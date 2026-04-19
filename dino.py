@@ -100,8 +100,17 @@ with tabs[0]:
             tamanho_ref = 12.0
             ref_nome = "Ônibus"
             
-        razao = tamanho_dino / tamanho_ref
-        st.metric(label="Proporção", value=f"{razao:.1f}x", delta=f"{tamanho_dino:.1f}m")
+        altura_dino = df[df["Nome"] == dino_sel]["Altura (m)"].values[0]
+
+        if ref_nome == "Humano":
+            altura_ref = 1.7
+        elif ref_nome == "Elefante":
+            altura_ref = 3.3
+        else:
+            altura_ref = 3.2
+        
+        razao = altura_dino / altura_ref
+        st.metric(label="Proporção (altura)", value=f"{razao:.1f}x", delta=f"{altura_dino:.1f}m")                
         
         # Explicação científica
         if st.checkbox("🔬 Por que ossos ocos?"):
@@ -113,17 +122,97 @@ with tabs[0]:
             """)
     
     with col2:
-        # Tenta carregar imagens das silhuetas (Fallback para gráfico de barras se não existir)
         try:
-            # Você precisa ter as imagens na pasta assets/ ou usar URLs públicas
-            img_dino = Image.open(SILHUETAS.get(dino_sel, "assets/default_dino.png"))
-            img_ref = Image.open(SILHUETAS.get(ref_nome, "assets/default_ref.png"))
-            
-            st.image([img_ref, img_dino], caption=[ref_nome, dino_sel], width=200)
-        except:
-            st.warning("⚠️ Silhuetas não encontradas. Mostrando gráfico de barras.")
-            fig = plot_comparacao_escala(dino_sel, ref_nome, tamanho_dino, tamanho_ref)
+            import os
+            from PIL import Image
+            import requests
+            from io import BytesIO
+    
+            # =============================
+            # FUNÇÃO SEGURA DE CARREGAMENTO
+            # =============================
+            def load_image_safe(path, fallback_url=None):
+                if path and os.path.exists(path):
+                    return Image.open(path).convert("RGBA")
+                elif fallback_url:
+                    response = requests.get(fallback_url, timeout=5)
+                    response.raise_for_status()
+                    return Image.open(BytesIO(response.content)).convert("RGBA")
+                else:
+                    raise FileNotFoundError("Imagem não encontrada")
+    
+            # =============================
+            # REDIMENSIONAMENTO PROPORCIONAL
+            # =============================
+            def resize_by_height(img, altura_base_px, altura_real, altura_ref_real):
+                proporcao = altura_real / altura_ref_real
+                new_height = int(altura_base_px * proporcao)
+    
+                # limites para não quebrar layout
+                new_height = max(30, min(new_height, 600))
+    
+                h_percent = new_height / float(img.size[1])
+                new_width = int(img.size[0] * h_percent)
+    
+                return img.resize((new_width, new_height))
+    
+            # =============================
+            # ALTURAS (CONSISTENTES)
+            # =============================
+            if ref_nome == "Humano":
+                altura_ref = 1.7
+            elif ref_nome == "Elefante":
+                altura_ref = 3.3
+            else:
+                altura_ref = 3.2  # ônibus
+    
+            altura_dino = df[df["Nome"] == dino_sel]["Altura (m)"].values[0]
+    
+            # =============================
+            # CARREGAMENTO DAS IMAGENS
+            # =============================
+            img_dino = load_image_safe(
+                SILHUETAS.get(dino_sel, ""),
+                fallback_url="https://via.placeholder.com/300x150?text=Dino"
+            )
+    
+            img_ref = load_image_safe(
+                SILHUETAS.get(ref_nome, ""),
+                fallback_url="https://via.placeholder.com/150x150?text=Ref"
+            )
+    
+            # =============================
+            # REDIMENSIONAMENTO
+            # =============================
+            base_px = 220
+    
+            img_ref_resized = resize_by_height(img_ref, base_px, altura_ref, altura_ref)
+            img_dino_resized = resize_by_height(img_dino, base_px, altura_dino, altura_ref)
+    
+            # =============================
+            # EXIBIÇÃO (VISUAL MELHORADO)
+            # =============================
+            st.markdown("### Comparação Visual")
+    
+            col_img1, col_img2 = st.columns(2)
+    
+            with col_img1:
+                st.image(img_ref_resized)
+                st.caption(f"{ref_nome} ({altura_ref} m)")
+    
+            with col_img2:
+                st.image(img_dino_resized)
+                st.caption(f"{dino_sel} ({altura_dino} m)")
+    
+        except Exception as e:
+            st.warning("⚠️ Erro ao carregar silhuetas. Mostrando gráfico alternativo.")
+    
+            fig = plot_comparacao_escala(
+                dino_sel, ref_nome, tamanho_dino, tamanho_ref
+            )
             st.pyplot(fig)
+    
+            st.caption(f"Detalhe técnico: {str(e)}")                       
 
 # =============================================================================
 # 2. MAPA DA DERIVA CONTINENTAL (DADOS REAIS)
