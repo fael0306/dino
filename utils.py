@@ -6,6 +6,8 @@ from PIL import Image, ImageOps
 import io
 import os
 from typing import Tuple
+import streamlit as st
+
 
 # --- Funções gerais de imagem (agora em português) ---
 def abrir_imagem(caminho_imagem):
@@ -93,6 +95,7 @@ def criar_silhueta_placeholder(nome: str) -> Image.Image:
     return Image.open(buf).convert("RGBA")
 
 
+@st.cache_data(ttl=3600, show_spinner=False)
 def carregar_imagem(nome: str) -> Image.Image:
     """Carrega imagem da pasta assets/ ou gera fallback."""
     mapa_arquivos = {
