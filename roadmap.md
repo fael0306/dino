@@ -4,7 +4,7 @@ Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento,
 
 ---
 
-## Fase 1 – Fundação Técnica e Estabilidade
+## Fase 1 – Fundação Técnica e Estabilidade - v0.1.0
 **Objetivo:** Preparar o código-base para crescimento sustentável, eliminar gargalos de performance e padronizar o projeto.
 
 | Issue | Título | Descrição resumida | Prioridade |
@@ -22,7 +22,7 @@ Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento,
 
 ---
 
-## Fase 2 – Experiência do Usuário e Precisão Visual
+## Fase 2 – Experiência do Usuário e Precisão Visual - v0.2.0
 **Objetivo:** Ajustar as visualizações principais para que sejam didáticas, responsivas e fiéis à comunicação científica.
 
 | Issue | Título | Descrição resumida | Prioridade |
@@ -42,7 +42,7 @@ Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento,
 
 ---
 
-## Fase 3 – Aprofundamento Científico e Conteúdo
+## Fase 3 – Aprofundamento Científico e Conteúdo - v0.3.0
 **Objetivo:** Ampliar a base de dados e tornar as ferramentas mais fiéis ao conhecimento paleontológico atual.
 
 | Issue | Título | Descrição resumida | Prioridade |
@@ -62,7 +62,7 @@ Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento,
 
 ---
 
-## Fase 4 – Qualidade, Robustez e Lançamento
+## Fase 4 – Qualidade, Robustez e Lançamento - v1.0.0
 **Objetivo:** Garantir que todo o sistema funcione de forma integrada e estável, pronto para divulgação.
 
 | Atividade | Responsável pela conclusão |
