@@ -3,7 +3,8 @@ import streamlit as st
 import pandas as pd
 import random
 from utils import (
-    get_referencia, carregar_imagem, redimensionar_para_altura, plot_comparacao_escala
+    get_referencia, carregar_imagem, redimensionar_para_altura,
+    plot_comparacao_escala, combinar_imagens_lado_a_lado
 )
 from data import obter_info_pegadas
 
@@ -50,11 +51,15 @@ def aba_escala_real(df):
                 altura_ref_px = altura_maxima_px
                 altura_dino_px = int(altura_maxima_px * (altura_dino / altura_ref))
 
+            img_dino_redim = redimensionar_para_altura(imagem_dino, altura_dino_px)
+            img_ref_redim = redimensionar_para_altura(imagem_ref, altura_ref_px)
+
+            # Combina as imagens lado a lado, alinhadas pela base
+            img_comparacao = combinar_imagens_lado_a_lado(img_ref_redim, img_dino_redim)
+
             st.markdown("### Comparação Visual")
-            st.image(redimensionar_para_altura(imagem_ref, altura_ref_px),
-                     caption=f"{ref_nome} ({altura_ref} m)")
-            st.image(redimensionar_para_altura(imagem_dino, altura_dino_px),
-                     caption=f"{dino_sel} ({altura_dino} m)")
+            st.image(img_comparacao, caption=f"{ref_nome} ({altura_ref}m)   |   {dino_sel} ({altura_dino}m)",
+                     use_container_width=True)
 
             if altura_dino / altura_ref > 10:
                 st.info("📐 **Nota:** Para diferenças extremas, a altura foi limitada para manter a visualização. A proporção ainda é fiel.")
