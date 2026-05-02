@@ -1,138 +1,108 @@
-## Roadmap Completo do Programa — PaleoLab Científico
+# 🗺️ Roadmap — PaleoLab Científico
 
-**Escopo:** Correção e consolidação da aba “📏 Escala Real” (Issue unificada) + melhorias de robustez e manutenibilidade.
-
----
-
-### 🎯 Objetivo Geral
-Eliminar falhas intermitentes de carregamento de imagens, centralizar a lógica de comparação de escala, remover duplicações e reforçar a confiabilidade didática do aplicativo.
+Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento, priorizando a estabilidade do código, performance e experiência do usuário antes de enriquecer o conteúdo científico. Cada fase contém um conjunto de issues, objetivo principal e critérios de sucesso.
 
 ---
 
-### 🗂️ Fases e Atividades
+## Fase 1 – Fundação Técnica e Estabilidade
+**Objetivo:** Preparar o código-base para crescimento sustentável, eliminar gargalos de performance e padronizar o projeto.
 
-#### Fase 1 – Correção Imediata de Bugs (Alta Prioridade)
-**Tarefa 1.1 – Sanitização da seleção de referência**
-- Criar função centralizada `get_referencia(label)`:
-  - Recebe o texto do `radio` (ex.: “Humano (1.7m)”)
-  - Retorna `(nome, comprimento_m, altura_m)` 
-  - Substituir todas as ocorrências dispersas no código
-- **Validação:** `if altura_ref <= 0: raise ValueError(...)`
-- **Prazo:** 1 dia
-- **Dependências:** Nenhuma
+| Issue | Título | Descrição resumida | Prioridade |
+|-------|--------|-------------------|------------|
+| #14 | Modularização do código | Separar em `data.py`, `utils.py`, `components.py`. | 🔴 Alta |
+| #15 | Padronização de idioma | Unificar código em português (ou inglês) para consistência. | 🔴 Alta |
+| #3  | Cache de imagens | Usar `st.cache_data`/`st.cache_resource` para evitar recarregamentos. | 🔴 Alta |
+| #16 | Adicionar testes automatizados | `pytest` para funções auxiliares e cálculos (cobertura ≥ 60%). | 🟡 Média |
 
-**Tarefa 1.2 – Proteção contra divisão por zero**
-- Antes de `razao = altura_dino / altura_ref`:
-  ```python
-  if altura_ref <= 0:
-      st.error("Erro nos dados de referência.")
-      st.stop()
-  ```
-- **Prazo:** Imediato
-- **Dependências:** Tarefa 1.1
-
-**Tarefa 1.3 – Remoção de duplicações de cálculo de altura**
-- Unificar as duas definições de `altura_ref` e `altura_dino` (hoje uma no bloco principal e outra no bloco de imagens).
-- Extrair os valores **uma única vez** no início da aba.
-- **Prazo:** Junto com 1.1
+**Critérios de saída:**
+- Estrutura de módulos clara e sem dependências circulares.
+- Todos os textos de UI e comentários no mesmo idioma.
+- Tempo de carregamento das imagens reduzido e mensurável.
+- Testes rodando em CI (ex: GitHub Actions) com cobertura mínima.
 
 ---
 
-#### Fase 2 – Confiabilidade do Carregamento de Imagens (Alta Prioridade)
-**Tarefa 2.1 – Sistema robusto de fallback**
-- Criar função `load_image_with_fallback(asset_path, fallback_url)`:
-  - Tenta carregar de `assets/` local
-  - Se falhar, tenta URL com `requests.get(..., timeout=3)`
-  - Caso falhe também, gera imagem placeholder (cor sólida com texto)
-  - Registrar tentativas para debug (`st.session_state` ou log)
-- **Cache opcional:** `@st.cache_data(ttl=3600)` apenas para imagens baixadas da internet.
-- **Prazo:** 2 dias
-- **Dependências:** Tarefa 1.3 (para usar os nomes corretos)
+## Fase 2 – Experiência do Usuário e Precisão Visual
+**Objetivo:** Ajustar as visualizações principais para que sejam didáticas, responsivas e fiéis à comunicação científica.
 
-**Tarefa 2.2 – Fallback local independente de internet**
-- Incluir na aplicação uma silhueta padrão SVG embutida (codificada em base64) para cada categoria (dinossauro genérico, humano, etc.)
-- Se nenhum recurso externo funcionar, usar esse fallback estático.
-- **Prazo:** 1 dia
+| Issue | Título | Descrição resumida | Prioridade |
+|-------|--------|-------------------|------------|
+| #1  | Melhorar alinhamento visual das silhuetas | Dispor imagens lado a lado com base alinhada (chão). | 🔴 Alta |
+| #2  | Normalizar proporção extrema | Toggle entre escala real e adaptativa, com mensagem explicativa. | 🟡 Média |
+| #6  | Tornar modelo de extinção mais didático | Adicionar equações e explicação simplificada no app. | 🟡 Média |
+| #7  | Melhorar estabilidade numérica (Extinção) | `clamp` robusto ou solver Euler melhorado para evitar valores irreais. | 🔴 Alta |
+| #12 | Validar entrada do usuário (Massa) | Limitar faixa de valores com base em dados reais e exibir erro. | 🟡 Média |
+| #13 | Comparação com dinossauros reais (Massa) | Mostrar equivalentes como "igual a X elefantes". | 🟢 Baixa |
 
-**Tarefa 2.3 – Otimização do redimensionamento**
-- Remover limites absolutos `max(30, min(new_height, 600))` que distorcem proporções.
-- Adotar escala relativa baseada apenas na proporção real, com um fator de escala configurável `pixels_por_metro` ajustável à viewport.
-- Para evitar imagens gigantes, aplicar `clamp` suave com mensagem visual (“diferença de escala > 10x – exibição reduzida para comparação”).
-- **Prazo:** 2 dias
-- **Dependências:** Tarefas 2.1 e 2.2
+**Critérios de saída:**
+- Comparação de escalas funciona bem em mobile e desktop.
+- Simulação K-Pg nunca gera números negativos ou presos em 0.1.
+- O usuário entende o que cada parâmetro da equação significa.
+- Calculadora de massa rejeita valores absurdos e oferece contexto.
 
 ---
 
-#### Fase 3 – Refatoração e DRY (Média Prioridade)
-**Tarefa 3.1 – Extração de constantes e configurações**
-- Mover mapeamentos `SILHUETAS` e parâmetros como `base_px`, referências para um módulo `config.py` ou dicionário central.
-- **Prazo:** 0,5 dia
+## Fase 3 – Aprofundamento Científico e Conteúdo
+**Objetivo:** Ampliar a base de dados e tornar as ferramentas mais fiéis ao conhecimento paleontológico atual.
 
-**Tarefa 3.2 – Revisão do `@st.cache_data`**
-- Remover `@st.cache_data` de `load_dino_data()` (dataset estático e pequeno). Manter apenas onde há ganho real (ex.: `get_fossil_data` que simula API, `fetch_image` se houver download).
-- **Prazo:** 0,5 dia
+| Issue | Título | Descrição resumida | Prioridade |
+|-------|--------|-------------------|------------|
+| #4  | Melhorar precisão paleogeográfica | Integrar GPlates ou dataset similar para coordenadas realistas. | 🔴 Alta |
+| #5  | Adicionar mais dinossauros no mapa | Expandir base do Paleobiology Database (≥ 80% cobertura). | 🟡 Média |
+| #8  | Melhorar chave dicotômica (Icnofósseis) | Incluir largura, profundidade, espaçamento etc. | 🟡 Média |
+| #9  | Fallback de imagens externas (Icnofósseis) | Salvar assets localmente em `/assets` para uso offline. | 🟡 Média |
+| #10 | Melhorar geração de nomes (Etimologia) | Adicionar regras de vogais de ligação e eufonia. | 🟢 Baixa |
+| #11 | Adicionar mais radicais (Etimologia) | Expandir para ≥ 20 radicais reais da paleontologia. | 🟢 Baixa |
 
----
-
-#### Fase 4 – Testes e Validação (Média Prioridade)
-**Tarefa 4.1 – Cenários de teste**
-- Executar app sem arquivos na pasta `assets/` → deve exibir placeholder.
-- Executar sem internet → placeholder funcional.
-- Verificar matemática: para cada combinação dinossauro+referência, exibir razão e confirmar com dados da tabela.
-- Verificar que nenhum `st.error` ou exceção não tratada aparece.
-- **Prazo:** 2 dias (paralelo a ajustes finos)
-
-**Tarefa 4.2 – Teste de regressão nas outras abas**
-- Garantir que nenhuma alteração quebrou as abas 2–6.
-- **Prazo:** 1 dia
+**Critérios de saída:**
+- Coordenadas fósseis no mapa refletem a posição continental da época.
+- Dinossauros exibidos no mapa são representativos da diversidade real.
+- Chave dicotômica consegue distinguir pelo menos 5 morfotipos de pegadas.
+- Gerador de nomes produz combinações verossímeis e sem cacofonia.
 
 ---
 
-#### Fase 5 – Documentação e Deploy (Baixa Prioridade)
-**Tarefa 5.1 – Comentários no código**
-- Documentar funções novas (`get_referencia`, `load_image_with_fallback`) com docstrings.
-- **Prazo:** 0,5 dia
+## Fase 4 – Qualidade, Robustez e Lançamento
+**Objetivo:** Garantir que todo o sistema funcione de forma integrada e estável, pronto para divulgação.
 
-**Tarefa 5.2 – Atualização do `README.md`**
-- Incluir instruções sobre fallback, dependências e estrutura de assets.
-- **Prazo:** 0,5 dia
+| Atividade | Responsável pela conclusão |
+|-----------|----------------------------|
+| Revisão dos testes (cobertura ≥ 60%) e adição de testes para componentes visuais simulados. | Issue #16 contínua |
+| Teste de usabilidade com usuários reais (professores/alunos) para validar didática. | Nova tarefa |
+| Documentação de deploy (Streamlit Cloud, requisitos, variáveis de ambiente). | Tarefa complementar |
+| Correção de bugs menores identificados nas fases anteriores. | Manutenção geral |
 
----
-
-### 📅 Cronograma Resumido
-| Fase | Duração (dias úteis) | Entregável Principal |
-|------|----------------------|----------------------|
-| 1. Correções imediatas | 1–2 | Código sem duplicações, divisão segura |
-| 2. Imagens robustas | 3–5 | Fallback triplo, redimensionamento proporcional |
-| 3. Refatoração | 1 | Código mais limpo, cache otimizado |
-| 4. Testes | 2–3 | Validação completa da aba |
-| 5. Documentação | 1 | Código comentado, README atualizado |
-
-**Total estimado:** 8–12 dias úteis (com um desenvolvedor dedicado em meio período).
+**Critérios finais de aceite do roadmap:**
+- Todas as issues das fases 1–3 estão fechadas.
+- Aplicação online funciona sem depender de serviços externos para imagens e dados geográficos (exceto fontes científicas atualizáveis).
+- O app pode ser usado por um professor em sala de aula sem treinamento prévio.
 
 ---
 
-### 🔄 Dependências entre Tarefas
-- Fase 2 depende da conclusão da Fase 1 (cálculo centralizado).
-- Testes (Fase 4) iniciam ao final da Fase 2 e 3.
+## Observações sobre dependências
+
+- **#14 (Modularização) e #15 (Idioma)** devem ser resolvidos no início para evitar retrabalho.
+- **#3 (Cache)** e **#9 (Fallback imagens)** podem ser implementados em paralelo.
+- **#4 (Precisão paleogeográfica)** pode depender da disponibilidade de bibliotecas Python – uma pesquisa prévia é necessária.
+- **#6 e #7 (Extinção)** são independentes, mas a didática (#6) pode ser construída após a estabilidade numérica (#7).
 
 ---
 
-### 📈 Métricas de Sucesso
-- Zero erros ao carregar a aba “Escala Real” em qualquer condição de rede.
-- Código da aba reduzido em pelo menos 30% de duplicações.
-- Comparações visuais fidedignas (proporção exata, sem distorção por limites arbitrários).
-- Tempo de resposta do app inalterado (fallbacks não devem causar lentidão perceptível).
+## Sugestão de timeline (sprints quinzenais)
+
+| Sprint | Itens |
+|--------|-------|
+| 1 | #14, #15 |
+| 2 | #3, #16 (início dos testes) |
+| 3 | #1, #2 |
+| 4 | #4, #5 (pesquisa e integração) |
+| 5 | #6, #7 |
+| 6 | #8, #9, #12 |
+| 7 | #10, #11, #13 |
+| 8 | Revisão, deploy, testes de usabilidade |
+
+Essa timeline é flexível e pode ser adaptada conforme a disponibilidade da equipe.
 
 ---
 
-### ⚠️ Riscos e Mitigações
-| Risco | Mitigação |
-|-------|-----------|
-| Imagens placeholder muito genéricas | Usar silhuetas licenciadas (PhyloPic) embutidas como base64 |
-| Fallback de internet lento | Implementar timeout curto e cache agressivo para URLs |
-| Manutenção de limites de redimensionamento | Usar escala contínua com `pixels_por_metro` definido pelo usuário |
-
----
-
-Com este roadmap, a equipe pode transformar uma aba atualmente frágil em um componente robusto, cientificamente preciso e de fácil manutenção, elevando a qualidade geral do PaleoLab Científico.
+Este roadmap fornece uma visão clara do caminho a seguir para transformar o PaleoLab em uma ferramenta educacional robusta, precisa e agradável. Todas as issues estão alinhadas com o objetivo de oferecer uma experiência científica interativa de alta qualidade.
