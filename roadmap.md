@@ -4,7 +4,7 @@ Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento,
 
 ---
 
-## Fase 1 – Fundação Técnica e Estabilidade - v0.1.0
+## Fase 1 – Fundação Técnica e Estabilidade - v0.1.0 - RESOLVIDO
 **Objetivo:** Preparar o código-base para crescimento sustentável, eliminar gargalos de performance e padronizar o projeto.
 
 | Issue | Título | Descrição resumida | Prioridade |
