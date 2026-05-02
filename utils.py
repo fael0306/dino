@@ -123,6 +123,27 @@ def redimensionar_para_altura(imagem: Image.Image, altura_alvo: int) -> Image.Im
     return imagem.resize((nova_largura, altura_alvo), Image.LANCZOS)
 
 
+def combinar_imagens_lado_a_lado(img_esq: Image.Image, img_dir: Image.Image) -> Image.Image:
+    """
+    Combina duas imagens horizontalmente, alinhadas pela base (borda inferior).
+    Retorna nova imagem RGBA com fundo transparente.
+    """
+    larg_esq, alt_esq = img_esq.size
+    larg_dir, alt_dir = img_dir.size
+
+    largura_total = larg_esq + larg_dir
+    altura_total = max(alt_esq, alt_dir)
+
+    img_combinada = Image.new('RGBA', (largura_total, altura_total), (0, 0, 0, 0))
+
+    # Colar a imagem da esquerda alinhada na base (y = altura_total - alt_esq)
+    img_combinada.paste(img_esq, (0, altura_total - alt_esq), img_esq if img_esq.mode == 'RGBA' else None)
+    # Colar a imagem da direita alinhada na base
+    img_combinada.paste(img_dir, (larg_esq, altura_total - alt_dir), img_dir if img_dir.mode == 'RGBA' else None)
+
+    return img_combinada
+
+
 def plot_comparacao_escala(dino_nome: str, referencia_nome: str,
                            comprimento_dino: float, comprimento_ref: float) -> plt.Figure:
     """Gráfico de barras horizontal para comparação de tamanhos."""
