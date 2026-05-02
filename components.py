@@ -16,7 +16,7 @@ def aba_escala_real(df):
     with col1:
         st.header("📏 Compare a Escala")
         dino_sel = st.selectbox("Escolha um dinossauro:", df["Nome"])
-        ref_sel = st.radio("Comparar com:", ["Humano (1.7m)", "Elefante Africano (6m)", "Ônibus Escolar (12m)"])
+        ref_sel = st.radio("Comparar com:", ["Humano (1.7m)", "Elefante Africano (3.3m)", "Ônibus Escolar (12m)"])
 
         ref_nome, comprimento_ref, altura_ref = get_referencia(ref_sel)
         if altura_ref <= 0:
