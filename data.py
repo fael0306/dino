@@ -1,8 +1,9 @@
+# data.py
 import pandas as pd
 
-def load_dino_data():
+def carregar_dados_dinossauros():
     """Retorna o DataFrame com os dados dos dinossauros."""
-    data = [
+    dados = [
         ["Tyrannosaurus rex", "Cretáceo", "Carnívoro", 12.3, 4.0, 8.4, "Bípede"],
         ["Triceratops", "Cretáceo", "Herbívoro", 9.0, 3.0, 6.0, "Quadrúpede"],
         ["Velociraptor", "Cretáceo", "Carnívoro", 2.0, 0.5, 0.015, "Bípede"],
@@ -11,10 +12,10 @@ def load_dino_data():
         ["Spinosaurus", "Cretáceo", "Piscívoro", 15.0, 5.0, 7.5, "Bípede"],
         ["Patagotitan", "Cretáceo", "Herbívoro", 37.0, 8.0, 70.0, "Quadrúpede"],
     ]
-    return pd.DataFrame(data, columns=["Nome", "Período", "Dieta", "Comprimento (m)", "Altura (m)", "Peso (ton)", "Postura"])
+    return pd.DataFrame(dados, columns=["Nome", "Período", "Dieta", "Comprimento (m)", "Altura (m)", "Peso (ton)", "Postura"])
 
 
-def get_pegadas_info():
+def obter_info_pegadas():
     """Retorna o dicionário com informações das pegadas (icnofósseis)."""
     return {
         "Grallator": {
