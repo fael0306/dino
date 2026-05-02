@@ -1,25 +1,26 @@
+# dino.py
 import streamlit as st
-from data import load_dino_data
+from data import carregar_dados_dinossauros
 from components import (
-    escala_real_tab,
-    deriva_continental_tab,
-    extincao_kpg_tab,
-    pegadas_tab,
-    etimologia_tab,
-    massa_corporal_tab
+    aba_escala_real,
+    aba_deriva_continental,
+    aba_extincao_kpg,
+    aba_icnofosseis,
+    aba_etimologia,
+    aba_massa_corporal
 )
 
 # Configuração da página
 st.set_page_config(page_title="PaleoLab Científico", layout="wide")
 
 # Carregar dados
-df = load_dino_data()
+df = carregar_dados_dinossauros()
 
 # Interface principal
 st.title("🦴 PaleoLab Científico - Edição Ensino Fundamental/Médio")
 st.markdown("Explorando dinossauros com dados reais e modelos matemáticos da paleontologia.")
 
-tabs = st.tabs([
+abas = st.tabs([
     "📏 Escala Real",
     "🗺️ Deriva Continental",
     "🦠 Extinção K-Pg",
@@ -29,20 +30,20 @@ tabs = st.tabs([
 ])
 
 # Chamar as funções de componente para cada aba
-with tabs[0]:
-    escala_real_tab(df)
+with abas[0]:
+    aba_escala_real(df)
 
-with tabs[1]:
-    deriva_continental_tab(df)
+with abas[1]:
+    aba_deriva_continental(df)
 
-with tabs[2]:
-    extincao_kpg_tab()
+with abas[2]:
+    aba_extincao_kpg()
 
-with tabs[3]:
-    pegadas_tab()
+with abas[3]:
+    aba_icnofosseis()
 
-with tabs[4]:
-    etimologia_tab()
+with abas[4]:
+    aba_etimologia()
 
-with tabs[5]:
-    massa_corporal_tab()
+with abas[5]:
+    aba_massa_corporal()
