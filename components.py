@@ -1,13 +1,14 @@
+# components.py
 import streamlit as st
 import pandas as pd
 import random
 from utils import (
-    get_referencia, carregar_imagem, resize_to_height, plot_comparacao_escala
+    get_referencia, carregar_imagem, redimensionar_para_altura, plot_comparacao_escala
 )
-from data import get_pegadas_info
+from data import obter_info_pegadas
 
 
-def escala_real_tab(df):
+def aba_escala_real(df):
     """Conteúdo da aba 'Escala Real'."""
     col1, col2 = st.columns([1, 2])
 
@@ -16,14 +17,14 @@ def escala_real_tab(df):
         dino_sel = st.selectbox("Escolha um dinossauro:", df["Nome"])
         ref_sel = st.radio("Comparar com:", ["Humano (1.7m)", "Elefante Africano (6m)", "Ônibus Escolar (12m)"])
 
-        ref_nome, tamanho_ref, altura_ref = get_referencia(ref_sel)
+        ref_nome, comprimento_ref, altura_ref = get_referencia(ref_sel)
         if altura_ref <= 0:
             st.error("Altura de referência inválida.")
             st.stop()
 
-        dino_data = df[df["Nome"] == dino_sel].iloc[0]
-        tamanho_dino = dino_data["Comprimento (m)"]
-        altura_dino = dino_data["Altura (m)"]
+        dados_dino = df[df["Nome"] == dino_sel].iloc[0]
+        comprimento_dino = dados_dino["Comprimento (m)"]
+        altura_dino = dados_dino["Altura (m)"]
 
         razao = altura_dino / altura_ref
         st.metric(label="Proporção (altura)", value=f"{razao:.1f}x", delta=f"{altura_dino:.1f}m")
@@ -38,64 +39,69 @@ def escala_real_tab(df):
 
     with col2:
         try:
-            img_dino = carregar_imagem(dino_sel)
-            img_ref = carregar_imagem(ref_nome)
+            imagem_dino = carregar_imagem(dino_sel)
+            imagem_ref = carregar_imagem(ref_nome)
 
-            max_height_px = 400
+            altura_maxima_px = 400
             if altura_dino >= altura_ref:
-                altura_dino_px = max_height_px
-                altura_ref_px = int(max_height_px * (altura_ref / altura_dino))
+                altura_dino_px = altura_maxima_px
+                altura_ref_px = int(altura_maxima_px * (altura_ref / altura_dino))
             else:
-                altura_ref_px = max_height_px
-                altura_dino_px = int(max_height_px * (altura_dino / altura_ref))
+                altura_ref_px = altura_maxima_px
+                altura_dino_px = int(altura_maxima_px * (altura_dino / altura_ref))
 
             st.markdown("### Comparação Visual")
-            st.image(resize_to_height(img_ref, altura_ref_px), caption=f"{ref_nome} ({altura_ref} m)")
-            st.image(resize_to_height(img_dino, altura_dino_px), caption=f"{dino_sel} ({altura_dino} m)")
+            st.image(redimensionar_para_altura(imagem_ref, altura_ref_px),
+                     caption=f"{ref_nome} ({altura_ref} m)")
+            st.image(redimensionar_para_altura(imagem_dino, altura_dino_px),
+                     caption=f"{dino_sel} ({altura_dino} m)")
 
             if altura_dino / altura_ref > 10:
                 st.info("📐 **Nota:** Para diferenças extremas, a altura foi limitada para manter a visualização. A proporção ainda é fiel.")
         except Exception as e:
             st.warning("⚠️ Erro ao processar silhuetas. Mostrando gráfico alternativo.")
-            fig = plot_comparacao_escala(dino_sel, ref_nome, tamanho_dino, tamanho_ref)
+            fig = plot_comparacao_escala(dino_sel, ref_nome, comprimento_dino, comprimento_ref)
             st.pyplot(fig)
             st.caption(f"Detalhe técnico: {str(e)}")
 
 
-def deriva_continental_tab(df):
+@st.cache_data(ttl=3600)
+def obter_dados_fosseis(dino_nome):
+    """Retorna DataFrame com coordenadas de sítios fósseis."""
+    sitios_fosseis = {
+        "Tyrannosaurus rex": [(47.5, -106.0), (44.0, -103.0)],
+        "Spinosaurus": [(30.0, 31.0), (28.0, 33.0)],
+        "Brachiosaurus": [(39.0, -108.0)],
+        "Triceratops": [(47.5, -106.0)],
+        "Velociraptor": [(44.0, 102.0)],
+    }
+    return pd.DataFrame(sitios_fosseis.get(dino_nome, [(0, 0)]), columns=["lat", "lon"])
+
+
+def aba_deriva_continental(df):
     """Conteúdo da aba 'Deriva Continental'."""
     st.header("🗺️ Onde os Fósseis Foram Encontrados?")
 
-    @st.cache_data(ttl=3600)
-    def get_fossil_data(dino_nome):
-        fossil_sites = {
-            "Tyrannosaurus rex": [(47.5, -106.0), (44.0, -103.0)],
-            "Spinosaurus": [(30.0, 31.0), (28.0, 33.0)],
-            "Brachiosaurus": [(39.0, -108.0)],
-            "Triceratops": [(47.5, -106.0)],
-            "Velociraptor": [(44.0, 102.0)],
-        }
-        return pd.DataFrame(fossil_sites.get(dino_nome, [(0, 0)]), columns=["lat", "lon"])
-
-    dino_mapa = st.selectbox("Selecione um dinossauro para ver suas descobertas:", df["Nome"], key="mapa_select")
+    dino_mapa = st.selectbox("Selecione um dinossauro para ver suas descobertas:",
+                             df["Nome"], key="mapa_select")
 
     modo_mapa = st.radio("Linha do Tempo Geológico:",
                          ["Mundo Atual (Holoceno)", "Cretáceo Superior (66 Ma)"],
                          help="No Cretáceo, a América do Sul e África estavam unidas, e a Índia era uma ilha.")
 
-    df_mapa = get_fossil_data(dino_mapa)
+    dados_mapa = obter_dados_fosseis(dino_mapa)
 
     if modo_mapa == "Cretáceo Superior (66 Ma)":
-        df_mapa["lon"] = df_mapa["lon"].apply(lambda x: x - 20 if x < 0 else x + 30)
-        df_mapa["lat"] = df_mapa["lat"].apply(lambda y: y - 10)
+        dados_mapa["lon"] = dados_mapa["lon"].apply(lambda x: x - 20 if x < 0 else x + 30)
+        dados_mapa["lat"] = dados_mapa["lat"].apply(lambda y: y - 10)
         st.caption("🌍 Os continentes estavam mais próximos. Isso explica por que encontramos fósseis iguais no Brasil e na África!")
 
-    st.map(df_mapa, zoom=2)
+    st.map(dados_mapa, zoom=2)
     st.markdown("---")
     st.markdown("**Dados Científicos:** As coordenadas são baseadas no [Paleobiology Database](https://paleobiodb.org/). O mapa do Cretáceo é uma aproximação visual da movimentação das placas tectônicas.")
 
 
-def extincao_kpg_tab():
+def aba_extincao_kpg():
     """Conteúdo da aba 'Extinção K-Pg'."""
     st.header("🦠 Simulador do Fim do Cretáceo")
     st.markdown("Baseado no modelo **Lotka-Volterra** (Presas-Predadores) e nos efeitos do Inverno de Impacto.")
@@ -119,19 +125,19 @@ def extincao_kpg_tab():
 
     P, H, C = [P0], [H0], [C0]
     for _ in range(anos_sim):
-        p_next = P[-1] + (r * P[-1] - a * P[-1] * H[-1])
-        h_next = H[-1] + (b * a * P[-1] * H[-1] - d * H[-1] - e * H[-1] * C[-1])
-        c_next = C[-1] + (f * e * H[-1] * C[-1] - g * C[-1])
-        P.append(max(p_next, 0.1 if p_next <= 0 else p_next))
-        H.append(max(h_next, 0.1 if h_next <= 0 else h_next))
-        C.append(max(c_next, 0.1 if c_next <= 0 else c_next))
+        p_prox = P[-1] + (r * P[-1] - a * P[-1] * H[-1])
+        h_prox = H[-1] + (b * a * P[-1] * H[-1] - d * H[-1] - e * H[-1] * C[-1])
+        c_prox = C[-1] + (f * e * H[-1] * C[-1] - g * C[-1])
+        P.append(max(p_prox, 0.1))
+        H.append(max(h_prox, 0.1))
+        C.append(max(c_prox, 0.1))
 
-    df_sim = pd.DataFrame({
+    dados_simulacao = pd.DataFrame({
         "Plantas (Base da Cadeia)": P,
         "Herbívoros (ex: Tricerátops)": H,
         "Carnívoros (ex: T-Rex)": C
     })
-    st.line_chart(df_sim)
+    st.line_chart(dados_simulacao)
 
     if P[-1] < 1.0:
         st.error("🔥 **COLAPSO TOTAL:** A falta de luz causou a extinção das plantas. Sem comida, os herbívoros morreram, seguidos pelos grandes carnívoros. Apenas pequenos animais onívoros sobreviveram.")
@@ -141,10 +147,10 @@ def extincao_kpg_tab():
         st.success("🌿 **ECOSSISTEMA ESTÁVEL:** O impacto não foi severo o suficiente para causar extinção em massa. (Mas lembre-se: na realidade, o bloqueio solar durou anos!)")
 
 
-def pegadas_tab():
+def aba_icnofosseis():
     """Conteúdo da aba 'Icnofósseis'."""
     st.header("👣 Paleo-Detetive: Identifique a Pegada")
-    pegadas_info = get_pegadas_info()
+    pegadas_info = obter_info_pegadas()
 
     col1, col2 = st.columns(2)
     with col1:
@@ -171,7 +177,7 @@ def pegadas_tab():
         st.caption("Icnofósseis são vestígios de atividade biológica. Eles nos ajudam a entender o comportamento sem precisar de ossos!")
 
 
-def etimologia_tab():
+def aba_etimologia():
     """Conteúdo da aba 'Etimologia'."""
     st.header("📖 Gerador de Nomes Científicos (Etimologia Grega/Latina)")
     radicais = {
@@ -197,7 +203,7 @@ def etimologia_tab():
         st.info(f"💡 **Interpretação Paleontológica:** {habito} cujo nome reflete {significado_pref.lower()} e {significado_suf.lower()}. Exemplo real similar: *Pachycephalosaurus* (Lagarto de Cabeça Grossa).")
 
 
-def massa_corporal_tab():
+def aba_massa_corporal():
     """Conteúdo da aba 'Massa Corporal'."""
     st.header("⚖️ Estimativa de Massa Corporal por Circunferência Femoral")
     st.markdown("Baseado no estudo de **Campione & Evans (2012)** - *BMC Biology*.")
@@ -205,14 +211,16 @@ def massa_corporal_tab():
     col1, col2 = st.columns(2)
     with col1:
         postura = st.radio("Tipo de Locomoção do Dinossauro:", ["Bípede (ex: T-Rex)", "Quadrúpede (ex: Braquiossauro)"])
-        circ_femur = st.number_input("📏 Circunferência do Fêmur (cm):", min_value=1.0, max_value=200.0, value=50.0, step=1.0)
+        circ_femur_cm = st.number_input("📏 Circunferência do Fêmur (cm):", min_value=1.0, max_value=200.0, value=50.0, step=1.0)
+        circ_femur_mm = circ_femur_cm * 10   # conversão para milímetros
 
+        # Coeficientes de Campione & Evans (2012) – circunferência em mm
         if postura == "Bípede (ex: T-Rex)":
             a, b = 0.00016, 2.73
         else:
             a, b = 0.00049, 2.75
 
-        massa_kg = a * (circ_femur ** b)
+        massa_kg = a * (circ_femur_mm ** b)
         massa_ton = massa_kg / 1000
         st.metric(label="🐘 Massa Estimada", value=f"{massa_ton:.2f} toneladas", delta=f"{massa_kg:.0f} kg")
 
@@ -222,12 +230,12 @@ def massa_corporal_tab():
         A circunferência do osso da coxa (fêmur) é o melhor indicador do peso que o animal suportava. 
         A equação é:
         """)
-        st.latex(r"Massa = a \times (Circunferência)^{b}")
+        st.latex(r"Massa = a \times (Circunferência_{mm})^{b}")
         st.markdown(f"""
         - **a = {a:.6f}**
         - **b = {b:.2f}**
         
-        *Exemplo real:* O fêmur do *Tyrannosaurus rex* "Sue" (FMNH PR 2081) tem cerca de 58 cm de circunferência.
+        *Exemplo real:* O fêmur do *Tyrannosaurus rex* "Sue" (FMNH PR 2081) tem cerca de 58 cm de circunferência (580 mm).
         Isso resulta em aproximadamente **9.5 toneladas**.
         """)
         st.caption("Referência: Campione, N. E., & Evans, D. C. (2012). A universal scaling relationship between body mass and proximal limb bone dimensions in quadrupedal terrestrial tetrapods.")
