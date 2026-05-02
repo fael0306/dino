@@ -239,3 +239,20 @@ def aba_massa_corporal():
         Isso resulta em aproximadamente **9.5 toneladas**.
         """)
         st.caption("Referência: Campione, N. E., & Evans, D. C. (2012). A universal scaling relationship between body mass and proximal limb bone dimensions in quadrupedal terrestrial tetrapods.")
+
+def classificar_pegada(dedos, garras, tamanho=None):
+    """Retorna o icnogênero baseado nas respostas."""
+    if dedos == 3 and garras == "Sim":
+        return "Grallator" if tamanho == "Pequeno (<25cm)" else "Eubrontes"
+    elif dedos == 4 and garras == "Sim":
+        return "Anomoepus"
+    else:
+        return "Brontopodus"
+
+def estimar_massa_corporal(postura, circ_femur_mm):
+    """Retorna massa em kg usando Campione & Evans."""
+    if postura == "Bípede (ex: T-Rex)":
+        a, b = 0.00016, 2.73   # Nota: verificar coeficientes
+    else:
+        a, b = 0.00049, 2.75
+    return a * (circ_femur_mm ** b)
