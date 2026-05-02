@@ -1,3 +1,4 @@
+# utils.py
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon, Ellipse
@@ -6,44 +7,44 @@ import io
 import os
 from typing import Tuple
 
-# --- Funções gerais de imagem (preservadas do utils.py original) ---
-def load_image(image_path):
-    """Load an image from the specified path."""
-    return Image.open(image_path)
+# --- Funções gerais de imagem (agora em português) ---
+def abrir_imagem(caminho_imagem):
+    """Carrega uma imagem a partir do caminho especificado."""
+    return Image.open(caminho_imagem)
 
 
-def save_image(image, save_path):
-    """Save the given image to a specified path."""
-    image.save(save_path)
+def salvar_imagem(imagem, caminho_salvar):
+    """Salva a imagem fornecida no caminho especificado."""
+    imagem.save(caminho_salvar)
 
 
-def generate_silhouette(image):
-    """Generate a silhouette from the given image."""
-    gray_image = image.convert('L')
-    silhouette = ImageOps.invert(gray_image)
-    return silhouette
+def extrair_silhueta(imagem):
+    """Gera uma silhueta a partir da imagem fornecida."""
+    imagem_cinza = imagem.convert('L')
+    silhueta = ImageOps.invert(imagem_cinza)
+    return silhueta
 
 
-def visualize_comparison(original_image, processed_image):
-    """Visualize the comparison between the original and processed images."""
-    fig, axes = plt.subplots(1, 2)
-    axes[0].imshow(original_image)
-    axes[0].set_title('Original Image')
-    axes[1].imshow(processed_image)
-    axes[1].set_title('Processed Image')
+def visualizar_comparacao(imagem_original, imagem_processada):
+    """Exibe a comparação entre a imagem original e a processada."""
+    fig, eixos = plt.subplots(1, 2)
+    eixos[0].imshow(imagem_original)
+    eixos[0].set_title('Imagem Original')
+    eixos[1].imshow(imagem_processada)
+    eixos[1].set_title('Imagem Processada')
     plt.show()
 
 
-def scale_calculations(original_size, target_size):
-    """Calculate scale factors for resizing images."""
-    scale_x = target_size[0] / original_size[0]
-    scale_y = target_size[1] / original_size[1]
-    return scale_x, scale_y
+def calcular_escalas(tamanho_original, tamanho_alvo):
+    """Calcula fatores de escala para redimensionamento de imagens."""
+    escala_x = tamanho_alvo[0] / tamanho_original[0]
+    escala_y = tamanho_alvo[1] / tamanho_original[1]
+    return escala_x, escala_y
 
 
 # --- Funções específicas do PaleoLab ---
 def get_referencia(ref_sel: str) -> Tuple[str, float, float]:
-    """Traduz a seleção de referência em nome e dimensões (altura)."""
+    """Traduz a seleção de referência em (nome, comprimento_m, altura_m)."""
     if "Humano" in ref_sel:
         return "Humano", 1.7, 1.7
     elif "Elefante" in ref_sel:
@@ -54,7 +55,7 @@ def get_referencia(ref_sel: str) -> Tuple[str, float, float]:
         raise ValueError(f"Referência inválida: {ref_sel}")
 
 
-def gerar_silhueta_local(nome: str) -> Image.Image:
+def criar_silhueta_placeholder(nome: str) -> Image.Image:
     """Desenha uma silhueta com matplotlib quando a imagem real não existe."""
     fig, ax = plt.subplots(figsize=(3, 2))
     ax.set_xlim(0, 10)
@@ -109,24 +110,24 @@ def carregar_imagem(nome: str) -> Image.Image:
     if os.path.exists(caminho):
         return Image.open(caminho).convert("RGBA")
     else:
-        return gerar_silhueta_local(nome)
+        return criar_silhueta_placeholder(nome)
 
 
-def resize_to_height(img: Image.Image, target_height: int) -> Image.Image:
+def redimensionar_para_altura(imagem: Image.Image, altura_alvo: int) -> Image.Image:
     """Redimensiona a imagem para uma altura específica mantendo a proporção."""
-    h_percent = target_height / float(img.size[1])
-    new_width = int(img.size[0] * h_percent)
-    return img.resize((new_width, target_height), Image.LANCZOS)
+    percentual_altura = altura_alvo / float(imagem.size[1])
+    nova_largura = int(imagem.size[0] * percentual_altura)
+    return imagem.resize((nova_largura, altura_alvo), Image.LANCZOS)
 
 
 def plot_comparacao_escala(dino_nome: str, referencia_nome: str,
-                           tamanho_dino: float, tamanho_ref: float) -> plt.Figure:
+                           comprimento_dino: float, comprimento_ref: float) -> plt.Figure:
     """Gráfico de barras horizontal para comparação de tamanhos."""
     fig, ax = plt.subplots(figsize=(8, 3))
     categorias = [referencia_nome, dino_nome]
-    valores = [tamanho_ref, tamanho_dino]
-    bars = ax.barh(categorias, valores, color=['gray', 'green'])
-    for bar, val in zip(bars, valores):
+    valores = [comprimento_ref, comprimento_dino]
+    barras = ax.barh(categorias, valores, color=['gray', 'green'])
+    for bar, val in zip(barras, valores):
         ax.text(bar.get_width() + 0.1, bar.get_y() + bar.get_height()/2,
                 f'{val:.1f} m', va='center')
     ax.set_xlabel('Comprimento (metros)')
