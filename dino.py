@@ -100,8 +100,6 @@ def gerar_placeholder_silhueta(nome: str, cor: Tuple[int, int, int] = (180, 180,
     
     return img
 
-
-@st.cache_data(ttl=3600, show_spinner=False)
 def fetch_image_cached(url: Optional[str], nome: str) -> Image.Image:
     """
     Carrega imagem com cache, retry e fallback para placeholder local.
