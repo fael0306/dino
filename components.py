@@ -109,16 +109,54 @@ def aba_deriva_continental(df):
 def aba_extincao_kpg():
     """Conteúdo da aba 'Extinção K-Pg'."""
     st.header("🦠 Simulador do Fim do Cretáceo")
-    st.markdown("Baseado no modelo **Lotka-Volterra** (Presas-Predadores) e nos efeitos do Inverno de Impacto.")
+    st.markdown("""
+    Baseado no modelo **Lotka-Volterra** (Presas-Predadores) e nos efeitos do Inverno de Impacto.
+    
+    📘 **O que este modelo representa?**  
+    Após o impacto do asteroide, a luz solar foi bloqueada, reduzindo a fotossíntese. Isso afetou toda a cadeia alimentar:
+    *Plantas → Herbívoros → Carnívoros*. O modelo matemático mostra como essas populações mudam ao longo do tempo.
+    """)
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        bloqueio_solar = st.slider("🌑 Bloqueio Solar (%)", 0, 100, 15)
+        bloqueio_solar = st.slider("🌑 Bloqueio Solar (%)", 0, 100, 15,
+                                   help="Quanto maior, menos luz chega às plantas, reduzindo sua taxa de crescimento (r).")
     with col2:
-        chuva_acida = st.slider("☔ Intensidade da Chuva Ácida", 0, 100, 40)
+        chuva_acida = st.slider("☔ Intensidade da Chuva Ácida", 0, 100, 40,
+                                help="Afeta a mortalidade dos herbívoros (d) e dos carnívoros (g).")
     with col3:
-        anos_sim = st.slider("📅 Anos após o impacto", 1, 50, 30)
+        anos_sim = st.slider("📅 Anos após o impacto", 1, 50, 30,
+                             help="Duração da simulação.")
 
+    # Equações do modelo
+    st.markdown("---")
+    st.markdown("### 🧮 Equações do Modelo (Lotka-Volterra)")
+    st.latex(r"\begin{aligned}"
+             r"\frac{dP}{dt} &= rP - aPH \\"
+             r"\frac{dH}{dt} &= b a P H - d H - e H C \\"
+             r"\frac{dC}{dt} &= f e H C - g C"
+             r"\end{aligned}")
+    st.caption("P = Plantas, H = Herbívoros, C = Carnívoros | Coeficientes explicados abaixo")
+
+    # Explicação dos parâmetros
+    with st.expander("🔍 O que significam essas letras?"):
+        st.markdown(f"""
+        | Símbolo | Significado ecológico | Valor na simulação |
+        |---------|-----------------------|---------------------|
+        | **P** | População de plantas (base da cadeia) | Inicia em 100 (unidades arbitrárias) |
+        | **H** | Herbívoros (ex: Tricerátops) | Inicia em 50 |
+        | **C** | Carnívoros (ex: T-Rex) | Inicia em 20 |
+        | **r** | Taxa de crescimento das plantas | `0.4 × (1 - {bloqueio_solar}/100) = {0.4 * (1 - bloqueio_solar/100):.2f}` |
+        | **a** | Taxa de consumo de plantas por herbívoro | Fixo: 0.01 |
+        | **b** | Eficiência de conversão (plantas → novos herbívoros) | Fixo: 0.6 |
+        | **d** | Mortalidade natural dos herbívoros | `0.1 + ({chuva_acida}/100)×0.05 = {0.1 + (chuva_acida/100)*0.05:.2f}` |
+        | **e** | Taxa de predação (herbívoros comidos por carn.) | Fixo: 0.02 |
+        | **f** | Eficiência de conversão (herbívoros → novos carn.) | Fixo: 0.3 |
+        | **g** | Mortalidade natural dos carnívoros | `0.15 + ({chuva_acida}/100)×0.02 = {0.15 + (chuva_acida/100)*0.02:.2f}` |
+        """)
+        st.info("🌞 **O bloqueio solar reduz r** (crescimento das plantas).\n\n☔ **A chuva ácida aumenta d e g** (mortes de herbívoros e carnívoros).")
+
+    # Inicialização dos parâmetros
     P0, H0, C0 = 100.0, 50.0, 20.0
     r = 0.4 * (1 - bloqueio_solar/100)
     a = 0.01
@@ -126,13 +164,14 @@ def aba_extincao_kpg():
     d = 0.1 + (chuva_acida/100)*0.05
     e = 0.02
     f = 0.3
-    g = 0.15 + (chuva_acida/100)*0.02
+    g_val = 0.15 + (chuva_acida/100)*0.02   # renomeado para não conflitar com g da explicação
 
+    # Simulação
     P, H, C = [P0], [H0], [C0]
     for _ in range(anos_sim):
         p_prox = P[-1] + (r * P[-1] - a * P[-1] * H[-1])
         h_prox = H[-1] + (b * a * P[-1] * H[-1] - d * H[-1] - e * H[-1] * C[-1])
-        c_prox = C[-1] + (f * e * H[-1] * C[-1] - g * C[-1])
+        c_prox = C[-1] + (f * e * H[-1] * C[-1] - g_val * C[-1])
         P.append(max(p_prox, 0.1))
         H.append(max(h_prox, 0.1))
         C.append(max(c_prox, 0.1))
@@ -142,8 +181,11 @@ def aba_extincao_kpg():
         "Herbívoros (ex: Tricerátops)": H,
         "Carnívoros (ex: T-Rex)": C
     })
+    st.markdown("---")
+    st.markdown("### 📊 Resultado da Simulação")
     st.line_chart(dados_simulacao)
 
+    # Interpretação automática
     if P[-1] < 1.0:
         st.error("🔥 **COLAPSO TOTAL:** A falta de luz causou a extinção das plantas. Sem comida, os herbívoros morreram, seguidos pelos grandes carnívoros. Apenas pequenos animais onívoros sobreviveram.")
     elif H[-1] < 5.0:
@@ -173,7 +215,7 @@ def aba_icnofosseis():
         st.subheader(f"🔍 Resultado: Icnogênero *{resultado}*")
         try:
             st.image(pegadas_info[resultado]["img"], caption=f"Fóssil de {resultado}", width=300)
-        except:
+        except Exception:
             st.warning("Imagem não disponível")
         st.markdown(f"""
         - **Dieta provável:** {pegadas_info[resultado]['dieta']}
