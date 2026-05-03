@@ -1,7 +1,3 @@
-Aqui está o roadmap revisado, incorporando as suas solicitações:
-
----
-
 ## 🗺️ Roadmap — PaleoLab Científico (ATUALIZADO)
 
 Este roadmap organiza as issues em fases lógicas de desenvolvimento. As fases já concluídas permanecem como registro, e as novas ideias são incorporadas nos momentos adequados.
