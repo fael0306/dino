@@ -117,26 +117,80 @@ def obter_dados_fosseis(dino_nome):
 
 
 def aba_deriva_continental(df):
-    """Conteúdo da aba 'Deriva Continental'."""
-    st.header("🗺️ Onde os Fósseis Foram Encontrados?")
+    """Conteúdo da aba 'Deriva Continental' com Globo Interativo."""
+    st.header("🗺️ Globo Interativo da Terra Antiga")
+    st.markdown(
+        "Viaje no tempo geológico e veja como os continentes se movimentaram. "
+        "O globo abaixo é fornecido pelo [Ancient Earth](https://dinosaurpictures.org/ancient-earth)."
+    )
 
-    dino_mapa = st.selectbox("Selecione um dinossauro para ver suas descobertas:",
-                             df["Nome"], key="mapa_select")
+    # Seletor de era geológica
+    era_opcoes = {
+        "Mundo Atual (Holoceno, 0 Ma)": 0,
+        "Cretáceo Superior (66 Ma)": 66,
+        "Jurássico Superior (150 Ma)": 150,
+        "Triássico Médio (240 Ma)": 240,
+    }
+    era_selecionada = st.radio(
+        "Selecione a era geológica:",
+        options=list(era_opcoes.keys()),
+        index=1,  # padrão: Cretáceo Superior
+        key="era_globo"
+    )
+    idade_ma = era_opcoes[era_selecionada]
 
-    modo_mapa = st.radio("Linha do Tempo Geológico:",
-                         ["Mundo Atual (Holoceno)", "Cretáceo Superior (66 Ma)"],
-                         help="No Cretáceo, a América do Sul e África estavam unidas, e a Índia era uma ilha.")
+    # URL do globo (parâmetro #idade)
+    url_globo = f"https://dinosaurpictures.org/ancient-earth#{idade_ma}"
+
+    # Tenta exibir o iframe; se falhar, mostra link e fallback
+    try:
+        st.iframe(url_globo, height=600, scrolling=False)
+    except Exception as e:
+        st.warning("⚠️ Não foi possível carregar o globo interativo. "
+                   "Isso pode ocorrer devido a restrições do navegador.")
+        st.markdown(f"[🔗 Abrir globo em nova aba]({url_globo})")
+        st.error(f"Erro técnico: {e}")
+
+    st.caption(
+        "Se o globo não aparecer, clique no link acima. "
+        "Alguns navegadores bloqueiam a incorporação por questões de segurança."
+    )
+
+    st.markdown("---")
+    st.subheader("📍 Localização dos Fósseis")
+
+    # Seletor de dinossauro para visualizar os sítios fósseis
+    dino_mapa = st.selectbox(
+        "Selecione um dinossauro para ver onde seus fósseis foram encontrados:",
+        df["Nome"],
+        key="mapa_select_fosseis"
+    )
 
     dados_mapa = obter_dados_fosseis(dino_mapa)
 
-    if modo_mapa == "Cretáceo Superior (66 Ma)":
-        dados_mapa["lon"] = dados_mapa["lon"].apply(lambda x: x - 20 if x < 0 else x + 30)
-        dados_mapa["lat"] = dados_mapa["lat"].apply(lambda y: y - 10)
-        st.caption("🌍 Os continentes estavam mais próximos. Isso explica por que encontramos fósseis iguais no Brasil e na África!")
+    # Opção de visualização: mapa 2D com pontos ou lista de coordenadas
+    modo_visualizacao = st.radio(
+        "Como deseja ver as localizações?",
+        ["Mapa 2D (mundo atual)", "Lista de coordenadas"],
+        horizontal=True
+    )
 
-    st.map(dados_mapa, zoom=2)
+    if modo_visualizacao == "Mapa 2D (mundo atual)":
+        st.map(dados_mapa, zoom=2)
+        st.caption("🌍 Mapa baseado no mundo moderno. As coordenadas indicam os sítios paleontológicos.")
+    else:
+        if not dados_mapa.empty:
+            st.write("**Coordenadas (latitude, longitude):**")
+            for _, linha in dados_mapa.iterrows():
+                st.write(f"- {linha['lat']:.2f}, {linha['lon']:.2f}")
+        else:
+            st.info("Nenhuma coordenada registrada para este dinossauro.")
+    
     st.markdown("---")
-    st.markdown("**Dados Científicos:** As coordenadas são baseadas no [Paleobiology Database](https://paleobiodb.org/). O mapa do Cretáceo é uma aproximação visual da movimentação das placas tectônicas.")
+    st.markdown(
+        "**Dados Científicos:** As coordenadas são baseadas no [Paleobiology Database](https://paleobiodb.org/). "
+        "O globo do Ancient Earth é uma reconstrução das placas tectônicas pelo projeto [Paleomap](https://www.earthbyte.org/)."
+    )
 
 
 def aba_extincao_kpg():
