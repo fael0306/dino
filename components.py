@@ -141,20 +141,28 @@ def aba_deriva_continental(df):
     # URL do globo (parâmetro #idade)
     url_globo = f"https://dinosaurpictures.org/ancient-earth#{idade_ma}"
 
-    # Tenta exibir o iframe; se falhar, mostra link e fallback
-    try:
-        # scrolling removido – versão atual do Streamlit não aceita esse argumento
-        st.iframe(url_globo, height=600)
-    except Exception as e:
-        st.warning("⚠️ Não foi possível carregar o globo interativo. "
-                   "Isso pode ocorrer devido a restrições do navegador.")
-        st.markdown(f"[🔗 Abrir globo em nova aba]({url_globo})")
-        st.error(f"Erro técnico: {e}")
+    # HTML do iframe com altura definida
+    iframe_html = (
+        f'<iframe src="{url_globo}" '
+        f'width="100%" height="600px" '
+        f'style="border:none;" '
+        f'allowfullscreen="true" '
+        f'loading="lazy">'
+        f'</iframe>'
+    )
+
+    # Exibe o iframe com key dinâmica para forçar atualização
+    st.html(
+        iframe_html,
+        height=600,
+        key=f"globo_era_{idade_ma}"
+    )
 
     st.caption(
-        "Se o globo não aparecer, clique no link acima. "
+        "Se o globo não aparecer, clique no link abaixo para abri-lo em uma nova aba. "
         "Alguns navegadores bloqueiam a incorporação por questões de segurança."
     )
+    st.markdown(f"[🔗 Abrir globo em nova aba]({url_globo})")
 
     st.markdown("---")
     st.subheader("📍 Localização dos Fósseis")
