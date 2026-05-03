@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 from PIL import Image
 from utils import (
-    get_referencia, carregar_imagem, redimensionar_para_altura,
+    carregar_imagem, redimensionar_para_altura,
     plot_comparacao_escala, combinar_imagens_lado_a_lado
 )
 from data import obter_info_pegadas
@@ -20,9 +20,38 @@ def aba_escala_real(df):
     with col1:
         st.header("📏 Compare a Escala")
         dino_sel = st.selectbox("Escolha um dinossauro:", df["Nome"])
-        ref_sel = st.radio("Comparar com:", ["Humano (1.7m)", "Elefante Africano (3.3m)", "Ônibus Escolar (12m)"])
 
-        ref_nome, comprimento_ref, altura_ref = get_referencia(ref_sel)
+        # Opções de referência apenas biológicas (Issue #17)
+        opcoes_ref = [
+            "Humano (1.7m)",
+            "Elefante Africano (3.3m)",
+            "Comparar com outro dinossauro..."
+        ]
+        ref_sel = st.radio("Comparar com:", opcoes_ref)
+
+        # Determina os dados da referência
+        if ref_sel == "Comparar com outro dinossauro...":
+            outros_dinos = df[df["Nome"] != dino_sel]["Nome"].tolist()
+            if not outros_dinos:
+                st.warning("Não há outros dinossauros para comparar.")
+                st.stop()
+            outro_dino = st.selectbox("Selecione o dinossauro para comparação:", outros_dinos)
+            ref_nome = outro_dino
+            dados_ref = df[df["Nome"] == outro_dino].iloc[0]
+            altura_ref = dados_ref["Altura (m)"]
+            comprimento_ref = dados_ref["Comprimento (m)"]
+        elif "Humano" in ref_sel:
+            ref_nome = "Humano"
+            altura_ref = 1.7
+            comprimento_ref = 1.7
+        elif "Elefante" in ref_sel:
+            ref_nome = "Elefante"
+            altura_ref = 3.3
+            comprimento_ref = 6.0
+        else:
+            st.error("Referência inválida.")
+            st.stop()
+
         if altura_ref <= 0:
             st.error("Altura de referência inválida.")
             st.stop()
@@ -338,3 +367,21 @@ def aba_massa_corporal():
         Isso resulta em aproximadamente **9.5 toneladas**.
         """)
         st.caption("Referência: Campione, N. E., & Evans, D. C. (2012). A universal scaling relationship between body mass and proximal limb bone dimensions in quadrupedal terrestrial tetrapods.")
+
+    # 🔁 Comparação automática com animais reais (Issue #13)
+    st.markdown("---")
+    st.subheader("🔁 Equivalência de Massa")
+    massa_elefante = 6.0      # toneladas (elefante africano médio)
+    massa_trex = 8.4          # Tyrannosaurus rex médio
+    massa_patagotitan = 70.0  # Patagotitan mayorum
+
+    elefantes = massa_ton / massa_elefante
+    trexes = massa_ton / massa_trex
+    patagos = massa_ton / massa_patagotitan
+
+    col3, col4, col5 = st.columns(3)
+    col3.metric("🐘 Elefantes Africanos", f"{elefantes:.1f}", "6 ton cada")
+    col4.metric("🦖 T-Rex", f"{trexes:.1f}", "8.4 ton cada")
+    col5.metric("🦕 Patagotitan", f"{patagos:.1f}", "70 ton cada")
+
+    st.caption("Comparação com animais reais para contextualizar a massa estimada.")
