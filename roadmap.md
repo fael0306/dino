@@ -53,12 +53,13 @@ Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento,
 | #9  | Fallback de imagens externas (Icnofósseis) | Salvar assets localmente em `/assets` para uso offline. | 🟡 Média |
 | #10 | Melhorar geração de nomes (Etimologia) | Adicionar regras de vogais de ligação e eufonia. | 🟢 Baixa |
 | #11 | Adicionar mais radicais (Etimologia) | Expandir para ≥ 20 radicais reais da paleontologia. | 🟢 Baixa |
+| 🆕 Gerador de nome #2 | Gerar nomes verdadeiros com descrição | Usar lista de ~50 dinossauros reais, exibindo nome aleatório + parágrafo explicativo do dinossauro. | 🟡 Média |
 
 **Critérios de saída:**
 - Coordenadas fósseis no mapa refletem a posição continental da época.
 - Dinossauros exibidos no mapa são representativos da diversidade real.
 - Chave dicotômica consegue distinguir pelo menos 5 morfotipos de pegadas.
-- Gerador de nomes produz combinações verossímeis e sem cacofonia.
+- Gerador de nomes produz combinações verossímeis e sem cacofonia, além de fornecer modo com dinossauros reais e descrições informativas.
 
 ---
 
@@ -85,6 +86,7 @@ Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento,
 - **#3 (Cache)** e **#9 (Fallback imagens)** podem ser implementados em paralelo.
 - **#4 (Precisão paleogeográfica)** pode depender da disponibilidade de bibliotecas Python – uma pesquisa prévia é necessária.
 - **#6 e #7 (Extinção)** são independentes, mas a didática (#6) pode ser construída após a estabilidade numérica (#7).
+- **🆕 Gerador de nome #2** pode compartilhar a base de dados com #5 (mapa de dinossauros), mas é independente das issues de etimologia (#10, #11).
 
 ---
 
@@ -98,7 +100,7 @@ Este roadmap organiza as issues existentes em fases lógicas de desenvolvimento,
 | 4 | #4, #5 (pesquisa e integração) |
 | 5 | #6, #7 |
 | 6 | #8, #9, #12 |
-| 7 | #10, #11, #13 |
+| 7 | #10, #11, #13, 🆕 Gerador de nome #2 |
 | 8 | Revisão, deploy, testes de usabilidade |
 
 Essa timeline é flexível e pode ser adaptada conforme a disponibilidade da equipe.
