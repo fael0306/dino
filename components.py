@@ -170,15 +170,20 @@ def aba_extincao_kpg():
     f = 0.3
     g_val = 0.15 + (chuva_acida/100)*0.02   # renomeado para não conflitar com g da explicação
 
-    # Simulação
+    # Simulação numérica (agora com esquema semi-implícito para estabilidade)
+    dt = 1.0  # passo de 1 ano
     P, H, C = [P0], [H0], [C0]
     for _ in range(anos_sim):
-        p_prox = P[-1] + (r * P[-1] - a * P[-1] * H[-1])
-        h_prox = H[-1] + (b * a * P[-1] * H[-1] - d * H[-1] - e * H[-1] * C[-1])
-        c_prox = C[-1] + (f * e * H[-1] * C[-1] - g_val * C[-1])
-        P.append(max(p_prox, 0.1))
-        H.append(max(h_prox, 0.1))
-        C.append(max(c_prox, 0.1))
+        # Plantas: crescimento explícito, consumo implícito (evita negatividade)
+        p_prox = P[-1] * (1 + r * dt) / (1 + a * H[-1] * dt)
+        # Herbívoros: nascimento usando plantas atualizadas, mortes implícitas
+        h_prox = H[-1] * (1 + b * a * p_prox * dt) / (1 + d * dt + e * C[-1] * dt)
+        # Carnívoros: nascimento usando herbívoros atualizados, morte implícita
+        c_prox = C[-1] * (1 + f * e * h_prox * dt) / (1 + g_val * dt)
+
+        P.append(p_prox)
+        H.append(h_prox)
+        C.append(c_prox)
 
     dados_simulacao = pd.DataFrame({
         "Plantas (Base da Cadeia)": P,
