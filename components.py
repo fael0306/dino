@@ -293,15 +293,32 @@ def aba_massa_corporal():
     col1, col2 = st.columns(2)
     with col1:
         postura = st.radio("Tipo de Locomoção do Dinossauro:", ["Bípede (ex: T-Rex)", "Quadrúpede (ex: Braquiossauro)"])
-        circ_femur_cm = st.number_input("📏 Circunferência do Fêmur (cm):", min_value=1.0, max_value=200.0, value=50.0, step=1.0)
-        circ_femur_mm = circ_femur_cm * 10   # conversão para milímetros
+        circ_femur_cm = st.number_input(
+            "📏 Circunferência do Fêmur (cm):",
+            min_value=0.5,
+            max_value=300.0,
+            value=50.0,
+            step=1.0,
+            help="Insira um valor entre 2 e 90 cm para bípedes, ou entre 15 e 250 cm para quadrúpedes."
+        )
 
-        # Coeficientes de Campione & Evans (2012) – circunferência em mm
+        # Validação baseada em dados reais
         if postura == "Bípede (ex: T-Rex)":
+            limite_min, limite_max = 2.0, 90.0
             a, b = 0.00016, 2.73
-        else:
+        else:  # Quadrúpede
+            limite_min, limite_max = 15.0, 250.0
             a, b = 0.00049, 2.75
 
+        if circ_femur_cm < limite_min or circ_femur_cm > limite_max:
+            st.error(
+                f"❌ **Valor fora do padrão realista para {postura.split('(')[0].strip()}.**\n"
+                f"A circunferência femoral de dinossauros {postura.split('(')[0].strip().lower()}s "
+                f"varia tipicamente entre **{limite_min:.0f} cm e {limite_max:.0f} cm**."
+            )
+            st.stop()
+
+        circ_femur_mm = circ_femur_cm * 10   # conversão para milímetros
         massa_kg = a * (circ_femur_mm ** b)
         massa_ton = massa_kg / 1000
         st.metric(label="🐘 Massa Estimada", value=f"{massa_ton:.2f} toneladas", delta=f"{massa_kg:.0f} kg")
