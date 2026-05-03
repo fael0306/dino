@@ -27,7 +27,7 @@ Este roadmap organiza as issues em fases lógicas de desenvolvimento. As fases j
 
 ---
 
-### Fase 2 – Experiência do Usuário e Precisão Visual - `v0.2.0`
+### Fase 2 – Experiência do Usuário e Precisão Visual - `v0.2.0` ✅ RESOLVIDA
 
 **Objetivo:** Ajustar as visualizações principais para que sejam didáticas, responsivas e fiéis à comunicação científica.
 
