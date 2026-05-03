@@ -138,15 +138,20 @@ def aba_deriva_continental(df):
     )
     idade_ma = era_opcoes[era_selecionada]
 
-    # URL do globo (parâmetro #idade)
-    url_globo = f"https://dinosaurpictures.org/ancient-earth#{idade_ma}"
+    # URL do globo com parâmetro único para forçar recarga no navegador
+    # O parâmetro _t é ignorado pelo site, mas torna a URL única para cada era
+    url_globo = f"https://dinosaurpictures.org/ancient-earth?_t={idade_ma}#{idade_ma}"
 
-    # Exibe o iframe com key dinâmica para forçar recriação ao mudar a era
-    st.iframe(
-        url_globo,
-        height=600,
-        key=f"globo_era_{idade_ma}"   # ESSA É A CHAVE PARA ATUALIZAR
+    # Injeção do iframe via HTML (st.markdown com allow unsafe)
+    iframe_html = (
+        f'<iframe src="{url_globo}" '
+        f'width="100%" height="600" '
+        f'style="border:none;" '
+        f'allowfullscreen '
+        f'loading="lazy">'
+        f'</iframe>'
     )
+    st.markdown(iframe_html, unsafe_allow_html=True)
 
     st.caption(
         "Se o globo não aparecer, clique no link abaixo para abri-lo em uma nova aba. "
