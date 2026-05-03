@@ -115,7 +115,6 @@ def obter_dados_fosseis(dino_nome):
     }
     return pd.DataFrame(sitios_fosseis.get(dino_nome, [(0, 0)]), columns=["lat", "lon"])
 
-
 def aba_deriva_continental(df):
     """Conteúdo da aba 'Deriva Continental' com Globo Interativo."""
     st.header("🗺️ Globo Interativo da Terra Antiga")
@@ -144,7 +143,8 @@ def aba_deriva_continental(df):
 
     # Tenta exibir o iframe; se falhar, mostra link e fallback
     try:
-        st.iframe(url_globo, height=600, scrolling=False)
+        # scrolling removido – versão atual do Streamlit não aceita esse argumento
+        st.iframe(url_globo, height=600)
     except Exception as e:
         st.warning("⚠️ Não foi possível carregar o globo interativo. "
                    "Isso pode ocorrer devido a restrições do navegador.")
@@ -191,7 +191,6 @@ def aba_deriva_continental(df):
         "**Dados Científicos:** As coordenadas são baseadas no [Paleobiology Database](https://paleobiodb.org/). "
         "O globo do Ancient Earth é uma reconstrução das placas tectônicas pelo projeto [Paleomap](https://www.earthbyte.org/)."
     )
-
 
 def aba_extincao_kpg():
     """Conteúdo da aba 'Extinção K-Pg'."""
