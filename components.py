@@ -141,18 +141,11 @@ def aba_deriva_continental(df):
     # URL do globo (parâmetro #idade)
     url_globo = f"https://dinosaurpictures.org/ancient-earth#{idade_ma}"
 
-    # HTML do iframe
-    iframe_html = (
-        f'<iframe src="{url_globo}" '
-        f'width="100%" height="600" '
-        f'style="border:none;" '
-        f'allowfullscreen="true" '
-        f'loading="lazy">'
-        f'</iframe>'
+    # Injeção do iframe via st.markdown (compatível com qualquer versão do Streamlit)
+    st.markdown(
+        f'<iframe src="{url_globo}" width="100%" height="600" style="border:none;" allowfullscreen loading="lazy"></iframe>',
+        unsafe_allow_html=True
     )
-
-    # Exibe o iframe (sem key, o Streamlit recria o componente automaticamente)
-    components.html(iframe_html, height=600)
 
     st.caption(
         "Se o globo não aparecer, clique no link abaixo para abri-lo em uma nova aba. "
