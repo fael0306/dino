@@ -16,26 +16,36 @@ def carregar_dados_dinossauros():
 
 
 def obter_info_pegadas():
-    """Retorna o dicionário com informações das pegadas (icnofósseis)."""
+    """Retorna o dicionário com informações das pegadas (icnofósseis).
+    As imagens são carregadas localmente da pasta assets/.
+    """
     return {
         "Grallator": {
-            "dedos": 3, "garras": True, "tamanho": "Pequeno (10-20cm)",
+            "dedos": 3,
+            "garras": True,
+            "tamanho": "Pequeno (10-20cm)",
             "dieta": "Carnívoro (Terópode)",
-            "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Grallator.jpg/320px-Grallator.jpg"
+            "arquivo": "grallator.png"
         },
         "Eubrontes": {
-            "dedos": 3, "garras": True, "tamanho": "Grande (30-50cm)",
+            "dedos": 3,
+            "garras": True,
+            "tamanho": "Grande (30-50cm)",
             "dieta": "Carnívoro (Dilofossauro?)",
-            "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Eubrontes01.jpg/320px-Eubrontes01.jpg"
+            "arquivo": "eubrontes.png"
         },
         "Brontopodus": {
-            "dedos": 4, "garras": False, "tamanho": "Enorme (>1m)",
+            "dedos": 4,
+            "garras": False,
+            "tamanho": "Enorme (>1m)",
             "dieta": "Herbívoro (Saurópode)",
-            "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Brontopodus.jpg/320px-Brontopodus.jpg"
+            "arquivo": "brontopodus.png"
         },
         "Anomoepus": {
-            "dedos": 4, "garras": True, "tamanho": "Médio",
+            "dedos": 4,
+            "garras": True,
+            "tamanho": "Médio",
             "dieta": "Herbívoro (Ornitísquio)",
-            "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Anomoepus.jpg/320px-Anomoepus.jpg"
+            "arquivo": "anomoepus.png"
         }
     }
