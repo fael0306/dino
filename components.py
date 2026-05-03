@@ -141,10 +141,11 @@ def aba_deriva_continental(df):
     # URL do globo (parâmetro #idade)
     url_globo = f"https://dinosaurpictures.org/ancient-earth#{idade_ma}"
 
-    # Injeção do iframe via st.markdown (compatível com qualquer versão do Streamlit)
-    st.markdown(
-        f'<iframe src="{url_globo}" width="100%" height="600" style="border:none;" allowfullscreen loading="lazy"></iframe>',
-        unsafe_allow_html=True
+    # Exibe o iframe com key dinâmica para forçar recriação ao mudar a era
+    st.iframe(
+        url_globo,
+        height=600,
+        key=f"globo_era_{idade_ma}"   # ESSA É A CHAVE PARA ATUALIZAR
     )
 
     st.caption(
