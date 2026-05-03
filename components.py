@@ -2,6 +2,10 @@
 import streamlit as st
 import pandas as pd
 import random
+import os
+import matplotlib.pyplot as plt
+from matplotlib.patches import Polygon
+from PIL import Image
 from utils import (
     get_referencia, carregar_imagem, redimensionar_para_altura,
     plot_comparacao_escala, combinar_imagens_lado_a_lado
@@ -203,6 +207,7 @@ def aba_icnofosseis():
     with col1:
         dedos = st.radio("1. Quantos dedos tocam o chão?", [3, 4])
         garras = st.radio("2. Marcas de garras afiadas?", ["Sim", "Não"])
+        tamanho = None  # inicializa
         if dedos == 3 and garras == "Sim":
             tamanho = st.radio("3. Tamanho da pegada?", ["Pequeno (<25cm)", "Grande (>25cm)"])
             resultado = "Grallator" if tamanho == "Pequeno (<25cm)" else "Eubrontes"
@@ -212,14 +217,39 @@ def aba_icnofosseis():
             resultado = "Brontopodus"
 
     with col2:
-        st.subheader(f"🔍 Resultado: Icnogênero *{resultado}*")
+        st.subheader(f"🔍 Resultado: Icnogénero *{resultado}*")
+        info_pegada = pegadas_info[resultado]
+        # Tenta carregar imagem local
+        caminho_imagem = os.path.join("assets", info_pegada["arquivo"])
         try:
-            st.image(pegadas_info[resultado]["img"], caption=f"Fóssil de {resultado}", width=300)
+            if os.path.exists(caminho_imagem):
+                img = Image.open(caminho_imagem)
+                st.image(img, caption=f"Fóssil de {resultado}", width=300)
+            else:
+                raise FileNotFoundError  # força fallback
         except Exception:
-            st.warning("Imagem não disponível")
+            # Fallback: desenha uma pegada genérica com matplotlib
+            fig, ax = plt.subplots(figsize=(2, 2))
+            ax.set_xlim(0, 10)
+            ax.set_ylim(0, 10)
+            ax.axis('off')
+            if resultado == "Brontopodus":
+                # Pegada arredondada de saurópode
+                dedos_coords = [(3, 2), (4, 1), (6, 1), (7, 2), (6, 3), (5, 4), (4, 4), (3, 3)]
+            elif resultado == "Anomoepus":
+                # Quatro dedos, garras
+                dedos_coords = [(2, 2), (3, 1), (5, 1.5), (7, 1), (8, 2), (7, 3), (6, 4), (4, 4), (3, 3)]
+            else:
+                # Grallator / Eubrontes (3 dedos)
+                dedos_coords = [(3, 1), (4, 1), (5, 2), (5.5, 3), (5, 4), (4, 4), (3, 3), (2.5, 2)]
+            poly = Polygon(dedos_coords, closed=True, facecolor='#6b5b4f', edgecolor='black', linewidth=1)
+            ax.add_patch(poly)
+            ax.text(5, 5, "?", fontsize=20, ha='center', va='center', color='white')
+            st.pyplot(fig)
+            st.caption("(Imagem ilustrativa – imagem real não encontrada em assets/)")
         st.markdown(f"""
-        - **Dieta provável:** {pegadas_info[resultado]['dieta']}
-        - **Tamanho típico:** {pegadas_info[resultado]['tamanho']}
+        - **Dieta provável:** {info_pegada['dieta']}
+        - **Tamanho típico:** {info_pegada['tamanho']}
         """)
         st.caption("Icnofósseis são vestígios de atividade biológica. Eles nos ajudam a entender o comportamento sem precisar de ossos!")
 
@@ -286,20 +316,3 @@ def aba_massa_corporal():
         Isso resulta em aproximadamente **9.5 toneladas**.
         """)
         st.caption("Referência: Campione, N. E., & Evans, D. C. (2012). A universal scaling relationship between body mass and proximal limb bone dimensions in quadrupedal terrestrial tetrapods.")
-
-def classificar_pegada(dedos, garras, tamanho=None):
-    """Retorna o icnogênero baseado nas respostas."""
-    if dedos == 3 and garras == "Sim":
-        return "Grallator" if tamanho == "Pequeno (<25cm)" else "Eubrontes"
-    elif dedos == 4 and garras == "Sim":
-        return "Anomoepus"
-    else:
-        return "Brontopodus"
-
-def estimar_massa_corporal(postura, circ_femur_mm):
-    """Retorna massa em kg usando Campione & Evans."""
-    if postura == "Bípede (ex: T-Rex)":
-        a, b = 0.00016, 2.73   # Nota: verificar coeficientes
-    else:
-        a, b = 0.00049, 2.75
-    return a * (circ_femur_mm ** b)
