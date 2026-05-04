@@ -117,13 +117,16 @@ def aba_escala_real(df):
 def obter_dados_fosseis(dino_nome):
     """Retorna DataFrame com coordenadas de sítios fósseis."""
     sitios_fosseis = {
-        "Tyrannosaurus rex": [(47.5, -106.0), (44.0, -103.0)],
-        "Spinosaurus": [(30.0, 31.0), (28.0, 33.0)],
-        "Brachiosaurus": [(39.0, -108.0)],
-        "Triceratops": [(47.5, -106.0)],
-        "Velociraptor": [(44.0, 102.0)],
+        "Tyrannosaurus rex": [(47.5, -106.0), (44.0, -103.0), (46.9, -103.5)],  # Montana, Dakota do Sul, Dakota do Norte
+        "Triceratops": [(47.5, -106.0), (44.5, -104.0), (46.0, -107.0)],        # Montana, Wyoming
+        "Velociraptor": [(44.0, 102.0), (43.5, 101.0)],                          # Mongólia
+        "Brachiosaurus": [(39.0, -108.0), (38.5, -109.5)],                       # Colorado/Utah (Formação Morrison)
+        "Stegosaurus": [(38.5, -109.0), (40.0, -106.0), (37.0, -110.0)],         # Morrison: Utah, Colorado, Arizona
+        "Spinosaurus": [(30.0, 31.0), (28.0, 33.0), (31.5, -7.0)],               # Egito, Marrocos
+        "Patagotitan": [(-43.3, -68.5), (-43.0, -69.0)],                         # Patagônia Argentina (Chubut)
     }
     return pd.DataFrame(sitios_fosseis.get(dino_nome, [(0, 0)]), columns=["lat", "lon"])
+
 
 def aba_deriva_continental(df):
     """Conteúdo da aba 'Deriva Continental' com Globo Interativo."""
