@@ -21,6 +21,16 @@ def aba_escala_real(df):
         st.header("📏 Compare a Escala")
         dino_sel = st.selectbox("Escolha um dinossauro:", df["Nome"])
 
+        # 🔗 Link para imagens externas (Issue #6)
+        genero = dino_sel.split()[0]  # ex.: "Tyrannosaurus" para "Tyrannosaurus rex"
+        url_imagens = f"https://dinosaurpictures.org/{genero}-pictures"
+        st.markdown(
+            f'<a href="{url_imagens}" target="_blank" style="text-decoration:none; color:#1f77b4;">'
+            f'🔍 Ver imagens no Dinosaur Pictures</a>',
+            unsafe_allow_html=True
+        )
+        st.caption("(Link externo – abre em nova aba)")
+
         # Opções de referência apenas biológicas (Issue #17)
         opcoes_ref = [
             "Humano (1.7m)",
