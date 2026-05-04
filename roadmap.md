@@ -1,3 +1,7 @@
+Segue o roadmap completo atualizado, com a **Issue #6** incorporada à Fase 3.
+
+---
+
 ## 🗺️ Roadmap — PaleoLab Científico (ATUALIZADO)
 
 Este roadmap organiza as issues em fases lógicas de desenvolvimento. As fases já concluídas permanecem como registro, e as novas ideias são incorporadas nos momentos adequados.
@@ -53,14 +57,15 @@ Este roadmap organiza as issues em fases lógicas de desenvolvimento. As fases j
 
 | Issue | Título | Descrição resumida | Prioridade |
 |-------|--------|-------------------|------------|
-| 🆕 #20 | **Substituir mapa de deriva continental por globo interativo** | Integrar o globo do [Ancient Earth](https://dinosaurpictures.org/ancient-earth#240) na aba "Deriva Continental". A abordagem recomendada é: **(1) Tentar incorporar via `st.iframe`** — o Streamlit oferece `st.iframe` para embutir URLs externas. Se o site `dinosaurpictures.org` permitir (sem bloqueio `X-Frame-Options` ou `Content-Security-Policy`), o globo pode ser exibido diretamente com `st.iframe("https://dinosaurpictures.org/ancient-earth#240", height=600)`. **(2) Fallback: usar `streamlit-folium` + GPlates Web Service** — Caso o iframe seja bloqueado, implementar um mapa 2D interativo com `streamlit-folium`, reconstruindo as coordenadas dos fósseis para o período geológico com o [GPlates Web Service](https://gws.gplates.org/reconstruct/reconstruct_points/). Esta abordagem oferece controle total sobre a visualização e não depende de serviços externos. O globo 3D completo pode ser deixado como melhoria futura. | 🔴 Alta |
-| #5  | Adicionar mais dinossauros no mapa | Expandir base do Paleobiology Database (≥ 80% de cobertura das ocorrências fósseis). | 🟡 Média |
-| #8  | Melhorar chave dicotômica (Icnofósseis) | Incluir novos atributos (largura, profundidade, espaçamento, etc.) para enriquecer a identificação. | 🟡 Média |
+| #20 | **Substituir mapa de deriva continental por globo interativo** | Integrar o globo do [Ancient Earth](https://dinosaurpictures.org/ancient-earth) via `st.iframe` (ou fallback com `streamlit-folium` + GPlates). | 🔴 Alta |
+| 🆕 #6 | **Integrar imagens do [Dinosaur Pictures](https://dinosaurpictures.org/)** | Permitir busca ou redirecionamento para a galeria de imagens do site, exibindo a página do dinossauro selecionado. Alternativa: embutir a miniatura da imagem (se tecnicamente viável e com respeito a direitos autorais). | 🟡 Média |
+| #5  | Adicionar mais dinossauros no mapa | Expandir base do Paleobiology Database (≥ 80% de cobertura). | 🟡 Média |
+| #8  | Melhorar chave dicotômica (Icnofósseis) | Incluir novos atributos (largura, profundidade, etc.). | 🟡 Média |
 | #9  | Fallback de imagens externas (Icnofósseis) | Salvar assets localmente em `/assets` para uso offline. | 🟡 Média |
-| #10 | Melhorar geração de nomes (Etimologia) | Adicionar regras de vogais de ligação e eufonia para gerar nomes verossímeis. | 🟢 Baixa |
-| #11 | Adicionar mais radicais (Etimologia) | Expandir para ≥ 20 radicais reais da paleontologia. | 🟢 Baixa |
-| 🆕 #18 | **Gerador de nomes reais com descrição** | Criar um banco com ~50 dinossauros reais. Ao clicar, exibir aleatoriamente nome, imagem (se disponível) e um parágrafo explicativo sobre o animal. | 🟡 Média |
-| 🆕 #19 | **Jogo Paleo‑Detetive** | Reformular a aba de Icnofósseis: mostrar primeiro o fóssil (imagem) e depois guiar o usuário com perguntas educativas para que ele tente adivinhar a espécie. Exibir o resultado e a explicação apenas no final. | 🟡 Média |
+| #10 | Melhorar geração de nomes (Etimologia) | Regras de eufonia e vogais de ligação. | 🟢 Baixa |
+| #11 | Adicionar mais radicais (Etimologia) | Expandir para ≥ 20 radicais reais. | 🟢 Baixa |
+| #18 | **Gerador de nomes reais com descrição** | Banco com ~50 dinossauros reais, imagem e descrição. | 🟡 Média |
+| #19 | **Jogo Paleo‑Detetive** | Reformular Icnofósseis: mostrar fóssil primeiro, depois perguntas para adivinhar. | 🟡 Média |
 
 **Critérios de saída:**
 - O globo interativo do Ancient Earth (ou mapa interativo 2D como fallback) substitui o mapa `st.map()` na aba "Deriva Continental".
@@ -69,6 +74,7 @@ Este roadmap organiza as issues em fases lógicas de desenvolvimento. As fases j
 - A chave dicotômica consegue distinguir pelo menos 5 morfotipos de pegadas.
 - O gerador de nomes produz combinações verossímeis e sem cacofonia, além do modo de dinossauros reais com descrições informativas.
 - O jogo de icnofósseis é auto‑explicativo, fornece feedback claro e pode ser usado em sala de aula sem instruções externas.
+- O app oferece um link ou botão que redireciona o usuário para a página do dinossauro no [Dinosaur Pictures](https://dinosaurpictures.org/), abrindo em nova aba. Opcionalmente, se a política do site permitir, pode-se exibir uma thumbnail da imagem diretamente no app.
 
 ---
 
@@ -95,6 +101,7 @@ Este roadmap organiza as issues em fases lógicas de desenvolvimento. As fases j
 - **#14 e #15** já resolvidos; base para todas as outras fases.
 - **#17 (comparação dinossauro x dinossauro)** é independente e deve ser implementada na Fase 2. Substitui a referência "Ônibus Escolar" por dinossauros do dataset (`df["Nome"]`).
 - **#20 (globo interativo)** agora é uma issue separada na Fase 3. A abordagem de fallback com `streamlit-folium` + GPlates Web Service garante que a funcionalidade seja entregue mesmo se o iframe for bloqueado.
+- **#6 (integração com Dinosaur Pictures)** não possui dependências fortes; pode ser desenvolvida em paralelo com outras tasks da Fase 3. Apenas requer um botão/link e, eventualmente, ajustes de direitos autorais.
 - **#19 (Jogo Paleo‑Detetive)** depende da disponibilidade das imagens (resolve‑se com #9) e das melhorias na chave (#8). Pode ser implementada após #8.
 - O **Gerador de Nomes Reais (#18)** compartilha base de dados com #5 e pode ser construído após a expansão dos dinossauros no mapa.
 
@@ -108,9 +115,11 @@ Este roadmap organiza as issues em fases lógicas de desenvolvimento. As fases j
 | 2 | #3, #16 (testes iniciais) |
 | 3 | #1, #2, #17 |
 | 4 | #20 (pesquisa + integração do globo/mapa) |
-| 5 | #6, #7, #5 |
-| 6 | #8, #9, #12 |
-| 7 | #10, #11, #18, #19 |
+| 5 | #6, #5, #12 |
+| 6 | #8, #9, #18, #19 |
+| 7 | #10, #11 |
 | 8 | Revisão, testes de usabilidade, correções finais, deploy |
 
 ---
+
+O roadmap agora reflete a nova issue de integração com o Dinosaur Pictures (#6), alocada na Fase 3 e com baixo impacto nas dependências, permitindo sua implementação de forma flexível ao longo do desenvolvimento.
