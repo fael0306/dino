@@ -123,7 +123,6 @@ Por favor, mantenha o estilo de código e adicione testes para novas funcionalid
 ## 📄 Licença
 
 Este projeto é distribuído sob a licença MIT. Consulte o ficheiro [LICENSE](LICENSE) para mais informações.
-```
 
 ---
 
