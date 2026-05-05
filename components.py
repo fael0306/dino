@@ -8,9 +8,9 @@ from matplotlib.patches import Polygon
 from PIL import Image
 from utils import (
     carregar_imagem, redimensionar_para_altura,
-    plot_comparacao_escala, combinar_imagens_lado_a_lado
+    plot_comparacao_escala, combinar_imagens_lado_a_lado, criar_silhueta_placeholder
 )
-from data import obter_info_pegadas
+from data import obter_info_pegadas, obter_banco_dinossauros_reais
 import streamlit.components.v1 as components
 
 def aba_escala_real(df):
@@ -21,8 +21,7 @@ def aba_escala_real(df):
         st.header("📏 Compare a Escala")
         dino_sel = st.selectbox("Escolha um dinossauro:", df["Nome"])
 
-        # 🔗 Link para imagens externas (Issue #6)
-        genero = dino_sel.split()[0]  # ex.: "Tyrannosaurus" para "Tyrannosaurus rex"
+        genero = dino_sel.split()[0]
         url_imagens = f"https://dinosaurpictures.org/{genero}-pictures"
         st.markdown(
             f'<a href="{url_imagens}" target="_blank" style="text-decoration:none; color:#1f77b4;">'
@@ -31,7 +30,6 @@ def aba_escala_real(df):
         )
         st.caption("(Link externo – abre em nova aba)")
 
-        # Opções de referência apenas biológicas (Issue #17)
         opcoes_ref = [
             "Humano (1.7m)",
             "Elefante Africano (3.3m)",
@@ -39,7 +37,6 @@ def aba_escala_real(df):
         ]
         ref_sel = st.radio("Comparar com:", opcoes_ref)
 
-        # Determina os dados da referência
         if ref_sel == "Comparar com outro dinossauro...":
             outros_dinos = df[df["Nome"] != dino_sel]["Nome"].tolist()
             if not outros_dinos:
@@ -97,7 +94,6 @@ def aba_escala_real(df):
             img_dino_redim = redimensionar_para_altura(imagem_dino, altura_dino_px)
             img_ref_redim = redimensionar_para_altura(imagem_ref, altura_ref_px)
 
-            # Combina as imagens lado a lado, alinhadas pela base
             img_comparacao = combinar_imagens_lado_a_lado(img_ref_redim, img_dino_redim)
 
             st.markdown("### Comparação Visual")
@@ -117,13 +113,13 @@ def aba_escala_real(df):
 def obter_dados_fosseis(dino_nome):
     """Retorna DataFrame com coordenadas de sítios fósseis."""
     sitios_fosseis = {
-        "Tyrannosaurus rex": [(47.5, -106.0), (44.0, -103.0), (46.9, -103.5)],  # Montana, Dakota do Sul, Dakota do Norte
-        "Triceratops": [(47.5, -106.0), (44.5, -104.0), (46.0, -107.0)],        # Montana, Wyoming
-        "Velociraptor": [(44.0, 102.0), (43.5, 101.0)],                          # Mongólia
-        "Brachiosaurus": [(39.0, -108.0), (38.5, -109.5)],                       # Colorado/Utah (Formação Morrison)
-        "Stegosaurus": [(38.5, -109.0), (40.0, -106.0), (37.0, -110.0)],         # Morrison: Utah, Colorado, Arizona
-        "Spinosaurus": [(30.0, 31.0), (28.0, 33.0), (31.5, -7.0)],               # Egito, Marrocos
-        "Patagotitan": [(-43.3, -68.5), (-43.0, -69.0)],                         # Patagônia Argentina (Chubut)
+        "Tyrannosaurus rex": [(47.5, -106.0), (44.0, -103.0), (46.9, -103.5)],
+        "Triceratops": [(47.5, -106.0), (44.5, -104.0), (46.0, -107.0)],
+        "Velociraptor": [(44.0, 102.0), (43.5, 101.0)],
+        "Brachiosaurus": [(39.0, -108.0), (38.5, -109.5)],
+        "Stegosaurus": [(38.5, -109.0), (40.0, -106.0), (37.0, -110.0)],
+        "Spinosaurus": [(30.0, 31.0), (28.0, 33.0), (31.5, -7.0)],
+        "Patagotitan": [(-43.3, -68.5), (-43.0, -69.0)],
     }
     return pd.DataFrame(sitios_fosseis.get(dino_nome, [(0, 0)]), columns=["lat", "lon"])
 
@@ -136,7 +132,6 @@ def aba_deriva_continental(df):
         "O globo abaixo é fornecido pelo [Ancient Earth](https://dinosaurpictures.org/ancient-earth)."
     )
 
-    # Seletor de era geológica
     era_opcoes = {
         "Mundo Atual (Holoceno, 0 Ma)": 0,
         "Cretáceo Superior (66 Ma)": 66,
@@ -146,16 +141,12 @@ def aba_deriva_continental(df):
     era_selecionada = st.radio(
         "Selecione a era geológica:",
         options=list(era_opcoes.keys()),
-        index=1,  # padrão: Cretáceo Superior
+        index=1,
         key="era_globo"
     )
     idade_ma = era_opcoes[era_selecionada]
-
-    # URL do globo com parâmetro único para forçar recarga no navegador
-    # O parâmetro _t é ignorado pelo site, mas torna a URL única para cada era
     url_globo = f"https://dinosaurpictures.org/ancient-earth?_t={idade_ma}#{idade_ma}"
 
-    # Injeção do iframe via HTML (st.markdown com allow unsafe)
     iframe_html = (
         f'<iframe src="{url_globo}" '
         f'width="100%" height="600" '
@@ -175,7 +166,6 @@ def aba_deriva_continental(df):
     st.markdown("---")
     st.subheader("📍 Localização dos Fósseis")
 
-    # Seletor de dinossauro para visualizar os sítios fósseis
     dino_mapa = st.selectbox(
         "Selecione um dinossauro para ver onde seus fósseis foram encontrados:",
         df["Nome"],
@@ -184,7 +174,6 @@ def aba_deriva_continental(df):
 
     dados_mapa = obter_dados_fosseis(dino_mapa)
 
-    # Opção de visualização: mapa 2D com pontos ou lista de coordenadas
     modo_visualizacao = st.radio(
         "Como deseja ver as localizações?",
         ["Mapa 2D (mundo atual)", "Lista de coordenadas"],
@@ -230,7 +219,6 @@ def aba_extincao_kpg():
         anos_sim = st.slider("📅 Anos após o impacto", 1, 50, 30,
                              help="Duração da simulação.")
 
-    # Equações do modelo
     st.markdown("---")
     st.markdown("### 🧮 Equações do Modelo (Lotka-Volterra)")
     st.latex(r"\begin{aligned}"
@@ -240,7 +228,6 @@ def aba_extincao_kpg():
              r"\end{aligned}")
     st.caption("P = Plantas, H = Herbívoros, C = Carnívoros | Coeficientes explicados abaixo")
 
-    # Explicação dos parâmetros
     with st.expander("🔍 O que significam essas letras?"):
         st.markdown(f"""
         | Símbolo | Significado ecológico | Valor na simulação |
@@ -258,7 +245,6 @@ def aba_extincao_kpg():
         """)
         st.info("🌞 **O bloqueio solar reduz r** (crescimento das plantas).\n\n☔ **A chuva ácida aumenta d e g** (mortes de herbívoros e carnívoros).")
 
-    # Inicialização dos parâmetros
     P0, H0, C0 = 100.0, 50.0, 20.0
     r = 0.4 * (1 - bloqueio_solar/100)
     a = 0.01
@@ -266,17 +252,13 @@ def aba_extincao_kpg():
     d = 0.1 + (chuva_acida/100)*0.05
     e = 0.02
     f = 0.3
-    g_val = 0.15 + (chuva_acida/100)*0.02   # renomeado para não conflitar com g da explicação
+    g_val = 0.15 + (chuva_acida/100)*0.02
 
-    # Simulação numérica (agora com esquema semi-implícito para estabilidade)
-    dt = 1.0  # passo de 1 ano
+    dt = 1.0
     P, H, C = [P0], [H0], [C0]
     for _ in range(anos_sim):
-        # Plantas: crescimento explícito, consumo implícito (evita negatividade)
         p_prox = P[-1] * (1 + r * dt) / (1 + a * H[-1] * dt)
-        # Herbívoros: nascimento usando plantas atualizadas, mortes implícitas
         h_prox = H[-1] * (1 + b * a * p_prox * dt) / (1 + d * dt + e * C[-1] * dt)
-        # Carnívoros: nascimento usando herbívoros atualizados, morte implícita
         c_prox = C[-1] * (1 + f * e * h_prox * dt) / (1 + g_val * dt)
 
         P.append(p_prox)
@@ -292,7 +274,6 @@ def aba_extincao_kpg():
     st.markdown("### 📊 Resultado da Simulação")
     st.line_chart(dados_simulacao)
 
-    # Interpretação automática
     if P[-1] < 1.0:
         st.error("🔥 **COLAPSO TOTAL:** A falta de luz causou a extinção das plantas. Sem comida, os herbívoros morreram, seguidos pelos grandes carnívoros. Apenas pequenos animais onívoros sobreviveram.")
     elif H[-1] < 5.0:
@@ -306,7 +287,6 @@ def aba_icnofosseis():
     st.header("👣 Paleo-Detetive: Identifique a Pegada")
     pegadas_info = obter_info_pegadas()
 
-    # --- Chave dicotômica melhorada ---
     resultado = None
 
     dedos = st.radio("1. Quantos dedos tocam o chão?", [3, 4], format_func=lambda x: f"{x} dedos")
@@ -317,7 +297,7 @@ def aba_icnofosseis():
             tamanho = st.radio("3. Tamanho da pegada?", ["Pequeno (<25cm)", "Grande (>25cm)"])
             if tamanho == "Pequeno (<25cm)":
                 resultado = "Grallator"
-            else:  # Grande
+            else:
                 forma = st.radio(
                     "4. Formato da pegada:",
                     ["Alongada e estreita (comprimento > 1,5 × largura)",
@@ -327,14 +307,14 @@ def aba_icnofosseis():
                     resultado = "Eubrontes"
                 else:
                     resultado = "Megalosauripus"
-        else:  # garras == "Não"
+        else:
             tamanho = st.radio("3. Tamanho da pegada?", ["Pequeno (<25cm)", "Grande (>25cm)"])
             if tamanho == "Pequeno (<25cm)":
                 resultado = "Wintonopus"
             else:
                 resultado = "Amblydactylus"
 
-    else:  # dedos == 4
+    else:
         garras = st.radio("2. Marcas de garras afiadas?", ["Sim", "Não"])
         if garras == "Sim":
             resultado = "Anomoepus"
@@ -349,36 +329,31 @@ def aba_icnofosseis():
             else:
                 resultado = "Parabrontopodus"
 
-    # --- Exibição do resultado ---
     if resultado is None:
         st.info("Responda todas as perguntas acima para identificar a pegada.")
         return
 
-    info_pegada = pegadas_info.get(resultado, pegadas_info["Grallator"])  # fallback seguro
+    info_pegada = pegadas_info.get(resultado, pegadas_info["Grallator"])
     st.subheader(f"🔍 Resultado: Icnogénero *{resultado}*")
 
-    # Tentar carregar imagem local
     caminho_imagem = os.path.join("assets", info_pegada["arquivo"])
     try:
         if os.path.exists(caminho_imagem):
             img = Image.open(caminho_imagem)
             st.image(img, caption=f"Fóssil de {resultado}", width=300)
         else:
-            raise FileNotFoundError  # força fallback
+            raise FileNotFoundError
     except Exception:
-        # Fallback: desenha uma pegada genérica adaptada ao tipo de pegada
         fig, ax = plt.subplots(figsize=(2, 2))
         ax.set_xlim(0, 10)
         ax.set_ylim(0, 10)
         ax.axis('off')
 
         if resultado in ["Grallator", "Eubrontes", "Megalosauripus"]:
-            # Três dedos alongados com garras
             dedos_coords = [(3, 1), (4, 1), (5, 2), (5.5, 3), (5, 4), (4, 4), (3, 3), (2.5, 2)]
         elif resultado in ["Wintonopus", "Amblydactylus", "Anomoepus"]:
-            # Quatro dedos arredondados (ornitópodes)
             dedos_coords = [(2, 2), (3, 1), (5, 1.5), (7, 1), (8, 2), (7, 3), (6, 4), (4, 4), (3, 3)]
-        else:  # Brontopodus, Parabrontopodus (saurópodes)
+        else:
             dedos_coords = [(3, 2), (4, 1), (6, 1), (7, 2), (6, 3), (5, 4), (4, 4), (3, 3)]
 
         poly = Polygon(dedos_coords, closed=True, facecolor='#6b5b4f', edgecolor='black', linewidth=1.5)
@@ -387,7 +362,6 @@ def aba_icnofosseis():
         st.pyplot(fig)
         st.caption("(Imagem ilustrativa – imagem real não encontrada em assets/)")
 
-    # Informações complementares
     st.markdown(f"""
     - **Dieta provável:** {info_pegada['dieta']}
     - **Tamanho típico:** {info_pegada['tamanho']}
@@ -396,29 +370,59 @@ def aba_icnofosseis():
 
 
 def aba_etimologia():
-    """Conteúdo da aba 'Etimologia'."""
-    st.header("📖 Gerador de Nomes Científicos (Etimologia Grega/Latina)")
-    radicais = {
-        "Micro": "Pequeno", "Mega": "Grande", "Pachy": "Grosso / Espesso",
-        "Brachy": "Curto", "Elasmo": "Placa / Chapa", "Cephalo": "Cabeça",
-        "Dont": "Dente", "Raptor": "Ladrão / Caçador", "Saurus": "Lagarto / Réptil",
-        "Ops": "Rosto / Face"
-    }
-    if st.button("🧬 Gerar Novo Dinossauro Fictício", type="primary"):
-        prefixo = random.choice(list(radicais.keys())[:5])
-        sufixo = random.choice(list(radicais.keys())[5:])
-        nome_completo = prefixo + sufixo.lower()
-        significado_pref = radicais[prefixo]
-        significado_suf = radicais[sufixo]
-        st.success(f"### *{nome_completo}*")
-        st.markdown(f"**Significado Científico:** **{significado_pref}** + **{significado_suf}**")
-        if "Raptor" in sufixo:
-            habito = "provavelmente um predador ágil"
-        elif "Saurus" in sufixo:
-            habito = "um réptil de grande porte"
-        else:
-            habito = "um dinossauro de características mistas"
-        st.info(f"💡 **Interpretação Paleontológica:** {habito} cujo nome reflete {significado_pref.lower()} e {significado_suf.lower()}. Exemplo real similar: *Pachycephalosaurus* (Lagarto de Cabeça Grossa).")
+    """Conteúdo da aba 'Etimologia' – agora com modo real."""
+    st.header("📖 Gerador de Nomes Científicos")
+
+    modo = st.radio(
+        "Escolha o modo:",
+        ["Fictício (Etimologia Grega/Latina)", "Real (Banco de Espécies)"]
+    )
+
+    if modo == "Fictício (Etimologia Grega/Latina)":
+        radicais = {
+            "Micro": "Pequeno", "Mega": "Grande", "Pachy": "Grosso / Espesso",
+            "Brachy": "Curto", "Elasmo": "Placa / Chapa", "Cephalo": "Cabeça",
+            "Dont": "Dente", "Raptor": "Ladrão / Caçador", "Saurus": "Lagarto / Réptil",
+            "Ops": "Rosto / Face"
+        }
+        if st.button("🧬 Gerar Novo Dinossauro Fictício", type="primary"):
+            prefixo = random.choice(list(radicais.keys())[:5])
+            sufixo = random.choice(list(radicais.keys())[5:])
+            nome_completo = prefixo + sufixo.lower()
+            significado_pref = radicais[prefixo]
+            significado_suf = radicais[sufixo]
+            st.success(f"### *{nome_completo}*")
+            st.markdown(f"**Significado Científico:** **{significado_pref}** + **{significado_suf}**")
+            if "Raptor" in sufixo:
+                habito = "provavelmente um predador ágil"
+            elif "Saurus" in sufixo:
+                habito = "um réptil de grande porte"
+            else:
+                habito = "um dinossauro de características mistas"
+            st.info(f"💡 **Interpretação Paleontológica:** {habito} cujo nome reflete {significado_pref.lower()} e {significado_suf.lower()}. Exemplo real similar: *Pachycephalosaurus* (Lagarto de Cabeça Grossa).")
+
+    else:  # Modo Real
+        dados_reais = obter_banco_dinossauros_reais()
+        if st.button("🎲 Sortear Dinossauro Real", type="primary"):
+            dino = random.choice(dados_reais)
+
+            st.success(f"### *{dino['Nome']}*")
+
+            # Exibe a imagem (fallback para silhueta se não existir)
+            try:
+                imagem = carregar_imagem(dino["Nome"])
+                st.image(imagem, caption=dino["Nome"], use_container_width=True)
+            except Exception:
+                st.warning("Imagem não encontrada. Exibindo silhueta ilustrativa.")
+                fallback = criar_silhueta_placeholder(dino["Nome"])
+                st.image(fallback, caption="(representação artística)")
+
+            st.markdown(f"**Período:** {dino['Período']}")
+            st.markdown(f"**Dieta:** {dino['Dieta']}")
+            st.markdown(f"**Tamanho:** {dino['Comprimento']:.1f} m de comprimento, ≈ {dino['Peso']:.1f} toneladas")
+
+            st.markdown("---")
+            st.markdown(f"📘 **Curiosidade:** {dino['Curiosidade']}")
 
 
 def aba_massa_corporal():
@@ -438,11 +442,10 @@ def aba_massa_corporal():
             help="Insira um valor entre 2 e 90 cm para bípedes, ou entre 15 e 250 cm para quadrúpedes."
         )
 
-        # Validação baseada em dados reais
         if postura == "Bípede (ex: T-Rex)":
             limite_min, limite_max = 2.0, 90.0
             a, b = 0.00016, 2.73
-        else:  # Quadrúpede
+        else:
             limite_min, limite_max = 15.0, 250.0
             a, b = 0.00049, 2.75
 
@@ -454,7 +457,7 @@ def aba_massa_corporal():
             )
             st.stop()
 
-        circ_femur_mm = circ_femur_cm * 10   # conversão para milímetros
+        circ_femur_mm = circ_femur_cm * 10
         massa_kg = a * (circ_femur_mm ** b)
         massa_ton = massa_kg / 1000
         st.metric(label="🐘 Massa Estimada", value=f"{massa_ton:.2f} toneladas", delta=f"{massa_kg:.0f} kg")
@@ -475,12 +478,11 @@ def aba_massa_corporal():
         """)
         st.caption("Referência: Campione, N. E., & Evans, D. C. (2012). A universal scaling relationship between body mass and proximal limb bone dimensions in quadrupedal terrestrial tetrapods.")
 
-    # 🔁 Comparação automática com animais reais (Issue #13)
     st.markdown("---")
     st.subheader("🔁 Equivalência de Massa")
-    massa_elefante = 6.0      # toneladas (elefante africano médio)
-    massa_trex = 8.4          # Tyrannosaurus rex médio
-    massa_patagotitan = 70.0  # Patagotitan mayorum
+    massa_elefante = 6.0
+    massa_trex = 8.4
+    massa_patagotitan = 70.0
 
     elefantes = massa_ton / massa_elefante
     trexes = massa_ton / massa_trex
