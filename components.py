@@ -10,7 +10,7 @@ from utils import (
     carregar_imagem, redimensionar_para_altura,
     plot_comparacao_escala, combinar_imagens_lado_a_lado, criar_silhueta_placeholder
 )
-from data import obter_info_pegadas, obter_banco_dinossauros_reais
+from data import obter_info_pegadas, obter_banco_dinossauros_reais, obter_coordenadas
 import streamlit.components.v1 as components
 
 def aba_escala_real(df):
@@ -109,21 +109,6 @@ def aba_escala_real(df):
             st.caption(f"Detalhe técnico: {str(e)}")
 
 
-@st.cache_data(ttl=3600)
-def obter_dados_fosseis(dino_nome):
-    """Retorna DataFrame com coordenadas de sítios fósseis."""
-    sitios_fosseis = {
-        "Tyrannosaurus rex": [(47.5, -106.0), (44.0, -103.0), (46.9, -103.5)],
-        "Triceratops": [(47.5, -106.0), (44.5, -104.0), (46.0, -107.0)],
-        "Velociraptor": [(44.0, 102.0), (43.5, 101.0)],
-        "Brachiosaurus": [(39.0, -108.0), (38.5, -109.5)],
-        "Stegosaurus": [(38.5, -109.0), (40.0, -106.0), (37.0, -110.0)],
-        "Spinosaurus": [(30.0, 31.0), (28.0, 33.0), (31.5, -7.0)],
-        "Patagotitan": [(-43.3, -68.5), (-43.0, -69.0)],
-    }
-    return pd.DataFrame(sitios_fosseis.get(dino_nome, [(0, 0)]), columns=["lat", "lon"])
-
-
 def aba_deriva_continental(df):
     """Conteúdo da aba 'Deriva Continental' com Globo Interativo."""
     st.header("🗺️ Globo Interativo da Terra Antiga")
@@ -172,7 +157,7 @@ def aba_deriva_continental(df):
         key="mapa_select_fosseis"
     )
 
-    dados_mapa = obter_dados_fosseis(dino_mapa)
+    dados_mapa = pd.DataFrame(obter_coordenadas(dino_mapa), columns=["lat", "lon"])
 
     modo_visualizacao = st.radio(
         "Como deseja ver as localizações?",
@@ -184,7 +169,7 @@ def aba_deriva_continental(df):
         st.map(dados_mapa, zoom=2)
         st.caption("🌍 Mapa baseado no mundo moderno. As coordenadas indicam os sítios paleontológicos.")
     else:
-        if not dados_mapa.empty:
+        if not dados_mapa.empty and not (dados_mapa["lat"] == 0).all():
             st.write("**Coordenadas (latitude, longitude):**")
             for _, linha in dados_mapa.iterrows():
                 st.write(f"- {linha['lat']:.2f}, {linha['lon']:.2f}")
@@ -198,7 +183,7 @@ def aba_deriva_continental(df):
     )
 
 def aba_extincao_kpg():
-    """Conteúdo da aba 'Extinção K-Pg'."""
+    """Conteúdo da aba 'Extinção K-Pg' com simulação melhorada (Runge-Kutta 4)."""
     st.header("🦠 Simulador do Fim do Cretáceo")
     st.markdown("""
     Baseado no modelo **Lotka-Volterra** (Presas-Predadores) e nos efeitos do Inverno de Impacto.
@@ -245,6 +230,7 @@ def aba_extincao_kpg():
         """)
         st.info("🌞 **O bloqueio solar reduz r** (crescimento das plantas).\n\n☔ **A chuva ácida aumenta d e g** (mortes de herbívoros e carnívoros).")
 
+    # Parâmetros
     P0, H0, C0 = 100.0, 50.0, 20.0
     r = 0.4 * (1 - bloqueio_solar/100)
     a = 0.01
@@ -254,16 +240,35 @@ def aba_extincao_kpg():
     f = 0.3
     g_val = 0.15 + (chuva_acida/100)*0.02
 
-    dt = 1.0
-    P, H, C = [P0], [H0], [C0]
-    for _ in range(anos_sim):
-        p_prox = P[-1] * (1 + r * dt) / (1 + a * H[-1] * dt)
-        h_prox = H[-1] * (1 + b * a * p_prox * dt) / (1 + d * dt + e * C[-1] * dt)
-        c_prox = C[-1] * (1 + f * e * h_prox * dt) / (1 + g_val * dt)
+    # Função do sistema Lotka-Volterra
+    def lotka_volterra(state, t=None):
+        P, H, C = state
+        dP = r*P - a*P*H
+        dH = b*a*P*H - d*H - e*H*C
+        dC = f*e*H*C - g_val*C
+        return dP, dH, dC
 
-        P.append(p_prox)
-        H.append(h_prox)
-        C.append(c_prox)
+    # Integração por Runge-Kutta 4 com passo dt=0.5 (anos)
+    dt = 0.5
+    n_steps = int(anos_sim / dt)
+    P, H, C = [P0], [H0], [C0]
+    state = [P0, H0, C0]
+    for _ in range(n_steps):
+        # RK4
+        k1 = lotka_volterra(state)
+        k2 = lotka_volterra([state[0] + dt/2*k1[0], state[1] + dt/2*k1[1], state[2] + dt/2*k1[2]])
+        k3 = lotka_volterra([state[0] + dt/2*k2[0], state[1] + dt/2*k2[1], state[2] + dt/2*k2[2]])
+        k4 = lotka_volterra([state[0] + dt*k3[0], state[1] + dt*k3[1], state[2] + dt*k3[2]])
+        state[0] += dt/6 * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0])
+        state[1] += dt/6 * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1])
+        state[2] += dt/6 * (k1[2] + 2*k2[2] + 2*k3[2] + k4[2])
+        # Garantir que populações não fiquem negativas
+        state[0] = max(0.0, state[0])
+        state[1] = max(0.0, state[1])
+        state[2] = max(0.0, state[2])
+        P.append(state[0])
+        H.append(state[1])
+        C.append(state[2])
 
     dados_simulacao = pd.DataFrame({
         "Plantas (Base da Cadeia)": P,
@@ -282,91 +287,187 @@ def aba_extincao_kpg():
         st.success("🌿 **ECOSSISTEMA ESTÁVEL:** O impacto não foi severo o suficiente para causar extinção em massa. (Mas lembre-se: na realidade, o bloqueio solar durou anos!)")
 
 
+def identificar_icnogenus(dedos, garras, tamanho, forma=None, proporcao=None):
+    """
+    Lógica de decisão para identificar o icnogênero a partir das respostas.
+    Retorna o nome do icnogênero ou None.
+    """
+    if dedos == 3:
+        if garras:
+            if tamanho == "pequeno":
+                return "Grallator"
+            else:
+                if forma == "alongada":
+                    return "Eubrontes"
+                else:
+                    return "Megalosauripus"
+        else:
+            if tamanho == "pequeno":
+                return "Wintonopus"
+            else:
+                return "Amblydactylus"
+    else:  # 4 dedos
+        if garras:
+            return "Anomoepus"
+        else:
+            if proporcao == "larga":
+                return "Brontopodus"
+            else:
+                return "Parabrontopodus"
+
+
 def aba_icnofosseis():
-    """Conteúdo da aba 'Icnofósseis'."""
+    """Jogo Paleo‑Detetive: identifique o icnofóssil."""
     st.header("👣 Paleo-Detetive: Identifique a Pegada")
+    st.markdown("""
+    **Como jogar:**  
+    Você verá a imagem de um icnofóssil (pegada fossilizada).  
+    Responda às perguntas sobre suas características e depois clique em **"Identificar"**.  
+    O sistema dirá que icnogênero você descreveu e comparará com o fóssil mostrado.  
+    *Dica: observe bem a imagem e leia as explicações em cada pergunta!*  
+    """)
+
     pegadas_info = obter_info_pegadas()
 
-    resultado = None
+    # Inicializar estado da sessão para o jogo
+    if "jogo_icno" not in st.session_state:
+        st.session_state.jogo_icno = {
+            "desafio": None,
+            "respostas": {},
+            "resultado": None
+        }
 
-    dedos = st.radio("1. Quantos dedos tocam o chão?", [3, 4], format_func=lambda x: f"{x} dedos")
+    # Botão para sortear um novo desafio
+    if st.button("🎲 Novo Desafio", type="primary", use_container_width=True):
+        st.session_state.jogo_icno["desafio"] = random.choice(list(pegadas_info.keys()))
+        st.session_state.jogo_icno["respostas"] = {}
+        st.session_state.jogo_icno["resultado"] = None
 
-    if dedos == 3:
-        garras = st.radio("2. Marcas de garras afiadas?", ["Sim", "Não"])
-        if garras == "Sim":
-            tamanho = st.radio("3. Tamanho da pegada?", ["Pequeno (<25cm)", "Grande (>25cm)"])
-            if tamanho == "Pequeno (<25cm)":
-                resultado = "Grallator"
-            else:
-                forma = st.radio(
-                    "4. Formato da pegada:",
-                    ["Alongada e estreita (comprimento > 1,5 × largura)",
-                     "Larga e robusta (largura ≥ 0,8 × comprimento)"]
-                )
-                if "Alongada" in forma:
-                    resultado = "Eubrontes"
-                else:
-                    resultado = "Megalosauripus"
-        else:
-            tamanho = st.radio("3. Tamanho da pegada?", ["Pequeno (<25cm)", "Grande (>25cm)"])
-            if tamanho == "Pequeno (<25cm)":
-                resultado = "Wintonopus"
-            else:
-                resultado = "Amblydactylus"
+    desafio_atual = st.session_state.jogo_icno["desafio"]
 
-    else:
-        garras = st.radio("2. Marcas de garras afiadas?", ["Sim", "Não"])
-        if garras == "Sim":
-            resultado = "Anomoepus"
-        else:
-            proporcao = st.radio(
-                "3. Largura em relação ao comprimento:",
-                ["Mais larga que comprida (largura > comprimento)",
-                 "Mais comprida que larga (comprimento > largura)"]
-            )
-            if "larga" in proporcao:
-                resultado = "Brontopodus"
-            else:
-                resultado = "Parabrontopodus"
-
-    if resultado is None:
-        st.info("Responda todas as perguntas acima para identificar a pegada.")
+    if desafio_atual is None:
+        st.info("Clique em **Novo Desafio** para começar.")
         return
 
-    info_pegada = pegadas_info.get(resultado, pegadas_info["Grallator"])
-    st.subheader(f"🔍 Resultado: Icnogénero *{resultado}*")
-
-    caminho_imagem = os.path.join("assets", info_pegada["arquivo"])
+    # Exibir a imagem do desafio
+    info_desafio = pegadas_info[desafio_atual]
+    caminho_imagem = os.path.join("assets", info_desafio["arquivo"])
     try:
         if os.path.exists(caminho_imagem):
             img = Image.open(caminho_imagem)
-            st.image(img, caption=f"Fóssil de {resultado}", width=300)
+            st.image(img, caption=f"Fóssil misterioso (não vale espiar o nome!)", width=300)
         else:
             raise FileNotFoundError
     except Exception:
+        # Fallback com silhueta
         fig, ax = plt.subplots(figsize=(2, 2))
         ax.set_xlim(0, 10)
         ax.set_ylim(0, 10)
         ax.axis('off')
-
-        if resultado in ["Grallator", "Eubrontes", "Megalosauripus"]:
-            dedos_coords = [(3, 1), (4, 1), (5, 2), (5.5, 3), (5, 4), (4, 4), (3, 3), (2.5, 2)]
-        elif resultado in ["Wintonopus", "Amblydactylus", "Anomoepus"]:
-            dedos_coords = [(2, 2), (3, 1), (5, 1.5), (7, 1), (8, 2), (7, 3), (6, 4), (4, 4), (3, 3)]
-        else:
-            dedos_coords = [(3, 2), (4, 1), (6, 1), (7, 2), (6, 3), (5, 4), (4, 4), (3, 3)]
-
-        poly = Polygon(dedos_coords, closed=True, facecolor='#6b5b4f', edgecolor='black', linewidth=1.5)
+        # Desenhar uma forma genérica (pode ser customizada depois)
+        poly = Polygon([(3,2),(7,2),(8,5),(6,8),(4,8),(2,5)], closed=True,
+                       facecolor='#6b5b4f', edgecolor='black', linewidth=1.5)
         ax.add_patch(poly)
         ax.text(5, 5, "?", fontsize=20, ha='center', va='center', color='white')
         st.pyplot(fig)
-        st.caption("(Imagem ilustrativa – imagem real não encontrada em assets/)")
+        st.caption("(Imagem ilustrativa – imagem real não encontrada)")
 
-    st.markdown(f"""
-    - **Dieta provável:** {info_pegada['dieta']}
-    - **Tamanho típico:** {info_pegada['tamanho']}
-    """)
-    st.caption("Icnofósseis são vestígios de atividade biológica. Eles nos ajudam a entender o comportamento sem precisar de ossos!")
+    st.markdown("---")
+    st.subheader("Perguntas (analise o fóssil e responda)")
+
+    # Pergunta 1: dedos
+    dedos = st.radio(
+        "1. Quantos dedos tocam o chão?",
+        [3, 4],
+        format_func=lambda x: f"{x} dedos",
+        key="dedos",
+        help="Conte as marcas dos dedos na pegada. Geralmente 3 ou 4."
+    )
+
+    # Pergunta 2: garras
+    garras_str = st.radio(
+        "2. Há marcas de garras afiadas?",
+        ["Sim", "Não"],
+        key="garras",
+        help="Garras aparecem como pontas agudas na frente dos dedos."
+    )
+    garras = garras_str == "Sim"
+
+    tamanho = None
+    forma = None
+    proporcao = None
+
+    # Perguntas condicionais
+    if dedos == 3:
+        tamanho_str = st.radio(
+            "3. Tamanho da pegada:",
+            ["Pequeno (<25cm)", "Grande (>25cm)"],
+            key="tamanho3",
+            help="Compare com uma mão adulta (aprox. 20 cm)."
+        )
+        tamanho = "pequeno" if "Pequeno" in tamanho_str else "grande"
+
+        if garras:
+            if tamanho == "grande":
+                forma_str = st.radio(
+                    "4. Formato da pegada:",
+                    ["Alongada e estreita (comprimento > 1,5 × largura)",
+                     "Larga e robusta (largura ≥ 0,8 × comprimento)"],
+                    key="forma_garras_grande",
+                    help="Observe a proporção entre comprimento e largura."
+                )
+                forma = "alongada" if "Alongada" in forma_str else "larga"
+        # Para pequeno com garras ou sem garras não precisa de mais perguntas
+    else:  # 4 dedos
+        if not garras:
+            proporcao_str = st.radio(
+                "3. Largura em relação ao comprimento:",
+                ["Mais larga que comprida (largura > comprimento)",
+                 "Mais comprida que larga (comprimento > largura)"],
+                key="proporcao_4",
+                help="Veja se a pegada é mais arredondada (larga) ou alongada."
+            )
+            proporcao = "larga" if "larga" in proporcao_str else "alongada"
+        # Com garras e 4 dedos já define (Anomoepus)
+
+    # Botão de identificação
+    if st.button("🔍 Identificar", type="primary", use_container_width=True):
+        resultado_identificado = identificar_icnogenus(
+            dedos, garras, tamanho, forma, proporcao
+        )
+
+        if resultado_identificado is None:
+            st.error("Não foi possível determinar o icnogênero. Verifique suas respostas.")
+        else:
+            st.session_state.jogo_icno["resultado"] = resultado_identificado
+
+            # Mostrar o resultado
+            if resultado_identificado == desafio_atual:
+                st.success(f"✅ **Parabéns!** Você acertou! O fóssil é realmente *{desafio_atual}*.")
+                st.balloons()
+            else:
+                st.error(f"❌ **Ops!** Você descreveu um *{resultado_identificado}*, mas o fóssil mostrado é *{desafio_atual}*.")
+
+            # Explicação educativa
+            info_res = pegadas_info[resultado_identificado]
+            st.markdown(f"""
+            ### Sobre o *{resultado_identificado}* (o que você descreveu)
+            - **Dieta provável:** {info_res['dieta']}
+            - **Tamanho típico:** {info_res['tamanho']}
+            """)
+
+            info_desafio = pegadas_info[desafio_atual]
+            st.markdown(f"""
+            ### Sobre o fóssil exibido (*{desafio_atual}*)
+            - **Dieta provável:** {info_desafio['dieta']}
+            - **Tamanho típico:** {info_desafio['tamanho']}
+            """)
+
+            st.caption("Icnofósseis são vestígios de atividade biológica. Eles nos ajudam a entender o comportamento sem precisar de ossos!")
+    else:
+        # Se ainda não identificou, mostra dica
+        st.info("Responda todas as perguntas e clique em **Identificar** para ver o resultado.")
+
 
 def aba_fosseis_reais():
     """Conteúdo da aba 'Fósseis Reais' – apenas dinossauros reais com imagens de fósseis."""
@@ -384,15 +485,9 @@ def aba_fosseis_reais():
 
         st.success(f"### *{dino['Nome']}*")
 
-        # Tenta carregar a imagem do fóssil
-        caminho_imagem = os.path.join("assets", dino["Arquivo"])
-        if os.path.exists(caminho_imagem):
-            img = Image.open(caminho_imagem)
-            st.image(img, caption=f"Fóssil de {dino['Nome']}", use_container_width=True)
-        else:
-            st.warning("Imagem do fóssil não encontrada. Exibindo silhueta ilustrativa.")
-            fallback = criar_silhueta_placeholder(dino["Nome"])
-            st.image(fallback, caption="(representação artística)")
+        # Carrega a imagem usando a função cacheada
+        img = carregar_imagem(dino["Nome"])
+        st.image(img, caption=f"Fóssil de {dino['Nome']}", use_container_width=True)
 
         col1, col2 = st.columns(2)
         with col1:
@@ -404,6 +499,7 @@ def aba_fosseis_reais():
 
         st.markdown("---")
         st.markdown(f"📘 **Curiosidade:** {dino['Curiosidade']}")
+
 
 def aba_massa_corporal():
     """Conteúdo da aba 'Massa Corporal'."""
