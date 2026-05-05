@@ -75,6 +75,7 @@ def obter_info_pegadas():
         }
     }
 
+# data.py (trecho final, apenas a função alterada)
 def obter_banco_dinossauros_reais():
     """Retorna uma lista com 50 dinossauros reais e suas curiosidades."""
     return [
@@ -87,7 +88,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 8.4,
             "Postura": "Bípede",
             "Curiosidade": "O T. rex possuía a mordida mais forte de qualquer animal terrestre, capaz de esmagar ossos com uma força equivalente a 6 toneladas.",
-            "Arquivo": "trex.png"
+            "Arquivo": "real_tyrannosaurus_rex.png"
         },
         {
             "Nome": "Triceratops horridus",
@@ -98,7 +99,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 6.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Seu nome significa 'cabeça com três chifres'. Provavelmente usava os chifres e o grande folho ósseo em disputas territoriais e defesa.",
-            "Arquivo": "triceratops.png"
+            "Arquivo": "real_triceratops_horridus.png"
         },
         {
             "Nome": "Velociraptor mongoliensis",
@@ -109,7 +110,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.015,
             "Postura": "Bípede",
             "Curiosidade": "Menor do que o retratado em filmes, o Velociraptor tinha penas e uma garra retrátil no pé, usada para caçar pequenas presas.",
-            "Arquivo": "velociraptor.png"
+            "Arquivo": "real_velociraptor_mongoliensis.png"
         },
         {
             "Nome": "Brachiosaurus altithorax",
@@ -120,7 +121,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 50.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Um dos maiores dinossauros, o Braquiossauro tinha as narinas no topo da cabeça, o que levou cientistas a pensarem que ele passava muito tempo submerso.",
-            "Arquivo": "brachiosaurus.png"
+            "Arquivo": "real_brachiosaurus_altithorax.png"
         },
         {
             "Nome": "Stegosaurus stenops",
@@ -131,7 +132,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 7.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "As placas ósseas do Stegossauro podem ter servido para termorregulação, além de exibição. O 'talo' na cauda era uma arma perigosa.",
-            "Arquivo": "stegosaurus.png"
+            "Arquivo": "real_stegosaurus_stenops.png"
         },
         {
             "Nome": "Spinosaurus aegyptiacus",
@@ -142,7 +143,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 7.5,
             "Postura": "Bípede",
             "Curiosidade": "O Espinossauro possuía uma vela neural de até 1,8 m e adaptações para a vida semiaquática, sendo um dos maiores dinossauros carnívoros.",
-            "Arquivo": "spinosaurus.png"
+            "Arquivo": "real_spinosaurus_aegyptiacus.png"
         },
         {
             "Nome": "Patagotitan mayorum",
@@ -153,7 +154,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 70.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "O Patagotitan é um dos maiores animais que já andaram na Terra, pesando cerca de 70 toneladas – o equivalente a 10 elefantes africanos.",
-            "Arquivo": "patagotitan.png"
+            "Arquivo": "real_patagotitan_mayorum.png"
         },
         {
             "Nome": "Allosaurus fragilis",
@@ -164,7 +165,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 2.3,
             "Postura": "Bípede",
             "Curiosidade": "O Alossauro era o principal predador do Jurássico, com dentes serrilhados e garras fortes, provavelmente caçando em bandos.",
-            "Arquivo": "allosaurus.png"
+            "Arquivo": "real_allosaurus_fragilis.png"
         },
         {
             "Nome": "Diplodocus longus",
@@ -175,7 +176,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 15.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "O Diplodoco tinha uma cauda extremamente longa, com cerca de 13 metros, que podia ser usada como chicote para se defender.",
-            "Arquivo": "diplodocus.png"
+            "Arquivo": "real_diplodocus_longus.png"
         },
         {
             "Nome": "Ankylosaurus magniventris",
@@ -186,7 +187,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 6.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "O Anquilossauro era um tanque vivo, com armadura óssea e uma pesada clava na cauda capaz de quebrar ossos de predadores.",
-            "Arquivo": "ankylosaurus.png"
+            "Arquivo": "real_ankylosaurus_magniventris.png"
         },
         {
             "Nome": "Parasaurolophus walkeri",
@@ -197,7 +198,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 2.5,
             "Postura": "Quadrúpede",
             "Curiosidade": "Sua crista tubular oca pode ter funcionado como câmara de ressonância para emitir sons de baixa frequência e comunicação.",
-            "Arquivo": "parasaurolophus.png"
+            "Arquivo": "real_parasaurolophus_walkeri.png"
         },
         {
             "Nome": "Pachycephalosaurus wyomingensis",
@@ -208,7 +209,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.45,
             "Postura": "Bípede",
             "Curiosidade": "Seu crânio tinha um domo ósseo de até 25 cm de espessura, usado provavelmente para disputas cabeça-contra-cabeça.",
-            "Arquivo": "pachycephalosaurus.png"
+            "Arquivo": "real_pachycephalosaurus_wyomingensis.png"
         },
         {
             "Nome": "Carnotaurus sastrei",
@@ -219,7 +220,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 1.3,
             "Postura": "Bípede",
             "Curiosidade": "O Carnotauro tinha dois chifres sobre os olhos e membros anteriores extremamente reduzidos, ainda mais curtos que os do T. rex.",
-            "Arquivo": "carnotaurus.png"
+            "Arquivo": "real_carnotaurus_sastrei.png"
         },
         {
             "Nome": "Therizinosaurus cheloniformis",
@@ -230,7 +231,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 5.0,
             "Postura": "Bípede",
             "Curiosidade": "Possuía garras gigantescas de até 1 metro de comprimento, mas provavelmente era um herbívoro pacífico que as usava para alcançar folhas.",
-            "Arquivo": "therizinosaurus.png"
+            "Arquivo": "real_therizinosaurus_cheloniformis.png"
         },
         {
             "Nome": "Deinonychus antirrhopus",
@@ -241,7 +242,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.08,
             "Postura": "Bípede",
             "Curiosidade": "Parente maior do Velociraptor, o Deinônico inspirou a garra retrátil e a cauda rígida dos raptores retratados em Jurassic Park.",
-            "Arquivo": "deinonychus.png"
+            "Arquivo": "real_deinonychus_antirrhopus.png"
         },
         {
             "Nome": "Iguanodon bernissartensis",
@@ -252,7 +253,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 3.5,
             "Postura": "Bípede/Quadrúpede",
             "Curiosidade": "Foi um dos primeiros dinossauros descobertos. Sua 'polegar' em forma de espinho pode ter sido usado como arma defensiva.",
-            "Arquivo": "iguanodon.png"
+            "Arquivo": "real_iguanodon_bernissartensis.png"
         },
         {
             "Nome": "Baryonyx walkeri",
@@ -263,7 +264,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 2.0,
             "Postura": "Bípede",
             "Curiosidade": "Tinha uma garra enorme no polegar e focinho alongado com dentes cônicos, ideal para pescar, semelhante a um urso-pescador.",
-            "Arquivo": "baryonyx.png"
+            "Arquivo": "real_baryonyx_walkeri.png"
         },
         {
             "Nome": "Microraptor gui",
@@ -274,7 +275,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.001,
             "Postura": "Bípede",
             "Curiosidade": "Um pequeno dinossauro com penas nas quatro asas, capaz de planar entre as árvores, mostrando um estágio evolutivo do voo.",
-            "Arquivo": "microraptor.png"
+            "Arquivo": "real_microraptor_gui.png"
         },
         {
             "Nome": "Archaeopteryx lithographica",
@@ -285,7 +286,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.0005,
             "Postura": "Bípede",
             "Curiosidade": "Considerado o 'elo perdido' entre dinossauros e aves, combinava penas assimétricas (bom para voo) com dentes e cauda longa.",
-            "Arquivo": "archaeopteryx.png"
+            "Arquivo": "real_archaeopteryx_lithographica.png"
         },
         {
             "Nome": "Coelophysis bauri",
@@ -296,7 +297,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.03,
             "Postura": "Bípede",
             "Curiosidade": "Um dos primeiros dinossauros, de ossos ocos e corpo esguio, viveu em um ambiente árido e provavelmente era canibal em situações extremas.",
-            "Arquivo": "coelophysis.png"
+            "Arquivo": "real_coelophysis_bauri.png"
         },
         {
             "Nome": "Plateosaurus engelhardti",
@@ -307,7 +308,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.7,
             "Postura": "Bípede/Quadrúpede",
             "Curiosidade": "Um dos primeiros grandes herbívoros, com pescoço longo e mãos fortes que podiam agarrar galhos ou caminhar sobre as quatro patas.",
-            "Arquivo": "plateosaurus.png"
+            "Arquivo": "real_plateosaurus_engelhardti.png"
         },
         {
             "Nome": "Apatosaurus louisae",
@@ -318,7 +319,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 20.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Conhecido popularmente como 'Brontossauro', o Apatossauro tinha vértebras ocas e um pescoço poderoso para pastar no alto.",
-            "Arquivo": "apatosaurus.png"
+            "Arquivo": "real_apatosaurus_louisae.png"
         },
         {
             "Nome": "Camarasaurus grandis",
@@ -329,7 +330,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 20.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Tinha dentes em forma de colher e um crânio relativamente curto e robusto, adaptado a uma mastigação mais eficiente.",
-            "Arquivo": "camarasaurus.png"
+            "Arquivo": "real_camarasaurus_grandis.png"
         },
         {
             "Nome": "Giganotosaurus carolinii",
@@ -340,7 +341,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 8.0,
             "Postura": "Bípede",
             "Curiosidade": "Maior que o T. rex em comprimento, o Giganotossauro habitava a América do Sul e provavelmente caçava grandes saurópodes como o Argentinossauro.",
-            "Arquivo": "giganotosaurus.png"
+            "Arquivo": "real_giganotosaurus_carolinii.png"
         },
         {
             "Nome": "Carcharodontosaurus saharicus",
@@ -351,7 +352,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 6.0,
             "Postura": "Bípede",
             "Curiosidade": "Seu nome significa 'lagarto com dentes de tubarão', graças aos dentes serrilhados e achatados, semelhantes aos do grande tubarão branco.",
-            "Arquivo": "carcharodontosaurus.png"
+            "Arquivo": "real_carcharodontosaurus_saharicus.png"
         },
         {
             "Nome": "Utahraptor ostrommaysorum",
@@ -362,7 +363,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.5,
             "Postura": "Bípede",
             "Curiosidade": "O maior dos dromaeossauros, com uma garra em foice de 24 cm, era um predador ativo que podia derrubar presas bem maiores.",
-            "Arquivo": "utahraptor.png"
+            "Arquivo": "real_utahraptor_ostrommaysorum.png"
         },
         {
             "Nome": "Dilophosaurus wetherilli",
@@ -373,7 +374,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.4,
             "Postura": "Bípede",
             "Curiosidade": "Conhecido pelas duas cristas ósseas na cabeça, o Dilofossauro não cuspia veneno como nos filmes, mas era um caçador ágil.",
-            "Arquivo": "dilophosaurus.png"
+            "Arquivo": "real_dilophosaurus_wetherilli.png"
         },
         {
             "Nome": "Ceratosaurus nasicornis",
@@ -384,7 +385,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.5,
             "Postura": "Bípede",
             "Curiosidade": "Possuía um chifre no nariz e dois chifres sobre os olhos, além de placas ósseas ao longo do dorso.",
-            "Arquivo": "ceratosaurus.png"
+            "Arquivo": "real_ceratosaurus_nasicornis.png"
         },
         {
             "Nome": "Edmontosaurus annectens",
@@ -395,7 +396,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 4.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Um dos dinossauros de bico de pato mais comuns, com baterias dentárias para mastigar plantas duras.",
-            "Arquivo": "edmontosaurus.png"
+            "Arquivo": "real_edmontosaurus_annectens.png"
         },
         {
             "Nome": "Lambeosaurus lambei",
@@ -406,7 +407,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 3.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Sua crista oca em formato de machado era maior nos machos e podia servir para emitir sons e se comunicar.",
-            "Arquivo": "lambeosaurus.png"
+            "Arquivo": "real_lambeosaurus_lambei.png"
         },
         {
             "Nome": "Corythosaurus casuarius",
@@ -417,7 +418,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 2.8,
             "Postura": "Quadrúpede",
             "Curiosidade": "Tinha uma crista arredondada que lembra um capacete coríntio. A função da crista permanece debatida (ressonância ou exibição).",
-            "Arquivo": "corythosaurus.png"
+            "Arquivo": "real_corythosaurus_casuarius.png"
         },
         {
             "Nome": "Styracosaurus albertensis",
@@ -428,7 +429,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 2.7,
             "Postura": "Quadrúpede",
             "Curiosidade": "Possuía um longo chifre nasal e espigões em forma de gancho na borda do folho, formando uma impressionante coroa defensiva.",
-            "Arquivo": "styracosaurus.png"
+            "Arquivo": "real_styracosaurus_albertensis.png"
         },
         {
             "Nome": "Chasmosaurus belli",
@@ -439,7 +440,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 1.5,
             "Postura": "Quadrúpede",
             "Curiosidade": "Seu folho craniano era enorme, com grandes aberturas (fenestras) que o tornavam mais leve e talvez colorido para exibição.",
-            "Arquivo": "chasmosaurus.png"
+            "Arquivo": "real_chasmosaurus_belli.png"
         },
         {
             "Nome": "Protoceratops andrewsi",
@@ -450,7 +451,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.2,
             "Postura": "Quadrúpede",
             "Curiosidade": "Fóssil de Protocerátops foi encontrado abraçado a um Velociraptor, evidenciando uma luta até a morte preservada na areia.",
-            "Arquivo": "protoceratops.png"
+            "Arquivo": "real_protoceratops_andrewsi.png"
         },
         {
             "Nome": "Psittacosaurus mongoliensis",
@@ -461,7 +462,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.02,
             "Postura": "Bípede/Quadrúpede",
             "Curiosidade": "Um dos ceratopsianos mais basais, tinha um bico semelhante ao de um papagaio e cerdas alongadas na cauda, sugerindo penas primitivas.",
-            "Arquivo": "psittacosaurus.png"
+            "Arquivo": "real_psittacosaurus_mongoliensis.png"
         },
         {
             "Nome": "Euoplocephalus tutus",
@@ -472,7 +473,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 2.5,
             "Postura": "Quadrúpede",
             "Curiosidade": "Seu corpo era coberto por placas ósseas e até as pálpebras tinham armadura. Usava uma clava óssea na ponta da cauda.",
-            "Arquivo": "euoplocephalus.png"
+            "Arquivo": "real_euoplocephalus_tutus.png"
         },
         {
             "Nome": "Gallimimus bullatus",
@@ -483,7 +484,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.5,
             "Postura": "Bípede",
             "Curiosidade": "O mais famoso dos 'dinossauros-avestruz', rápido e possivelmente onívoro, filtrador ou comedor de pequenas presas.",
-            "Arquivo": "gallimimus.png"
+            "Arquivo": "real_gallimimus_bullatus.png"
         },
         {
             "Nome": "Ornithomimus velox",
@@ -494,7 +495,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.1,
             "Postura": "Bípede",
             "Curiosidade": "Semelhante a uma avestruz moderna, corria a cerca de 60 km/h. Evidências mostram que possuía penas no corpo e asas rudimentares.",
-            "Arquivo": "ornithomimus.png"
+            "Arquivo": "real_ornithomimus_velox.png"
         },
         {
             "Nome": "Struthiomimus altus",
@@ -505,7 +506,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.15,
             "Postura": "Bípede",
             "Curiosidade": "Seu nome significa 'imitador de avestruz'. Tinha pernas longas e provavelmente usava o bico para bicar plantas e pequenos animais.",
-            "Arquivo": "struthiomimus.png"
+            "Arquivo": "real_struthiomimus_altus.png"
         },
         {
             "Nome": "Oviraptor philoceratops",
@@ -516,7 +517,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.04,
             "Postura": "Bípede",
             "Curiosidade": "Originalmente acusado de roubar ovos, hoje sabe-se que chocava seus próprios ovos, preservado em posição de incubação sobre o ninho.",
-            "Arquivo": "oviraptor.png"
+            "Arquivo": "real_oviraptor_philoceratops.png"
         },
         {
             "Nome": "Citipati osmolskae",
@@ -527,7 +528,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.08,
             "Postura": "Bípede",
             "Curiosidade": "Encontrado em posição de sentar sobre o ninho, com os braços abertos para proteger os ovos, como as aves modernas.",
-            "Arquivo": "citipati.png"
+            "Arquivo": "real_citipati_osmolskae.png"
         },
         {
             "Nome": "Maiasaura peeblesorum",
@@ -538,7 +539,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 3.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "O 'lagarto boa mãe' evidenciava cuidado parental; ninhos com ovos e filhotes foram encontrados em colônias, sugerindo comportamento social.",
-            "Arquivo": "maiasaura.png"
+            "Arquivo": "real_maiasaura_peeblesorum.png"
         },
         {
             "Nome": "Shantungosaurus giganteus",
@@ -549,7 +550,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 13.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Um dos maiores hadrossauros já descobertos, com um crânio de 1,6 metro e dentes perfeitamente adaptados para triturar folhas.",
-            "Arquivo": "shantungosaurus.png"
+            "Arquivo": "real_shantungosaurus_giganteus.png"
         },
         {
             "Nome": "Mamenchisaurus hochuanensis",
@@ -560,7 +561,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 15.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "O dinossauro de pescoço mais longo já registrado: seu pescoço atingia 14 metros, mais da metade do comprimento total.",
-            "Arquivo": "mamenchisaurus.png"
+            "Arquivo": "real_mamenchisaurus_hochuanensis.png"
         },
         {
             "Nome": "Sauroposeidon proteles",
@@ -571,7 +572,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 50.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Possivelmente o dinossauro mais alto que existiu: com o pescoço erguido, alcançava uma altura de 18 metros, como um prédio de 6 andares.",
-            "Arquivo": "sauroposeidon.png"
+            "Arquivo": "real_sauroposeidon_proteles.png"
         },
         {
             "Nome": "Amargasaurus cazaui",
@@ -582,7 +583,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 2.6,
             "Postura": "Quadrúpede",
             "Curiosidade": "Possuía duas fileiras de espinhos neurais alongados ao longo do pescoço, formando uma vela dupla ou suporte para espinhos queratinosos.",
-            "Arquivo": "amargasaurus.png"
+            "Arquivo": "real_amargasaurus_cazaui.png"
         },
         {
             "Nome": "Kentrosaurus aethiopicus",
@@ -593,7 +594,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 0.5,
             "Postura": "Quadrúpede",
             "Curiosidade": "Parente do Stegossauro, tinha espinhos afiados na metade posterior do corpo e placas apenas na parte dianteira, sendo bem espinhoso.",
-            "Arquivo": "kentrosaurus.png"
+            "Arquivo": "real_kentrosaurus_aethiopicus.png"
         },
         {
             "Nome": "Tuojiangosaurus multispinus",
@@ -604,7 +605,7 @@ def obter_banco_dinossauros_reais():
             "Peso": 2.8,
             "Postura": "Quadrúpede",
             "Curiosidade": "Mais um estegossauro chinês, com placas nas costas e dois grandes espinhos nos ombros, além da cauda espinhosa (talo).",
-            "Arquivo": "tuojiangosaurus.png"
+            "Arquivo": "real_tuojiangosaurus_multispinus.png"
         },
         {
             "Nome": "Euhelopus zdanskyi",
@@ -615,6 +616,6 @@ def obter_banco_dinossauros_reais():
             "Peso": 5.0,
             "Postura": "Quadrúpede",
             "Curiosidade": "Um saurópode de pescoço relativamente curto, encontrado na China, com dentes espatulados que indicam uma dieta de vegetação tenra.",
-            "Arquivo": "euhelopus.png"
+            "Arquivo": "real_euhelopus_zdanskyi.png"
         },
     ]
