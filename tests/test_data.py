@@ -17,4 +17,5 @@ def test_obter_info_pegadas():
     assert isinstance(info, dict)
     assert "Grallator" in info
     assert info["Grallator"]["dedos"] == 3
-    assert info["Brontopodus"]["tamanho"] == "Enorme (>1m)"
+    # String exata que está em data.py
+    assert info["Brontopodus"]["tamanho"] == "Enorme (>1 m, largo)"
