@@ -13,7 +13,7 @@
 |--------|--------|-----------|------------------------|
 | **v0.4.0** | #8, #9 | Chave dicotômica melhorada (novos atributos) + fallback com imagens locais em `/assets`. | Características adicionais (largura, profundidade) distinguem ≥ 5 morfotipos; imagens offline disponíveis. |
 | **v0.4.1** | #10, #11 | Aprimoramento da etimologia: eufonia, vogais de ligação, ≥ 20 radicais. | Nomes soam naturais; banco expandido. |
-| **v0.4.2** | #18 | Gerador de dinossauros reais: banco de ~50 espécies com imagem e descrição. | Modo “real” mostra imagem, período, dieta e curiosidade. |
+| **v0.4.2** | #18 | Gerador de nomes de dinossauros reais: banco de ~50 espécies com imagem e descrição (se possível). | Modo “real” mostra imagem, período, dieta e curiosidade. |
 
 ---
 
