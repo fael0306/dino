@@ -10,13 +10,10 @@ from components import (
     aba_massa_corporal
 )
 
-# Configuração da página
 st.set_page_config(page_title="PaleoLab Científico", layout="wide")
 
-# Carregar dados
 df = carregar_dados_dinossauros()
 
-# Interface principal
 st.title("🦴 PaleoLab Científico - Edição Ensino Fundamental/Médio")
 st.markdown("Explorando dinossauros com dados reais e modelos matemáticos da paleontologia.")
 
@@ -25,11 +22,10 @@ abas = st.tabs([
     "🗺️ Deriva Continental",
     "🦠 Extinção K-Pg",
     "👣 Icnofósseis",
-    "📖 Etimologia",
+    "🦴 Fósseis Reais",
     "⚖️ Massa Corporal"
 ])
 
-# Chamar as funções de componente para cada aba
 with abas[0]:
     aba_escala_real(df)
 
