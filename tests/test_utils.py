@@ -3,10 +3,16 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 from utils import (
-    get_referencia, calcular_escalas, redimensionar_para_altura,
-    criar_silhueta_placeholder, plot_comparacao_escala, carregar_imagem
+    get_referencia,
+    calcular_escalas,
+    redimensionar_para_altura,
+    criar_silhueta_placeholder,
+    plot_comparacao_escala,
+    carregar_imagem,
 )
 
+
+# ─── get_referencia ─────────────────────────────────────────────────
 def test_get_referencia_humano():
     nome, comp, alt = get_referencia("Humano (1.7m)")
     assert nome == "Humano"
@@ -20,6 +26,7 @@ def test_get_referencia_elefante():
     assert alt == 3.3
 
 def test_get_referencia_onibus():
+    # A função ainda aceita ônibus (compatibilidade)
     nome, comp, alt = get_referencia("Ônibus Escolar (12m)")
     assert nome == "Ônibus"
     assert comp == 12.0
@@ -29,6 +36,8 @@ def test_get_referencia_invalida():
     with pytest.raises(ValueError):
         get_referencia("Cavalo")
 
+
+# ─── calcular_escalas ───────────────────────────────────────────────
 def test_calcular_escalas():
     esc_x, esc_y = calcular_escalas((100, 200), (200, 400))
     assert esc_x == 2.0
@@ -38,6 +47,8 @@ def test_calcular_escalas():
     assert esc_x == 0.5
     assert esc_y == 2.0
 
+
+# ─── redimensionar_para_altura ──────────────────────────────────────
 def test_redimensionar_para_altura():
     img = Image.new('RGB', (100, 200))
     img_resized = redimensionar_para_altura(img, 100)
@@ -46,6 +57,8 @@ def test_redimensionar_para_altura():
     img_resized2 = redimensionar_para_altura(img, 400)
     assert img_resized2.size == (200, 400)
 
+
+# ─── criar_silhueta_placeholder ─────────────────────────────────────
 def test_criar_silhueta_placeholder():
     img = criar_silhueta_placeholder("Tyrannosaurus rex")
     assert isinstance(img, Image.Image)
@@ -55,6 +68,8 @@ def test_criar_silhueta_placeholder():
     img2 = criar_silhueta_placeholder("Dinossauro Desconhecido")
     assert isinstance(img2, Image.Image)
 
+
+# ─── plot_comparacao_escala ─────────────────────────────────────────
 def test_plot_comparacao_escala():
     fig = plot_comparacao_escala("T-rex", "Humano", 12.3, 1.7)
     assert isinstance(fig, plt.Figure)
@@ -64,6 +79,8 @@ def test_plot_comparacao_escala():
     assert len(bars) == 2
     plt.close(fig)
 
+
+# ─── carregar_imagem (placeholder) ──────────────────────────────────
 def test_carregar_imagem_placeholder(monkeypatch):
     monkeypatch.setattr("os.path.exists", lambda x: False)
     img = carregar_imagem("Tyrannosaurus rex")
