@@ -4,7 +4,10 @@
 
 O PaleoLab Científico é uma aplicação interativa desenvolvida em [Streamlit](https://streamlit.io/), voltada para o ensino fundamental e médio. Com visualizações imersivas, jogos educativos e simulações científicas, o app convida os alunos a mergulharem no mundo da paleontologia de forma prática e divertida.
 
-<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/562b697e-8bf7-4e40-86ed-75411c365425" />
+**🌐 Acesse agora:** [https://paleolabcientifico.streamlit.app/](https://paleolabcientifico.streamlit.app/)  
+*O aplicativo está online e público — não é necessário instalar nada!*
+
+<img width="1366" height="768" alt="PaleoLab Screenshot" src="https://github.com/user-attachments/assets/562b697e-8bf7-4e40-86ed-75411c365425" />
 
 ---
 
@@ -79,7 +82,19 @@ paleolab/
 
 ---
 
-## 🚀 Instalação e Execução
+## 🚀 Acesso Online (Recomendado)
+
+Basta acessar a URL pública do PaleoLab:
+
+👉 [**https://paleolabcientifico.streamlit.app/**](https://paleolabcientifico.streamlit.app/)
+
+Nenhuma instalação é necessária! O aplicativo roda diretamente no navegador, pronto para uso em sala de aula, estudos individuais ou demonstrações.
+
+---
+
+## 🔧 Execução Local (Para Desenvolvedores)
+
+Se você deseja executar o projeto na sua máquina (para contribuir ou modificar), siga os passos abaixo:
 
 1. **Clone o repositório**
 
@@ -161,4 +176,4 @@ Este projeto está licenciado sob a **MIT License**. Veja o arquivo [LICENSE](LI
 
 ---
 
-🐾 *Explore, aprenda e divirta‑se com a ciência dos gigantes que já dominaram a Terra!*
+🐾 *Explore, aprenda e divirta‑se com a ciência dos gigantes que já dominaram a Terra!* 
