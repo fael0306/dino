@@ -4,7 +4,7 @@
 
 O PaleoLab Científico é uma aplicação interativa desenvolvida em [Streamlit](https://streamlit.io/), voltada para o ensino fundamental e médio. Com visualizações imersivas, jogos educativos e simulações científicas, o app convida os alunos a mergulharem no mundo da paleontologia de forma prática e divertida.
 
-![PaleoLab Screenshot](https://via.placeholder.com/800x400?text=PaleoLab+Screenshot)
+<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/562b697e-8bf7-4e40-86ed-75411c365425" />
 
 ---
 
