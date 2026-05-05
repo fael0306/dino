@@ -23,13 +23,13 @@ def extrair_silhueta(imagem):
     return silhueta
 
 def visualizar_comparacao(imagem_original, imagem_processada):
-    """Exibe a comparação entre a imagem original e a processada."""
+    """⚠️ Esta função é apenas ilustrativa e não funciona no Streamlit. Use st.pyplot."""
     fig, eixos = plt.subplots(1, 2)
     eixos[0].imshow(imagem_original)
     eixos[0].set_title('Imagem Original')
     eixos[1].imshow(imagem_processada)
     eixos[1].set_title('Imagem Processada')
-    plt.show()
+    plt.show()  # substitua por st.pyplot(fig) se for usar no Streamlit
 
 def calcular_escalas(tamanho_original, tamanho_alvo):
     """Calcula fatores de escala para redimensionamento de imagens."""
