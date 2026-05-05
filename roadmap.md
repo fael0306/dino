@@ -1,9 +1,26 @@
-## 🗺️ Roadmap — PaleoLab Científico (partindo da v0.2.0)
+**🗺️ Roadmap — PaleoLab Científico (atualizado com issues pendentes)**  
+
+Mantive todas as versões já planejadas e adicionei a **issue #4** (precisão paleogeográfica) em uma nova versão, **v0.3.3**, respeitando o cronograma existente.
+
+---
 
 ### Estado atual
 - **v0.1.0** ✅ Fundação (modularização, idioma)
 - **v0.1.1** ✅ Cache + primeiros testes
 - **v0.2.0** ✅ Alinhamento de silhuetas e normalização de proporção extrema
+
+---
+
+### 🧪 Fase 3 – Aprofundamento Científico (parte 1)
+
+| Versão | Issues | Descrição | Critérios de aceitação |
+|--------|--------|-----------|------------------------|
+| **v0.2.1** | #17 | Comparação dino × dino na escala real. | Selecionar dois dinossauros, visualização lado a lado. |
+| **v0.2.2** | #7, #6 | Modelo K‑Pg robusto e didático (estabilidade numérica + clareza). | Simulação sem valores inconsistentes, explicações acessíveis. |
+| **v0.3.0** | #12, #13 | Calculadora de massa corporal (formula de Campione & Evans). | Entrada de circunferência femoral com limites realistas e equivalências. |
+| **v0.3.1** | #5, #20 | Globo interativo com mais dinossauros no mapa e link para imagens. | ≥80% dos dinossauros com coordenadas; globo navegável. |
+| **v0.3.2** | #6 | Link direto para Dinosaur Pictures na aba Escala Real. | Acesso externo, integração suave. |
+| **v0.3.3** | **#4** | **Melhorar precisão paleogeográfica (Deriva Continental).** | **Coordenadas transformadas com maior fidelidade (idealmente com apoio do GPlates ou dataset especializado), documentação da fonte científica.** |
 
 ---
 
@@ -21,7 +38,7 @@
 
 | Versão | Issues | Descrição | Critérios de aceitação |
 |--------|--------|-----------|------------------------|
-| **v0.5.0** | #19 | Jogo Paleo‑Detetive: reformula icnofósseis (fóssil → perguntas → adivinhação). | Fluxo autoexplicativo, feedback visual, pronto para sala de aula. |
+| **v0.5.0** | #19 | Jogo Paleo‑Detetive: reformula icnofósseis (mostra fóssil → perguntas → adivinhação). | Fluxo autoexplicativo, feedback visual, pronto para sala de aula. |
 
 ---
 
@@ -34,7 +51,7 @@
 
 ---
 
-### 📅 Cronograma sugerido (sprints de 2 semanas a partir de hoje)
+### 📅 Cronograma sugerido (sprints de 2 semanas)
 
 | Sprint | Versão | Entregas principais |
 |--------|--------|---------------------|
@@ -43,6 +60,7 @@
 | 3 | v0.3.0 | Issues #12, #13 (massa corporal) |
 | 4 | v0.3.1 | Issues #5, #20 (globo + expansão dados) |
 | 5 | v0.3.2 | Issue #6 (link Dinosaur Pictures) |
+| **5.5** | **v0.3.3** | **Issue #4 (precisão paleogeográfica)** |
 | 6 | v0.4.0 | Issues #8, #9 (chave dicotômica) |
 | 7 | v0.4.1 | Issues #10, #11 (etimologia) |
 | 8 | v0.4.2 | Issue #18 (dinossauros reais) |
@@ -51,3 +69,5 @@
 | 11 | v1.0.0 | Deploy e publicação |
 
 ---
+
+*Nota:* A issue **#4** (*Paleo-detetive*, descrição detalhada do jogo) já está coberta pela issue **#19** na versão v0.5.0, portanto não foi duplicada. A nova issue **#4** adicionada refere‑se exclusivamente à **precisão paleogeográfica**.
