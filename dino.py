@@ -30,7 +30,7 @@ with abas[0]:
     aba_escala_real(df)
 
 with abas[1]:
-    aba_deriva_continental(df)
+    aba_deriva_continental()  # não precisa mais passar df
 
 with abas[2]:
     aba_extincao_kpg()
