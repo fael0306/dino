@@ -616,6 +616,18 @@ def obter_banco_dinossauros_reais():
             "Curiosidade": "Um saurópode de pescoço relativamente curto, encontrado na China, com dentes espatulados que indicam uma dieta de vegetação tenra.",
             "Arquivo": "real_euhelopus_zdanskyi.png"
         },
+        # No final de obter_banco_dinossauros_reais(), inclua o novo dinossauro:
+{
+    "Nome": "Herrerasaurus ischigualastensis",
+    "Período": "Triássico Superior",
+    "Dieta": "Carnívoro",
+    "Comprimento": 3.0,
+    "Altura": 1.0,
+    "Peso": 0.1,
+    "Postura": "Bípede",
+    "Curiosidade": "Um dos dinossauros mais antigos já descobertos, viveu há 231 milhões de anos na Argentina e já possuía características de terópodes e sauropodomorfos.",
+    "Arquivo": "real_herrerasaurus_ischigualastensis.png"
+}
     ]
 
 # --- Coordenadas paleogeográficas expandidas (≥80% dos dinossauros) ---
@@ -676,6 +688,7 @@ COORDENADAS_DINOSSAUROS = {
     "Kentrosaurus aethiopicus":       [(-7.0, 37.0), (-6.5, 36.5)],                       # Tendaguru
     "Tuojiangosaurus multispinus":    [(29.0, 105.0), (28.5, 104.5)],                     # Sichuan
     "Euhelopus zdanskyi":             [(37.0, 118.0), (38.0, 119.0)],                     # Shandong
+    "Herrerasaurus ischigualastensis": [(-30.0, -68.0), (-29.5, -68.5)],  # Ischigualasto, Argentina
 }
 
 def obter_coordenadas(nome_dinossauro):
