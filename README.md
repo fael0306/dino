@@ -1,126 +1,164 @@
-# 🦴 PaleoLab Científico
+# 🦴 PaleoLab Científico v1.0.0
 
-Uma aplicação interativa em Streamlit para o ensino de paleontologia voltada aos ensinos fundamental e médio. Explore dinossauros com dados reais, modelos matemáticos e visualizações científicas.
+**Explorando dinossauros com dados reais e modelos matemáticos da paleontologia.**
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red?logo=streamlit)
-![Licença](https://img.shields.io/badge/Licença-MIT-green)
+O PaleoLab Científico é uma aplicação interativa desenvolvida em [Streamlit](https://streamlit.io/), voltada para o ensino fundamental e médio. Com visualizações imersivas, jogos educativos e simulações científicas, o app convida os alunos a mergulharem no mundo da paleontologia de forma prática e divertida.
 
----
-
-## 📖 Descrição
-
-O **PaleoLab Científico** é um laboratório virtual que transforma conceitos paleontológicos em atividades interativas. Através de abas temáticas, os estudantes podem:
-
-- Comparar dinossauros em escala real (com silhuetas)
-- Visualizar a deriva continental e a distribuição de fósseis
-- Simular a extinção K‑Pg com o modelo Lotka‑Volterra
-- Identificar pegadas com uma chave dicotômica
-- Criar nomes científicos a partir de radicais gregos/latinos
-- Estimar a massa corporal usando a circunferência femoral
-
-Tudo baseado em dados reais do Paleobiology Database e em estudos publicados (Campione & Evans, 2012).
+![PaleoLab Screenshot](https://via.placeholder.com/800x400?text=PaleoLab+Screenshot)
 
 ---
 
-## 🧪 Funcionalidades (Abas)
+## ✨ Funcionalidades
 
-| Aba                         | Descrição                                                                                                                                                  |
-|-----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **📏 Escala Real**          | Comparação visual de altura entre dinossauros e referências (humano, elefante, ônibus). Inclui explicação sobre ossos pneumáticos.                         |
-| **🗺️ Deriva Continental**   | Mapa com pontos de descoberta de fósseis e opção de visualização no Cretáceo Superior (66 Ma), mostrando o efeito das placas tectônicas.                 |
-| **🦠 Extinção K‑Pg**       | Simulador do colapso ecológico pós‑impacto do asteroide, baseado na dinâmica presa‑predador (Lotka‑Volterra) com parâmetros ajustáveis.                    |
-| **👣 Icnofósseis**         | Chave dicotômica interativa para identificar icnogêneros de pegadas (Grallator, Eubrontes, Brontopodus, Anomoepus).                                        |
-| **📖 Etimologia**          | Gerador de nomes fictícios de dinossauros usando radicais gregos/latinos, com explicação do significado e exemplos reais.                                 |
-| **⚖️ Massa Corporal**      | Cálculo da massa estimada a partir da circunferência do fêmur, diferenciando bípedes e quadrúpedes, conforme Campione & Evans (2012).                      |
+### 📏 Escala Real
+- Compare o tamanho de um dinossauro com um humano, um elefante africano ou outro dinossauro.
+- Silhuetas redimensionadas lado a lado, alinhadas pela base, com proporção exata.
+- Link externo para imagens no Dinosaur Pictures.
+- Explicação sobre ossos pneumáticos (adaptação evolutiva).
+
+### 🗺️ Deriva Continental
+- Globo interativo do [Ancient Earth](https://dinosaurpictures.org/ancient-earth) embutido via iframe.
+- Selecione entre **Mundo Atual, Cretáceo Superior, Jurássico Superior e Triássico Médio**.
+- Visualize no mapa 2D os sítios fossilíferos de **50 dinossauros reais**, com dados do Paleobiology Database.
+- Opção de lista de coordenadas (latitude/longitude).
+
+### 🦠 Extinção K‑Pg
+- Simulação do ecossistema pós‑impacto usando o modelo **Lotka‑Volterra**.
+- Integração numérica via **Runge‑Kutta de 4ª ordem** (RK4) para maior precisão.
+- Parâmetros ajustáveis: bloqueio solar, chuva ácida e anos de simulação.
+- Equações exibidas em LaTeX, explicação detalhada dos coeficientes ecológicos.
+- Interpretação automática do resultado: colapso total, ecossistema devastado ou estável.
+
+### 👣 Icnofósseis – Jogo Paleo‑Detetive
+- Desafio: observe uma pegada fóssil e responda perguntas (dedos, garras, tamanho, forma).
+- Ao final, o sistema revela qual icnogênero você descreveu e compara com o fóssil real.
+- **8 icnogêneros** disponíveis: *Grallator, Eubrontes, Megalosauripus, Wintonopus, Amblydactylus, Anomoepus, Brontopodus, Parabrontopodus*.
+- Feedback lúdico com balões e explicações científicas.
+
+### 🦴 Fósseis Reais
+- Botão para sortear aleatoriamente um dos **50 dinossauros reais** do banco de dados.
+- Exibe imagem do fóssil (ou silhueta artística), período, dieta, tamanho e uma **curiosidade exclusiva**.
+- Ideal para atividades de descoberta e discussão em sala de aula.
+
+### ⚖️ Massa Corporal
+- Estime a massa de um dinossauro a partir da circunferência do fêmur, com base no estudo de Campione & Evans (2012).
+- Fórmulas diferentes para bípedes e quadrúpedes.
+- Validação dos limites realistas (ex.: fêmur de T. rex ~58 cm).
+- Equivalência visual: “quantos elefantes”, “quantos T. rex” e “quantos Patagotitan” equivalem à massa calculada.
 
 ---
 
-## 🚀 Como Executar
+## 🧰 Tecnologias Utilizadas
 
-### Pré‑requisitos
-- Python 3.8 ou superior
-- pip (gerenciador de pacotes)
+- **Python 3.8+**
+- **Streamlit** – interface web interativa
+- **Pandas** – manipulação de dados
+- **Matplotlib** – gráficos e silhuetas
+- **Pillow (PIL)** – processamento de imagens
+- **NumPy** – cálculos numéricos
+- **Streamlit Components** – injeção de HTML/iframe
 
-### Instalação
+---
 
-Clone o repositório e instale as dependências:
+## 📁 Estrutura do Projeto
+
+```
+paleolab/
+├── dino.py                   # Ponto de entrada da aplicação Streamlit
+├── components.py             # Componentes das abas (lógica de interface)
+├── data.py                   # Dados e funções de acesso a dados
+├── utils.py                  # Funções utilitárias (imagens, escalas, etc.)
+├── assets/                   # Imagens das silhuetas e fósseis
+├── tests/
+│   ├── test_data.py
+│   ├── test_components.py
+│   └── test_utils.py
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## 🚀 Instalação e Execução
+
+1. **Clone o repositório**
+
+   ```bash
+   git clone https://github.com/seuusuario/paleolab.git
+   cd paleolab
+   ```
+
+2. **Crie um ambiente virtual (recomendado)**
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate      # Linux/macOS
+   venv\Scripts\activate         # Windows
+   ```
+
+3. **Instale as dependências**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Execute o aplicativo**
+
+   ```bash
+   streamlit run dino.py
+   ```
+
+   O navegador abrirá automaticamente em `http://localhost:8501`.
+
+---
+
+## 🧪 Testes
+
+O projeto inclui testes unitários para garantir a integridade das funções de dados, dos componentes e dos utilitários.
+
+Para executá‑los:
 
 ```bash
-git clone https://github.com/seu-usuario/paleolab-cientifico.git
-cd paleolab-cientifico
-pip install -r requirements.txt
+pytest tests/
 ```
 
-### Executando o aplicativo
-
-```bash
-streamlit run dino.py
-```
-
-O navegador abrirá automaticamente em `http://localhost:8501`.
-
----
-
-## 🗂️ Estrutura do Projeto
-
-```
-.
-├── dino.py               # Código principal do Streamlit
-├── requirements.txt      # Dependências Python
-├── assets/               # (Opcional) Imagens personalizadas
-│   ├── trex.png
-│   ├── triceratops.png
-│   ├── velociraptor.png
-│   ├── brachiosaurus.png
-│   ├── human.png
-│   ├── elephant.png
-│   └── onibus.png
-└── README.md             # Este arquivo
-```
-
-**Sobre as imagens:**  
-Se a pasta `assets/` com os arquivos PNG não existir, o aplicativo gera automaticamente silhuetas simples usando o `matplotlib`. As imagens próprias podem ser adicionadas para melhorar a experiência visual.
+Os testes cobrem:
+- Carga correta dos datasets
+- Classificação dos icnogêneros
+- Simulação da extinção K‑Pg (RK4)
+- Funções de manipulação de imagem
+- Coordenadas paleogeográficas
 
 ---
 
-## 📦 Dependências
+## 🤝 Contribuição
 
-As bibliotecas necessárias estão listadas em `requirements.txt`:
+Contribuições são muito bem‑vindas! Sugestões, correções de bugs, novas ideias de abas ou melhorias nos modelos são ótimas formas de ajudar.
 
-- `streamlit`
-- `pandas`
-- `numpy`
-- `matplotlib`
-- `Pillow`
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature: `git checkout -b minha-feature`
+3. Commit suas mudanças: `git commit -m 'Adiciona nova funcionalidade'`
+4. Push para a branch: `git push origin minha-feature`
+5. Abra um Pull Request
 
-Instale com:
-
-```bash
-pip install -r requirements.txt
-```
+Antes de enviar, verifique se os testes passam e, se possível, adicione testes para as novas funcionalidades.
 
 ---
 
-## 🧠 Modelos Científicos Utilizados
+## 📜 Licença
 
-- **Extinção K‑Pg:** Modelo de Lotka‑Volterra com três níveis tróficos (plantas, herbívoros, carnívoros), modificado para simular bloqueio solar e chuva ácida.
-- **Massa Corporal:** Equação alométrica de Campione & Evans (2012):  
-  `Massa = a × (Circunferência Femoral)^b`, com parâmetros diferentes para bípedes e quadrúpedes.
-- **Deriva Continental:** As coordenadas dos fósseis no mapa do Cretáceo são ajustadas heuristicamente para refletir a posição aproximada dos continentes há 66 milhões de anos.
+Este projeto está licenciado sob a **MIT License**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-## 🤝 Contribuições
+## 📚 Créditos e Referências
 
-Contribuições são bem‑vindas! Se você tiver ideias para novas abas, melhorias visuais ou correções científicas, sinta‑se à vontade para abrir uma *issue* ou enviar um *pull request*.
-
----
-
-## 📄 Licença
-
-Este projeto é distribuído sob a licença MIT. Consulte o arquivo `LICENSE` para mais detalhes.
+- **Dados de dinossauros**: [Paleobiology Database](https://paleobiodb.org/)
+- **Globo interativo**: [Ancient Earth](https://dinosaurpictures.org/ancient-earth) (projeto Paleomap)
+- **Modelo de massa corporal**: Campione, N. E., & Evans, D. C. (2012) – *BMC Biology*
+- **Silhuetas e imagens**: originais ou geradas proceduralmente (fallback)
+- **Desenvolvimento**: comunidade de professores e entusiastas da paleontologia
 
 ---
 
-**Desenvolvido para fins educacionais – inspire futuros paleontólogos!** 🦕
+🐾 *Explore, aprenda e divirta‑se com a ciência dos gigantes que já dominaram a Terra!*
