@@ -8,24 +8,19 @@ import os
 from typing import Tuple
 import streamlit as st
 
-
-# --- Funções gerais de imagem (agora em português) ---
 def abrir_imagem(caminho_imagem):
     """Carrega uma imagem a partir do caminho especificado."""
     return Image.open(caminho_imagem)
 
-
 def salvar_imagem(imagem, caminho_salvar):
     """Salva a imagem fornecida no caminho especificado."""
     imagem.save(caminho_salvar)
-
 
 def extrair_silhueta(imagem):
     """Gera uma silhueta a partir da imagem fornecida."""
     imagem_cinza = imagem.convert('L')
     silhueta = ImageOps.invert(imagem_cinza)
     return silhueta
-
 
 def visualizar_comparacao(imagem_original, imagem_processada):
     """Exibe a comparação entre a imagem original e a processada."""
@@ -36,15 +31,12 @@ def visualizar_comparacao(imagem_original, imagem_processada):
     eixos[1].set_title('Imagem Processada')
     plt.show()
 
-
 def calcular_escalas(tamanho_original, tamanho_alvo):
     """Calcula fatores de escala para redimensionamento de imagens."""
     escala_x = tamanho_alvo[0] / tamanho_original[0]
     escala_y = tamanho_alvo[1] / tamanho_original[1]
     return escala_x, escala_y
 
-
-# --- Funções específicas do PaleoLab ---
 def get_referencia(ref_sel: str) -> Tuple[str, float, float]:
     """Traduz a seleção de referência em (nome, comprimento_m, altura_m)."""
     if "Humano" in ref_sel:
@@ -55,7 +47,6 @@ def get_referencia(ref_sel: str) -> Tuple[str, float, float]:
         return "Ônibus", 12.0, 3.2
     else:
         raise ValueError(f"Referência inválida: {ref_sel}")
-
 
 def criar_silhueta_placeholder(nome: str) -> Image.Image:
     """Desenha uma silhueta com matplotlib quando a imagem real não existe."""
@@ -94,7 +85,6 @@ def criar_silhueta_placeholder(nome: str) -> Image.Image:
     buf.seek(0)
     return Image.open(buf).convert("RGBA")
 
-
 @st.cache_data(ttl=3600, show_spinner=False)
 def carregar_imagem(nome: str) -> Image.Image:
     """Carrega imagem da pasta assets/ ou gera fallback."""
@@ -103,9 +93,60 @@ def carregar_imagem(nome: str) -> Image.Image:
         "Triceratops": "triceratops.png",
         "Velociraptor": "velociraptor.png",
         "Brachiosaurus": "brachiosaurus.png",
+        "Stegosaurus": "stegosaurus.png",
+        "Spinosaurus": "spinosaurus.png",
+        "Patagotitan": "patagotitan.png",
         "Humano": "human.png",
         "Elefante": "elephant.png",
-        "Ônibus": "onibus.png"
+        "Ônibus": "onibus.png",
+        "Triceratops horridus": "triceratops.png",
+        "Velociraptor mongoliensis": "velociraptor.png",
+        "Brachiosaurus altithorax": "brachiosaurus.png",
+        "Stegosaurus stenops": "stegosaurus.png",
+        "Spinosaurus aegyptiacus": "spinosaurus.png",
+        "Patagotitan mayorum": "patagotitan.png",
+        "Allosaurus fragilis": "allosaurus.png",
+        "Diplodocus longus": "diplodocus.png",
+        "Ankylosaurus magniventris": "ankylosaurus.png",
+        "Parasaurolophus walkeri": "parasaurolophus.png",
+        "Pachycephalosaurus wyomingensis": "pachycephalosaurus.png",
+        "Carnotaurus sastrei": "carnotaurus.png",
+        "Therizinosaurus cheloniformis": "therizinosaurus.png",
+        "Deinonychus antirrhopus": "deinonychus.png",
+        "Iguanodon bernissartensis": "iguanodon.png",
+        "Baryonyx walkeri": "baryonyx.png",
+        "Microraptor gui": "microraptor.png",
+        "Archaeopteryx lithographica": "archaeopteryx.png",
+        "Coelophysis bauri": "coelophysis.png",
+        "Plateosaurus engelhardti": "plateosaurus.png",
+        "Apatosaurus louisae": "apatosaurus.png",
+        "Camarasaurus grandis": "camarasaurus.png",
+        "Giganotosaurus carolinii": "giganotosaurus.png",
+        "Carcharodontosaurus saharicus": "carcharodontosaurus.png",
+        "Utahraptor ostrommaysorum": "utahraptor.png",
+        "Dilophosaurus wetherilli": "dilophosaurus.png",
+        "Ceratosaurus nasicornis": "ceratosaurus.png",
+        "Edmontosaurus annectens": "edmontosaurus.png",
+        "Lambeosaurus lambei": "lambeosaurus.png",
+        "Corythosaurus casuarius": "corythosaurus.png",
+        "Styracosaurus albertensis": "styracosaurus.png",
+        "Chasmosaurus belli": "chasmosaurus.png",
+        "Protoceratops andrewsi": "protoceratops.png",
+        "Psittacosaurus mongoliensis": "psittacosaurus.png",
+        "Euoplocephalus tutus": "euoplocephalus.png",
+        "Gallimimus bullatus": "gallimimus.png",
+        "Ornithomimus velox": "ornithomimus.png",
+        "Struthiomimus altus": "struthiomimus.png",
+        "Oviraptor philoceratops": "oviraptor.png",
+        "Citipati osmolskae": "citipati.png",
+        "Maiasaura peeblesorum": "maiasaura.png",
+        "Shantungosaurus giganteus": "shantungosaurus.png",
+        "Mamenchisaurus hochuanensis": "mamenchisaurus.png",
+        "Sauroposeidon proteles": "sauroposeidon.png",
+        "Amargasaurus cazaui": "amargasaurus.png",
+        "Kentrosaurus aethiopicus": "kentrosaurus.png",
+        "Tuojiangosaurus multispinus": "tuojiangosaurus.png",
+        "Euhelopus zdanskyi": "euhelopus.png",
     }
     nome_arquivo = mapa_arquivos.get(nome, nome.lower().replace(" ", "_") + ".png")
     caminho = os.path.join("assets", nome_arquivo)
@@ -136,9 +177,7 @@ def combinar_imagens_lado_a_lado(img_esq: Image.Image, img_dir: Image.Image) -> 
 
     img_combinada = Image.new('RGBA', (largura_total, altura_total), (0, 0, 0, 0))
 
-    # Colar a imagem da esquerda alinhada na base (y = altura_total - alt_esq)
     img_combinada.paste(img_esq, (0, altura_total - alt_esq), img_esq if img_esq.mode == 'RGBA' else None)
-    # Colar a imagem da direita alinhada na base
     img_combinada.paste(img_dir, (larg_esq, altura_total - alt_dir), img_dir if img_dir.mode == 'RGBA' else None)
 
     return img_combinada
