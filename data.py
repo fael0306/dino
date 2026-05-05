@@ -75,7 +75,6 @@ def obter_info_pegadas():
         }
     }
 
-# data.py (trecho final, apenas a função alterada)
 def obter_banco_dinossauros_reais():
     """Retorna uma lista com 50 dinossauros reais e suas curiosidades."""
     return [
