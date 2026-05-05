@@ -368,64 +368,42 @@ def aba_icnofosseis():
     """)
     st.caption("Icnofósseis são vestígios de atividade biológica. Eles nos ajudam a entender o comportamento sem precisar de ossos!")
 
-
-def aba_etimologia():
-    """Conteúdo da aba 'Fósseis Reais' – agora com modo real."""
+def aba_fosseis_reais():
+    """Conteúdo da aba 'Fósseis Reais' – apenas dinossauros reais com imagens de fósseis."""
     st.header("🦴 Museu de Fósseis Reais")
-    st.markdown("Descubra dinossauros reais com suas curiosidades científicas e imagens de fósseis.")
-
-    modo = st.radio(
-        "Escolha o modo:",
-        ["Fictício (Etimologia Grega/Latina)", "Real (Banco de Espécies)"]
+    st.markdown(
+        "Os fósseis são a principal evidência da existência dos dinossauros. "
+        "Cada descoberta ajuda a reconstruir a história da vida na Terra. "
+        "Clique no botão abaixo para explorar uma espécie real, ver seu fóssil e descobrir curiosidades."
     )
 
-    if modo == "Fictício (Etimologia Grega/Latina)":
-        radicais = {
-            "Micro": "Pequeno", "Mega": "Grande", "Pachy": "Grosso / Espesso",
-            "Brachy": "Curto", "Elasmo": "Placa / Chapa", "Cephalo": "Cabeça",
-            "Dont": "Dente", "Raptor": "Ladrão / Caçador", "Saurus": "Lagarto / Réptil",
-            "Ops": "Rosto / Face"
-        }
-        if st.button("🧬 Gerar Novo Dinossauro Fictício", type="primary"):
-            prefixo = random.choice(list(radicais.keys())[:5])
-            sufixo = random.choice(list(radicais.keys())[5:])
-            nome_completo = prefixo + sufixo.lower()
-            significado_pref = radicais[prefixo]
-            significado_suf = radicais[sufixo]
-            st.success(f"### *{nome_completo}*")
-            st.markdown(f"**Significado Científico:** **{significado_pref}** + **{significado_suf}**")
-            if "Raptor" in sufixo:
-                habito = "provavelmente um predador ágil"
-            elif "Saurus" in sufixo:
-                habito = "um réptil de grande porte"
-            else:
-                habito = "um dinossauro de características mistas"
-            st.info(f"💡 **Interpretação Paleontológica:** {habito} cujo nome reflete {significado_pref.lower()} e {significado_suf.lower()}. Exemplo real similar: *Pachycephalosaurus* (Lagarto de Cabeça Grossa).")
+    dados_reais = obter_banco_dinossauros_reais()
 
-    else:  # Modo Real
-        dados_reais = obter_banco_dinossauros_reais()
-        if st.button("🎲 Sortear Fóssil Real", type="primary"):
-            dino = random.choice(dados_reais)
+    if st.button("🎲 Sortear Dinossauro Real", type="primary", use_container_width=True):
+        dino = random.choice(dados_reais)
 
-            st.success(f"### *{dino['Nome']}*")
+        st.success(f"### *{dino['Nome']}*")
 
-            # Tenta carregar a imagem do fóssil
-            caminho_imagem = os.path.join("assets", dino["Arquivo"])
-            if os.path.exists(caminho_imagem):
-                img = Image.open(caminho_imagem)
-                st.image(img, caption=dino["Nome"], use_container_width=True)
-            else:
-                st.warning("Imagem do fóssil não encontrada. Exibindo silhueta ilustrativa.")
-                fallback = criar_silhueta_placeholder(dino["Nome"])
-                st.image(fallback, caption="(representação artística)")
+        # Tenta carregar a imagem do fóssil
+        caminho_imagem = os.path.join("assets", dino["Arquivo"])
+        if os.path.exists(caminho_imagem):
+            img = Image.open(caminho_imagem)
+            st.image(img, caption=f"Fóssil de {dino['Nome']}", use_container_width=True)
+        else:
+            st.warning("Imagem do fóssil não encontrada. Exibindo silhueta ilustrativa.")
+            fallback = criar_silhueta_placeholder(dino["Nome"])
+            st.image(fallback, caption="(representação artística)")
 
+        col1, col2 = st.columns(2)
+        with col1:
             st.markdown(f"**Período:** {dino['Período']}")
             st.markdown(f"**Dieta:** {dino['Dieta']}")
-            st.markdown(f"**Tamanho:** {dino['Comprimento']:.1f} m de comprimento, ≈ {dino['Peso']:.1f} toneladas")
+        with col2:
+            st.markdown(f"**Comprimento:** {dino['Comprimento']:.1f} m")
+            st.markdown(f"**Peso:** {dino['Peso']:.1f} toneladas")
 
-            st.markdown("---")
-            st.markdown(f"📘 **Curiosidade:** {dino['Curiosidade']}")
-
+        st.markdown("---")
+        st.markdown(f"📘 **Curiosidade:** {dino['Curiosidade']}")
 
 def aba_massa_corporal():
     """Conteúdo da aba 'Massa Corporal'."""
