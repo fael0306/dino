@@ -369,11 +369,10 @@ def aba_icnofosseis():
     st.caption("Icnofósseis são vestígios de atividade biológica. Eles nos ajudam a entender o comportamento sem precisar de ossos!")
 
 
-# components.py (apenas a função aba_etimologia modificada, o restante permanece igual)
-
 def aba_etimologia():
-    """Conteúdo da aba 'Etimologia' – agora com modo real."""
-    st.header("📖 Gerador de Nomes Científicos")
+    """Conteúdo da aba 'Fósseis Reais' – agora com modo real."""
+    st.header("🦴 Museu de Fósseis Reais")
+    st.markdown("Descubra dinossauros reais com suas curiosidades científicas e imagens de fósseis.")
 
     modo = st.radio(
         "Escolha o modo:",
@@ -405,21 +404,18 @@ def aba_etimologia():
 
     else:  # Modo Real
         dados_reais = obter_banco_dinossauros_reais()
-        if st.button("🎲 Sortear Dinossauro Real", type="primary"):
+        if st.button("🎲 Sortear Fóssil Real", type="primary"):
             dino = random.choice(dados_reais)
 
             st.success(f"### *{dino['Nome']}*")
 
-            # Carrega a imagem específica usando o campo Arquivo
+            # Tenta carregar a imagem do fóssil
             caminho_imagem = os.path.join("assets", dino["Arquivo"])
-            try:
-                if os.path.exists(caminho_imagem):
-                    img = Image.open(caminho_imagem)
-                    st.image(img, caption=dino["Nome"], use_container_width=True)
-                else:
-                    raise FileNotFoundError
-            except Exception:
-                st.warning("Imagem não encontrada. Exibindo silhueta ilustrativa.")
+            if os.path.exists(caminho_imagem):
+                img = Image.open(caminho_imagem)
+                st.image(img, caption=dino["Nome"], use_container_width=True)
+            else:
+                st.warning("Imagem do fóssil não encontrada. Exibindo silhueta ilustrativa.")
                 fallback = criar_silhueta_placeholder(dino["Nome"])
                 st.image(fallback, caption="(representação artística)")
 
