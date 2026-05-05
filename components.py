@@ -109,7 +109,7 @@ def aba_escala_real(df):
             st.caption(f"Detalhe técnico: {str(e)}")
 
 
-def aba_deriva_continental(df=None):  # df não é mais usado, mas mantive compatível
+def aba_deriva_continental(df=None):
     """Conteúdo da aba 'Deriva Continental' com Globo Interativo."""
     from data import obter_banco_dinossauros_reais, obter_coordenadas
 
@@ -153,7 +153,6 @@ def aba_deriva_continental(df=None):  # df não é mais usado, mas mantive compa
     st.markdown("---")
     st.subheader("📍 Localização dos Fósseis")
 
-    # Carrega a lista completa de dinossauros reais (50 espécies)
     dinos_reais = obter_banco_dinossauros_reais()
     nomes_dinos = [dino["Nome"] for dino in dinos_reais]
 
@@ -576,3 +575,93 @@ def aba_massa_corporal():
     col5.metric("🦕 Patagotitan", f"{patagos:.1f}", "70 ton cada")
 
     st.caption("Comparação com animais reais para contextualizar a massa estimada.")
+
+
+def aba_quiz():
+    """Conteúdo da aba Quiz."""
+    from data import obter_quiz_perguntas
+
+    st.header("📝 Quiz Paleontológico")
+    st.markdown("Teste seus conhecimentos sobre dinossauros! Escolha a dificuldade e responda a 20 perguntas.")
+
+    if "quiz" not in st.session_state:
+        st.session_state.quiz = {
+            "dificuldade": None,
+            "indice_pergunta": 0,
+            "pontuacao": 0,
+            "perguntas": [],
+            "respostas_usuario": [],
+            "concluido": False
+        }
+
+    quiz = st.session_state.quiz
+
+    # Escolha de dificuldade
+    if quiz["dificuldade"] is None:
+        dificuldade = st.radio("Escolha o nível de dificuldade:", ["Fácil", "Médio", "Difícil"], horizontal=True)
+        if st.button("Iniciar Quiz", type="primary"):
+            dados = obter_quiz_perguntas()
+            quiz["dificuldade"] = dificuldade
+            quiz["perguntas"] = dados[dificuldade]
+            quiz["indice_pergunta"] = 0
+            quiz["pontuacao"] = 0
+            quiz["respostas_usuario"] = [None] * len(dados[dificuldade])
+            quiz["concluido"] = False
+            st.rerun()
+    elif not quiz["concluido"]:
+        # Exibição da pergunta atual
+        idx = quiz["indice_pergunta"]
+        total = len(quiz["perguntas"])
+        pergunta_atual = quiz["perguntas"][idx]
+
+        st.subheader(f"Pergunta {idx+1} de {total} (Dificuldade: {quiz['dificuldade']})")
+        progresso = (idx) / total
+        st.progress(progresso)
+
+        st.markdown(f"**{pergunta_atual['pergunta']}**")
+        opcoes = pergunta_atual["opcoes"]
+        resposta_anterior = quiz["respostas_usuario"][idx]
+
+        if resposta_anterior is None:
+            escolha = st.radio("Selecione uma alternativa:", range(len(opcoes)),
+                               format_func=lambda i: opcoes[i], key=f"q{idx}")
+            if st.button("Confirmar resposta", key=f"conf{idx}"):
+                quiz["respostas_usuario"][idx] = escolha
+                if escolha == pergunta_atual["resposta"]:
+                    quiz["pontuacao"] += 1
+                if idx + 1 < total:
+                    quiz["indice_pergunta"] += 1
+                else:
+                    quiz["concluido"] = True
+                st.rerun()
+        else:
+            st.info(f"Você respondeu: **{opcoes[resposta_anterior]}**")
+            if idx + 1 < total:
+                if st.button("Próxima pergunta", type="primary"):
+                    quiz["indice_pergunta"] += 1
+                    st.rerun()
+            else:
+                if st.button("Ver resultado", type="primary"):
+                    quiz["concluido"] = True
+                    st.rerun()
+
+    if quiz["concluido"]:
+        st.balloons()
+        st.success(f"### Quiz concluído! Nível: {quiz['dificuldade']}")
+        pontuacao = quiz["pontuacao"]
+        total = len(quiz["perguntas"])
+        porcentagem = int(pontuacao / total * 100)
+        st.metric("Pontuação", f"{pontuacao}/{total}", f"{porcentagem}%")
+        if porcentagem == 100:
+            st.markdown("🏆 **Perfeito! Você é um verdadeiro paleontólogo!**")
+        elif porcentagem >= 70:
+            st.markdown("👍 **Muito bom! Continue estudando!**")
+        elif porcentagem >= 50:
+            st.markdown("📘 **Você tem um bom conhecimento básico.**")
+        else:
+            st.markdown("📚 **Que tal revisitar as outras abas do PaleoLab para aprender mais?**")
+
+        if st.button("Refazer Quiz", type="primary"):
+            for key in ["dificuldade", "indice_pergunta", "pontuacao", "perguntas", "respostas_usuario", "concluido"]:
+                st.session_state.quiz[key] = None
+            st.rerun()
