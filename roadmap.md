@@ -7,15 +7,6 @@
 
 ---
 
-### 🎨 Fase 2 – Experiência do Usuário (continuação)
-
-| Versão | Issues | Descrição | Critérios de aceitação |
-|--------|--------|-----------|------------------------|
-| **v0.2.1** | #17 | Comparação dinossauro × dinossauro (remove “Ônibus”, mantém referências biológicas). | Seletor só com humano, elefante e dinossauros do dataset; comparação visual lado a lado. |
-| **v0.2.2** | #7, #6 (modelo K‑Pg) | Estabilidade numérica (semi‑implícito) + explicação didática das equações de Lotka‑Volterra. | Simulação nunca gera valores negativos/estourados; fórmulas e parâmetros explicados em linguagem acessível. |
-
----
-
 ### 📊 Fase 3 – Aprofundamento Científico (parte 1)
 
 | Versão | Issues | Descrição | Critérios de aceitação |
