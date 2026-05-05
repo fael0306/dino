@@ -7,7 +7,8 @@ from components import (
     aba_extincao_kpg,
     aba_icnofosseis,
     aba_fosseis_reais,
-    aba_massa_corporal
+    aba_massa_corporal,
+    aba_quiz  # <--- nova importação
 )
 
 st.set_page_config(page_title="PaleoLab Científico", layout="wide")
@@ -23,14 +24,15 @@ abas = st.tabs([
     "🦠 Extinção K-Pg",
     "👣 Icnofósseis",
     "🦴 Fósseis Reais",
-    "⚖️ Massa Corporal"
+    "⚖️ Massa Corporal",
+    "📝 Quiz"  # <--- nova aba
 ])
 
 with abas[0]:
     aba_escala_real(df)
 
 with abas[1]:
-    aba_deriva_continental()  # não precisa mais passar df
+    aba_deriva_continental()
 
 with abas[2]:
     aba_extincao_kpg()
@@ -43,3 +45,6 @@ with abas[4]:
 
 with abas[5]:
     aba_massa_corporal()
+
+with abas[6]:          # <--- executa a nova aba
+    aba_quiz()
