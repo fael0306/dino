@@ -109,8 +109,10 @@ def aba_escala_real(df):
             st.caption(f"Detalhe técnico: {str(e)}")
 
 
-def aba_deriva_continental(df):
+def aba_deriva_continental(df=None):  # df não é mais usado, mas mantive compatível
     """Conteúdo da aba 'Deriva Continental' com Globo Interativo."""
+    from data import obter_banco_dinossauros_reais, obter_coordenadas
+
     st.header("🗺️ Globo Interativo da Terra Antiga")
     st.markdown(
         "Viaje no tempo geológico e veja como os continentes se movimentaram. "
@@ -151,9 +153,13 @@ def aba_deriva_continental(df):
     st.markdown("---")
     st.subheader("📍 Localização dos Fósseis")
 
+    # Carrega a lista completa de dinossauros reais (50 espécies)
+    dinos_reais = obter_banco_dinossauros_reais()
+    nomes_dinos = [dino["Nome"] for dino in dinos_reais]
+
     dino_mapa = st.selectbox(
         "Selecione um dinossauro para ver onde seus fósseis foram encontrados:",
-        df["Nome"],
+        nomes_dinos,
         key="mapa_select_fosseis"
     )
 
