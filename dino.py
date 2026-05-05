@@ -6,7 +6,7 @@ from components import (
     aba_deriva_continental,
     aba_extincao_kpg,
     aba_icnofosseis,
-    aba_etimologia,
+    aba_fosseis_reais,
     aba_massa_corporal
 )
 
@@ -39,7 +39,7 @@ with abas[3]:
     aba_icnofosseis()
 
 with abas[4]:
-    aba_etimologia()
+    aba_fosseis_reais()
 
 with abas[5]:
     aba_massa_corporal()
