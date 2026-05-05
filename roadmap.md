@@ -11,7 +11,6 @@
 
 | Versão | Issues | Descrição | Critérios de aceitação |
 |--------|--------|-----------|------------------------|
-| **v0.3.0** | #12, #13 | Validação de entrada na massa corporal + equivalências com animais reais (elefantes, T‑Rex, Patagotitan). | Erro se valor fora do padrão realista; métricas de comparação exibidas automaticamente. |
 | **v0.3.1** | #5, #20 | Expansão da base de dinossauros (≥ 80% PaleoDB) + substituição do mapa por globo interativo (Ancient Earth). | Globo incorporado com fallback funcional; novos dinossauros no seletor e mapa. |
 | **v0.3.2** | #6 (Dinosaur Pictures) | Link/botão que redireciona para a galeria do Dinosaur Pictures do dinossauro selecionado. | Link funcional, abre em nova aba; opcional thumbnail se viável. |
 
