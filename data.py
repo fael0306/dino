@@ -14,7 +14,6 @@ def carregar_dados_dinossauros():
     ]
     return pd.DataFrame(dados, columns=["Nome", "Período", "Dieta", "Comprimento (m)", "Altura (m)", "Peso (ton)", "Postura"])
 
-
 def obter_info_pegadas():
     """Retorna o dicionário com informações das pegadas (icnofósseis).
     As imagens são carregadas localmente da pasta assets/.
@@ -23,29 +22,57 @@ def obter_info_pegadas():
         "Grallator": {
             "dedos": 3,
             "garras": True,
-            "tamanho": "Pequeno (10-20cm)",
-            "dieta": "Carnívoro (Terópode)",
+            "tamanho": "Pequeno (10-20 cm)",
+            "dieta": "Carnívoro (Terópode pequeno)",
             "arquivo": "grallator.png"
         },
         "Eubrontes": {
             "dedos": 3,
             "garras": True,
-            "tamanho": "Grande (30-50cm)",
-            "dieta": "Carnívoro (Dilofossauro?)",
+            "tamanho": "Grande (30-50 cm)",
+            "dieta": "Carnívoro (Terópode ágil)",
             "arquivo": "eubrontes.png"
         },
-        "Brontopodus": {
-            "dedos": 4,
+        "Megalosauripus": {
+            "dedos": 3,
+            "garras": True,
+            "tamanho": "Grande (40-60 cm)",
+            "dieta": "Carnívoro (Terópode robusto)",
+            "arquivo": "megalosauripus.png"
+        },
+        "Wintonopus": {
+            "dedos": 3,
             "garras": False,
-            "tamanho": "Enorme (>1m)",
-            "dieta": "Herbívoro (Saurópode)",
-            "arquivo": "brontopodus.png"
+            "tamanho": "Pequeno (10-15 cm)",
+            "dieta": "Herbívoro (Ornitópode pequeno)",
+            "arquivo": "wintonopus.png"
+        },
+        "Amblydactylus": {
+            "dedos": 3,
+            "garras": False,
+            "tamanho": "Grande (50-80 cm)",
+            "dieta": "Herbívoro (Hadrossaurídeo)",
+            "arquivo": "amblydactylus.png"
         },
         "Anomoepus": {
             "dedos": 4,
             "garras": True,
-            "tamanho": "Médio",
-            "dieta": "Herbívoro (Ornitísquio)",
+            "tamanho": "Médio (15-25 cm)",
+            "dieta": "Herbívoro (Ornitísquio primitivo)",
             "arquivo": "anomoepus.png"
+        },
+        "Brontopodus": {
+            "dedos": 4,
+            "garras": False,
+            "tamanho": "Enorme (>1 m, largo)",
+            "dieta": "Herbívoro (Saurópode de passada larga)",
+            "arquivo": "brontopodus.png"
+        },
+        "Parabrontopodus": {
+            "dedos": 4,
+            "garras": False,
+            "tamanho": "Grande (>80 cm, alongado)",
+            "dieta": "Herbívoro (Saurópode de passada estreita)",
+            "arquivo": "parabrontopodus.png"
         }
     }
