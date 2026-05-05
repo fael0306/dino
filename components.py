@@ -369,6 +369,8 @@ def aba_icnofosseis():
     st.caption("Icnofósseis são vestígios de atividade biológica. Eles nos ajudam a entender o comportamento sem precisar de ossos!")
 
 
+# components.py (apenas a função aba_etimologia modificada, o restante permanece igual)
+
 def aba_etimologia():
     """Conteúdo da aba 'Etimologia' – agora com modo real."""
     st.header("📖 Gerador de Nomes Científicos")
@@ -408,10 +410,14 @@ def aba_etimologia():
 
             st.success(f"### *{dino['Nome']}*")
 
-            # Exibe a imagem (fallback para silhueta se não existir)
+            # Carrega a imagem específica usando o campo Arquivo
+            caminho_imagem = os.path.join("assets", dino["Arquivo"])
             try:
-                imagem = carregar_imagem(dino["Nome"])
-                st.image(imagem, caption=dino["Nome"], use_container_width=True)
+                if os.path.exists(caminho_imagem):
+                    img = Image.open(caminho_imagem)
+                    st.image(img, caption=dino["Nome"], use_container_width=True)
+                else:
+                    raise FileNotFoundError
             except Exception:
                 st.warning("Imagem não encontrada. Exibindo silhueta ilustrativa.")
                 fallback = criar_silhueta_placeholder(dino["Nome"])
