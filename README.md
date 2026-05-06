@@ -126,4 +126,4 @@ Este projeto é distribuído sob a licença MIT. Consulte o ficheiro [LICENSE](L
 
 ---
 
-**📎 Resumo:** A versão 1.0.0 marca o lançamento completo do PaleoLab Científico, pronto para utilização em contexto educativo, com todas as ferramentas interactivas planeadas, dados científicos actualizados e uma base de código sólida e testada.
+**📎 Resumo:** A versão 1.0.0 marca o lançamento completo do PaleoLab Científico, pronto para utilização em contexto educativo, com todas as ferramentas interativas planeadas, dados científicos atualizados e uma base de código sólida e testada.
