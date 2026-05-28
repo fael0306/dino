@@ -674,28 +674,18 @@ def aba_linha_tempo():
     import matplotlib.pyplot as plt
 
     st.header("⏳ Linha do Tempo Geológica Interativa")
-    st.markdown("Navegue pelas eras e períodos da história da Terra, desde o Pré-Cambriano até o presente.")
+    st.markdown("Navegue pelos períodos da Era Mesozoica, quando os dinossauros dominaram a Terra.")
 
-    # Dados da linha do tempo
+    # Apenas períodos com dinossauros no banco de dados
     periodos = [
-        {"nome": "Pré-Cambriano", "inicio": 4600, "fim": 541, "cor": "#8B8B8B", "eventos": ["Origem da vida (3.8 Ga)", "Oxigênio atmosférico (2.4 Ga)", "Primeiras células eucarióticas"]},
-        {"nome": "Cambriano", "inicio": 541, "fim": 485, "cor": "#4CAF50", "eventos": ["Explosão Cambriana - aparecimento da maioria dos filos animais"]},
-        {"nome": "Ordoviciano", "inicio": 485, "fim": 443, "cor": "#8BC34A", "eventos": ["Primeiros vertebrados (peixes sem mandíbula)", "Extinção do Ordoviciano (85% espécies)"]},
-        {"nome": "Siluriano", "inicio": 443, "fim": 419, "cor": "#CDDC39", "eventos": ["Primeiras plantas vasculares terrestres", "Primeiros peixes com mandíbula"]},
-        {"nome": "Devoniano", "inicio": 419, "fim": 359, "cor": "#FFEB3B", "eventos": ["Idade dos Peixes", "Primeiros anfíbios", "Extinção do Devoniano"]},
-        {"nome": "Carbonífero", "inicio": 359, "fim": 299, "cor": "#FFC107", "eventos": ["Grandes florestas formadoras de carvão", "Primeiros répteis", "Insetos gigantes"]},
-        {"nome": "Permiano", "inicio": 299, "fim": 252, "cor": "#FF9800", "eventos": ["Formação da Pangeia", "Extinção do Permiano (96% da vida marinha)"]},
         {"nome": "Triássico", "inicio": 252, "fim": 201, "cor": "#F44336", "eventos": ["Surgimento dos dinossauros", "Primeiros mamíferos", "Início do Mesozóico"]},
         {"nome": "Jurássico", "inicio": 201, "fim": 145, "cor": "#E91E63", "eventos": ["Dinossauros dominam a Terra", "Surgimento das aves (Archaeopteryx)", "Primeiros pterossauros gigantes"]},
         {"nome": "Cretáceo", "inicio": 145, "fim": 66, "cor": "#9C27B0", "eventos": ["Primeiras plantas com flores", "Extinção K-Pg (dinossauros não-avianos)", "Auge dos répteis marinhos"]},
-        {"nome": "Paleogeno", "inicio": 66, "fim": 23, "cor": "#673AB7", "eventos": ["Diversificação dos mamíferos", "Primeiros primatas", "Surgimento das baleias"]},
-        {"nome": "Neogeno", "inicio": 23, "fim": 2.6, "cor": "#3F51B5", "eventos": ["Evolução dos hominídeos", "Mamutes e tigres dentes-de-sabre"]},
-        {"nome": "Quaternário", "inicio": 2.6, "fim": 0, "cor": "#2196F3", "eventos": ["Era do Gelo", "Evolução do Homo sapiens", "Extinção da megafauna"]},
     ]
 
-    # Slider para seleção temporal
-    ano_min = 4600
-    ano_max = 0
+    # Slider ajustado para o intervalo dos períodos
+    ano_min = 252
+    ano_max = 66
     ano_selecionado = st.slider(
         "Selecione uma idade (milhões de anos atrás):",
         min_value=ano_max, max_value=ano_min, value=66,
@@ -715,37 +705,36 @@ def aba_linha_tempo():
         for ev in periodo_atual["eventos"]:
             st.write(f"• {ev}")
 
-    # Gráfico da linha do tempo
+    # Gráfico da linha do tempo (apenas Mesozoico)
     fig, ax = plt.subplots(figsize=(12, 3))
     y = 1
     for p in periodos:
         largura = p["inicio"] - p["fim"]
         ax.barh(y, largura, left=p["fim"], color=p["cor"], edgecolor='black', height=0.6)
         meio = p["fim"] + largura/2
-        if largura > 15:
-            ax.text(meio, y, p["nome"], ha='center', va='center', fontsize=8, color='white', weight='bold')
+        if largura > 10:
+            ax.text(meio, y, p["nome"], ha='center', va='center', fontsize=9, color='white', weight='bold')
 
     ax.set_xlim(ano_max, ano_min)
     ax.set_ylim(0.5, 1.5)
     ax.axvline(x=ano_selecionado, color='red', linestyle='--', linewidth=2, label='Idade selecionada')
     ax.set_xlabel('Milhões de anos atrás (Ma)')
     ax.set_yticks([])
-    ax.set_title('Escala do Tempo Geológico')
+    ax.set_title('Era Mesozoica - Períodos com Dinossauros')
     ax.legend()
     st.pyplot(fig)
 
-    # --- DINOSSAUROS DO PERÍODO (CORRIGIDO: LISTA COMPLETA) ---
+    # --- DINOSSAUROS DO PERÍODO ---
     if periodo_atual:
         todos_dinos = obter_banco_dinossauros_reais()
-        # Filtra dinossauros cujo período contém o nome do período atual (ex: "Cretáceo" em "Cretáceo Superior")
+        # Filtra dinossauros cujo período contém o nome do período atual
         dinos_periodo = [d for d in todos_dinos if periodo_atual["nome"] in d["Período"]]
 
         st.subheader(f"🦕 Dinossauros do {periodo_atual['nome']} ({len(dinos_periodo)} espécies)")
 
         if dinos_periodo:
-            # Organiza os nomes em colunas para melhor visualização
             nomes = [d["Nome"] for d in dinos_periodo]
-            # Divide em 3 colunas
+            # Exibe em 3 colunas
             col1, col2, col3 = st.columns(3)
             for i, nome in enumerate(nomes):
                 if i % 3 == 0:
