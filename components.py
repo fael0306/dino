@@ -665,3 +665,329 @@ def aba_quiz():
             for key in ["dificuldade", "indice_pergunta", "pontuacao", "perguntas", "respostas_usuario", "concluido"]:
                 st.session_state.quiz[key] = None
             st.rerun()
+
+# ============================================================
+# Enhancement 1: Linha do tempo geológica interativa
+# ============================================================
+def aba_linha_tempo():
+    st.header("⏳ Linha do Tempo Geológica Interativa")
+    st.markdown("Navegue pelas eras e períodos da história da Terra, desde o Pré-Cambriano até o presente.")
+
+    # Dados da linha do tempo
+    periodos = [
+        {"nome": "Pré-Cambriano", "inicio": 4600, "fim": 541, "cor": "#8B8B8B", "eventos": ["Origem da vida (3.8 Ga)", "Oxigênio atmosférico (2.4 Ga)", "Primeiras células eucarióticas"]},
+        {"nome": "Cambriano", "inicio": 541, "fim": 485, "cor": "#4CAF50", "eventos": ["Explosão Cambriana - aparecimento da maioria dos filos animais"]},
+        {"nome": "Ordoviciano", "inicio": 485, "fim": 443, "cor": "#8BC34A", "eventos": ["Primeiros vertebrados (peixes sem mandíbula)", "Extinção do Ordoviciano (85% espécies)"]},
+        {"nome": "Siluriano", "inicio": 443, "fim": 419, "cor": "#CDDC39", "eventos": ["Primeiras plantas vasculares terrestres", "Primeiros peixes com mandíbula"]},
+        {"nome": "Devoniano", "inicio": 419, "fim": 359, "cor": "#FFEB3B", "eventos": ["Idade dos Peixes", "Primeiros anfíbios", "Extinção do Devoniano"]},
+        {"nome": "Carbonífero", "inicio": 359, "fim": 299, "cor": "#FFC107", "eventos": ["Grandes florestas formadoras de carvão", "Primeiros répteis", "Insetos gigantes"]},
+        {"nome": "Permiano", "inicio": 299, "fim": 252, "cor": "#FF9800", "eventos": ["Formação da Pangeia", "Extinção do Permiano (96% da vida marinha)"]},
+        {"nome": "Triássico", "inicio": 252, "fim": 201, "cor": "#F44336", "eventos": ["Surgimento dos dinossauros", "Primeiros mamíferos", "Início do Mesozóico"]},
+        {"nome": "Jurássico", "inicio": 201, "fim": 145, "cor": "#E91E63", "eventos": ["Dinossauros dominam a Terra", "Surgimento das aves (Archaeopteryx)", "Primeiros pterossauros gigantes"]},
+        {"nome": "Cretáceo", "inicio": 145, "fim": 66, "cor": "#9C27B0", "eventos": ["Primeiras plantas com flores", "Extinção K-Pg (dinossauros não-avianos)", "Auge dos répteis marinhos"]},
+        {"nome": "Paleogeno", "inicio": 66, "fim": 23, "cor": "#673AB7", "eventos": ["Diversificação dos mamíferos", "Primeiros primatas", "Surgimento das baleias"]},
+        {"nome": "Neogeno", "inicio": 23, "fim": 2.6, "cor": "#3F51B5", "eventos": ["Evolução dos hominídeos", "Mamutes e tigres dentes-de-sabre"]},
+        {"nome": "Quaternário", "inicio": 2.6, "fim": 0, "cor": "#2196F3", "eventos": ["Era do Gelo", "Evolução do Homo sapiens", "Extinção da megafauna"]},
+    ]
+
+    # Slider para seleção temporal
+    ano_min = 4600
+    ano_max = 0
+    ano_selecionado = st.slider(
+        "Selecione uma idade (milhões de anos atrás):",
+        min_value=ano_max, max_value=ano_min, value=66,
+        format="%d Ma"
+    )
+
+    # Encontrar período atual
+    periodo_atual = None
+    for p in periodos:
+        if p["inicio"] >= ano_selecionado >= p["fim"]:
+            periodo_atual = p
+            break
+
+    if periodo_atual:
+        st.subheader(f"📍 Período: {periodo_atual['nome']} ({periodo_atual['inicio']} - {periodo_atual['fim']} Ma)")
+        st.markdown(f"**Eventos importantes:**")
+        for ev in periodo_atual["eventos"]:
+            st.write(f"• {ev}")
+
+    # Gráfico da linha do tempo
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(figsize=(12, 3))
+    y = 1
+    for p in periodos:
+        largura = p["inicio"] - p["fim"]
+        ax.barh(y, largura, left=p["fim"], color=p["cor"], edgecolor='black', height=0.6)
+        meio = p["fim"] + largura/2
+        if largura > 15:  # só mostra texto se espaço suficiente
+            ax.text(meio, y, p["nome"], ha='center', va='center', fontsize=8, color='white', weight='bold')
+
+    ax.set_xlim(ano_max, ano_min)
+    ax.set_ylim(0.5, 1.5)
+    ax.axvline(x=ano_selecionado, color='red', linestyle='--', linewidth=2, label='Idade selecionada')
+    ax.set_xlabel('Milhões de anos atrás (Ma)')
+    ax.set_yticks([])
+    ax.set_title('Escala do Tempo Geológico')
+    ax.legend()
+    st.pyplot(fig)
+
+    # Dinossauros do período (integração com banco)
+    from data import obter_banco_dinossauros_reais
+    todos_dinos = obter_banco_dinossauros_reais()
+    dinos_periodo = [d for d in todos_dinos if periodo_atual and periodo_atual["nome"] in d["Período"]]
+    if dinos_periodo:
+        st.subheader(f"🦕 Dinossauros do {periodo_atual['nome']}")
+        nomes = [d["Nome"] for d in dinos_periodo[:10]]
+        st.write(", ".join(nomes))
+        if len(dinos_periodo) > 10:
+            st.caption(f"mais {len(dinos_periodo)-10} espécies...")
+    else:
+        st.info("Nenhum dinossauro registrado para este período no banco de dados.")
+
+
+# ============================================================
+# Enhancement 4: Simulação climática do Mesozóico
+# ============================================================
+def aba_clima_mesozoico():
+    st.header("🌍 Simulação Climática do Mesozóico")
+    st.markdown("Explore as condições de temperatura, CO₂ e vegetação durante a Era dos Dinossauros.")
+
+    periodo = st.radio("Selecione o período:", ["Triássico (252-201 Ma)", "Jurássico (201-145 Ma)", "Cretáceo (145-66 Ma)"], horizontal=True)
+
+    dados_clima = {
+        "Triássico (252-201 Ma)": {
+            "temperatura_media": 20,
+            "co2_ppm": 2000,
+            "vegetacao": "Gimnospermas (coníferas, cicadáceas), primeiras plantas com flores no final",
+            "nivel_mar": "Baixo (Pangeia unificada)",
+            "descricao": "Clima quente e seco, com desertos extensos. Concentração de CO₂ muito alta."
+        },
+        "Jurássico (201-145 Ma)": {
+            "temperatura_media": 22,
+            "co2_ppm": 1500,
+            "vegetacao": "Florestas de coníferas, cicadáceas, ginkgos. Primeiras angiospermas no final.",
+            "nivel_mar": "Moderado, com início da abertura do Atlântico",
+            "descricao": "Clima quente e úmido, com estações definidas e aumento das florestas."
+        },
+        "Cretáceo (145-66 Ma)": {
+            "temperatura_media": 26,
+            "co2_ppm": 1000,
+            "vegetacao": "Angiospermas (plantas com flores) tornam-se dominantes",
+            "nivel_mar": "Alto (mar epicontinental inundando continentes)",
+            "descricao": "Clima quente e úmido, sem calotas polares. Grande diversificação de plantas e dinossauros."
+        }
+    }
+
+    info = dados_clima[periodo]
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("🌡️ Temperatura média global", f"{info['temperatura_media']} °C", delta="+{:.1f}°C".format(info['temperatura_media']-14) if info['temperatura_media'] > 14 else None)
+        st.metric("🫧 CO₂ atmosférico", f"{info['co2_ppm']} ppm", delta=f"{info['co2_ppm'] - 420} ppm vs atual")
+    with col2:
+        st.metric("🌊 Nível do mar", info['nivel_mar'])
+        st.metric("🌿 Vegetação dominante", info['vegetacao'].split()[0], delta="", help=info['vegetacao'])
+
+    st.markdown("---")
+    st.subheader("📈 Comparação com o clima atual")
+    comparacao = pd.DataFrame({
+        "Parâmetro": ["Temperatura (°C)", "CO₂ (ppm)"],
+        "Período selecionado": [info['temperatura_media'], info['co2_ppm']],
+        "Atual (2025)": [14.8, 420]
+    })
+    st.dataframe(comparacao, hide_index=True, use_container_width=True)
+
+    st.markdown("---")
+    st.info(f"**{info['descricao']}**")
+    st.caption("Dados baseados em reconstruções paleoclimáticas (IPCC, 2021; Scotese, 2021).")
+
+
+# ============================================================
+# Enhancement 5: Sistema de conquistas e progressão
+# ============================================================
+def verificar_conquistas():
+    """Verifica e atualiza conquistas baseado nas ações do usuário."""
+    conquistas = st.session_state.conquistas
+
+    if not conquistas["quiz_facil"] and st.session_state.get("quiz_facil_completo", False):
+        conquistas["quiz_facil"] = True
+        st.toast("🏅 Conquista desbloqueada: Mestre do Quiz Fácil!", icon="🏆")
+
+    if not conquistas["quiz_medio"] and st.session_state.get("quiz_medio_completo", False):
+        conquistas["quiz_medio"] = True
+        st.toast("🏅 Conquista desbloqueada: Paleontólogo Nível Médio!", icon="🏆")
+
+    if not conquistas["quiz_dificil"] and st.session_state.get("quiz_dificil_completo", False):
+        conquistas["quiz_dificil"] = True
+        st.toast("🏅 Conquista desbloqueada: Doutor em Paleontologia!", icon="🏆")
+
+    if not conquistas["explorador_escala"] and st.session_state.get("escala_utilizada", False):
+        conquistas["explorador_escala"] = True
+        st.toast("🏅 Conquista desbloqueada: Explorador de Escalas!", icon="📏")
+
+    # Atualiza sessão
+    st.session_state.conquistas = conquistas
+
+def aba_conquistas():
+    st.header("🏆 Suas Conquistas")
+    verificar_conquistas()
+    conquistas = st.session_state.conquistas
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Quiz")
+        st.checkbox("Mestre do Quiz Fácil (20/20)", value=conquistas["quiz_facil"], disabled=True)
+        st.checkbox("Paleontólogo Nível Médio", value=conquistas["quiz_medio"], disabled=True)
+        st.checkbox("Doutor em Paleontologia", value=conquistas["quiz_dificil"], disabled=True)
+
+    with col2:
+        st.subheader("Exploração")
+        st.checkbox("Explorador de Escalas", value=conquistas["explorador_escala"], disabled=True)
+        st.checkbox("Detetive de Icnofósseis", value=conquistas.get("detetive_icno", False), disabled=True)
+        st.checkbox("Climaturista", value=conquistas.get("climaturista", False), disabled=True)
+
+    # Barra de progresso
+    total = len(conquistas)
+    conquistadas = sum(conquistas.values())
+    st.progress(conquistadas/total, text=f"Progresso total: {conquistadas}/{total}")
+    st.caption("Desbloqueie conquistas usando as diferentes funcionalidades do PaleoLab!")
+
+
+# ============================================================
+# Enhancement 7: Exportação de relatórios científicos em PDF
+# ============================================================
+def aba_exportar_relatorio():
+    st.header("📄 Exportar Relatório Científico (PDF)")
+    st.markdown("Gere um relatório com suas análises e simulações realizadas nesta sessão.")
+
+    if st.button("Gerar Relatório PDF", type="primary", use_container_width=True):
+        try:
+            from fpdf import FPDF
+        except ImportError:
+            st.error("Biblioteca FPDF não instalada. Execute: pip install fpdf")
+            return
+
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=16, style='B')
+        pdf.cell(200, 10, txt="PaleoLab Científico - Relatório de Atividades", ln=1, align='C')
+        pdf.ln(10)
+
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt=f"Data: {pd.Timestamp.now().strftime('%d/%m/%Y %H:%M')}", ln=1)
+
+        # Simulações realizadas (exemplo)
+        if "ultima_simulacao_kpg" in st.session_state:
+            pdf.ln(5)
+            pdf.set_font("Arial", style='B', size=12)
+            pdf.cell(200, 10, txt="Simulação de Extinção K-Pg", ln=1)
+            pdf.set_font("Arial", size=10)
+            sim = st.session_state.ultima_simulacao_kpg
+            pdf.cell(200, 6, txt=f"Bloqueio solar: {sim['bloqueio']}%", ln=1)
+            pdf.cell(200, 6, txt=f"Chuva ácida: {sim['chuva']}%", ln=1)
+            pdf.cell(200, 6, txt=f"Plantas finais: {sim['plantas_final']:.1f}", ln=1)
+
+        # Conquistas
+        pdf.ln(5)
+        pdf.set_font("Arial", style='B', size=12)
+        pdf.cell(200, 10, txt="Conquistas Desbloqueadas", ln=1)
+        pdf.set_font("Arial", size=10)
+        for nome, desbloq in st.session_state.conquistas.items():
+            if desbloq:
+                pdf.cell(200, 6, txt=f"✔ {nome.replace('_', ' ').title()}", ln=1)
+
+        # Salvar
+        pdf.output("relatorio_paleolab.pdf")
+        with open("relatorio_paleolab.pdf", "rb") as f:
+            st.download_button("📥 Baixar PDF", data=f, file_name="relatorio_paleolab.pdf", mime="application/pdf")
+
+        st.success("Relatório gerado com sucesso!")
+        st.balloons()
+
+
+# ============================================================
+# Enhancement 8: Banco expandido (já adicionado em data.py)
+# Exibição na aba Fósseis Reais pode ser estendida, mas manteremos
+# a função existente. Para mostrar os novos grupos, adicionamos:
+# ============================================================
+# (opcional: modificar aba_fosseis_reais para incluir filtros)
+# Por simplicidade, mantemos como está, mas os dados estão disponíveis.
+
+# ============================================================
+# Enhancement 10: Árvore evolutiva interativa
+# ============================================================
+def aba_arvore_evolutiva():
+    st.header("🌳 Árvore Evolutiva Interativa")
+    st.markdown("Explore as relações filogenéticas entre os principais grupos de dinossauros e outros répteis.")
+
+    # Dados hierárquicos para visualização
+    # Usaremos plotly para criar uma árvore radial ou treemap
+
+    import plotly.express as px
+    import plotly.graph_objects as go
+
+    # Estrutura simplificada da árvore dos dinossauros
+    # Formato: [pai, filho, tamanho]
+    dados_arvore = [
+        {"pai": "Reptilia", "filho": "Archosauria", "valor": 1},
+        {"pai": "Archosauria", "filho": "Dinosauria", "valor": 1},
+        {"pai": "Dinosauria", "filho": "Saurischia", "valor": 1},
+        {"pai": "Dinosauria", "filho": "Ornithischia", "valor": 1},
+        {"pai": "Saurischia", "filho": "Theropoda", "valor": 1},
+        {"pai": "Saurischia", "filho": "Sauropodomorpha", "valor": 1},
+        {"pai": "Theropoda", "filho": "Tyrannosauridae", "valor": 1},
+        {"pai": "Theropoda", "filho": "Dromaeosauridae", "valor": 1},
+        {"pai": "Theropoda", "filho": "Spinosauridae", "valor": 1},
+        {"pai": "Sauropodomorpha", "filho": "Brachiosauridae", "valor": 1},
+        {"pai": "Sauropodomorpha", "filho": "Diplodocidae", "valor": 1},
+        {"pai": "Ornithischia", "filho": "Ceratopsia", "valor": 1},
+        {"pai": "Ornithischia", "filho": "Ornithopoda", "valor": 1},
+        {"pai": "Ornithischia", "filho": "Stegosauria", "valor": 1},
+        {"pai": "Ornithischia", "filho": "Ankylosauria", "valor": 1},
+        {"pai": "Archosauria", "filho": "Pterosauria", "valor": 1},
+        {"pai": "Reptilia", "filho": "Sauropterygia", "valor": 1},
+        {"pai": "Sauropterygia", "filho": "Plesiosauria", "valor": 1},
+        {"pai": "Reptilia", "filho": "Ichthyosauria", "valor": 1},
+    ]
+
+    # Criar gráfico de árvore usando treemap
+    fig = go.Figure(go.Treemap(
+        labels=["Reptilia", "Archosauria", "Dinosauria", "Saurischia", "Ornithischia",
+                "Theropoda", "Sauropodomorpha", "Tyrannosauridae", "Dromaeosauridae",
+                "Spinosauridae", "Brachiosauridae", "Diplodocidae", "Ceratopsia",
+                "Ornithopoda", "Stegosauria", "Ankylosauria", "Pterosauria",
+                "Sauropterygia", "Plesiosauria", "Ichthyosauria"],
+        parents=["", "Reptilia", "Archosauria", "Dinosauria", "Dinosauria",
+                 "Saurischia", "Saurischia", "Theropoda", "Theropoda", "Theropoda",
+                 "Sauropodomorpha", "Sauropodomorpha", "Ornithischia", "Ornithischia",
+                 "Ornithischia", "Ornithischia", "Archosauria", "Reptilia",
+                 "Sauropterygia", "Reptilia"],
+        values=[20, 15, 12, 8, 8, 6, 6, 3, 3, 3, 4, 4, 4, 4, 3, 3, 5, 5, 3, 4],
+        branchvalues="total",
+        textinfo="label+value+percent parent",
+        marker=dict(colors=["lightblue"]*20),
+    ))
+    fig.update_layout(margin=dict(t=0, l=0, r=0, b=0), title="Cladograma interativo (clique nos blocos)")
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("""
+    **Legenda:**
+    - **Reptilia** – Classe dos répteis.
+    - **Archosauria** – Grupo que inclui dinossauros, pterossauros e crocodilos.
+    - **Dinosauria** – Dinossauros (divididos em Saurischia e Ornithischia).
+    - **Theropoda** – Carnívoros bípedes (T-Rex, Velociraptor, etc.).
+    - **Sauropodomorpha** – Herbívoros de pescoço longo (Braquiossauro, Diplodoco).
+    - **Ornithischia** – Dinossauros com bico (Triceratops, Estegossauro).
+    - **Pterosauria** – Répteis voadores.
+    - **Sauropterygia & Ichthyosauria** – Répteis marinhos.
+    """)
+
+    # Explicação adicional com ícones
+    with st.expander("📚 Saiba mais sobre classificação dos dinossauros"):
+        st.markdown("""
+        - **Saurischia** (bacia de lagarto): inclui terópodes (carnívoros) e sauropodomorfos (herbívoros de pescoço longo).
+        - **Ornithischia** (bacia de ave): inclui ceratopsianos (Triceratops), ornitópodes (Iguanodon), estegossauros e anquilossauros.
+        - **Pterossauros** não são dinossauros, mas arcossauros voadores.
+        - **Répteis marinhos** (plesiossauros, ictiossauros) também não são dinossauros; evoluíram separadamente.
+        """)

@@ -892,3 +892,30 @@ def obter_quiz_perguntas():
              "resposta": 0}
         ]
     }
+
+# ============================================================
+# Enhancement 8: Banco expandido de espécies pré-históricas
+# ============================================================
+
+ESPECIES_PRE_HISTORICAS = {
+    "Répteis Marinhos": [
+        {"Nome": "Mosasaurus hoffmannii", "Período": "Cretáceo Superior", "Dieta": "Carnívoro", "Comprimento": 17.0, "Curiosidade": "Predador marinho dominante, podia abrir a boca em 90 graus para engolir grandes presas."},
+        {"Nome": "Plesiosaurus dolichodeirus", "Período": "Jurássico Inferior", "Dieta": "Piscívoro", "Comprimento": 4.5, "Curiosidade": "Tinha pescoço extremamente longo, com mais de 40 vértebras cervicais."},
+        {"Nome": "Ichthyosaurus communis", "Período": "Jurássico Inferior", "Dieta": "Carnívoro", "Comprimento": 3.5, "Curiosidade": "Parecido com um golfinho moderno, dava à luz filhotes vivos (não botava ovos)."},
+        {"Nome": "Elasmosaurus platyurus", "Período": "Cretáceo Superior", "Dieta": "Piscívoro", "Comprimento": 14.0, "Curiosidade": "Possuía o pescoço mais longo de todos os animais, com até 7 metros de comprimento."},
+    ],
+    "Pterossauros": [
+        {"Nome": "Pteranodon longiceps", "Período": "Cretáceo Superior", "Dieta": "Piscívoro", "Envergadura": 7.0, "Curiosidade": "Tinha uma crista óssea na cabeça que usava para equilíbrio e exibição."},
+        {"Nome": "Quetzalcoatlus northropi", "Período": "Cretáceo Superior", "Dieta": "Carnívoro", "Envergadura": 11.0, "Curiosidade": "Maior animal voador de todos os tempos, do tamanho de um avião monomotor."},
+        {"Nome": "Rhamphorhynchus muensteri", "Período": "Jurássico Superior", "Dieta": "Piscívoro", "Envergadura": 1.8, "Curiosidade": "Tinha uma cauda longa com um leque na ponta para estabilização durante o voo."},
+    ],
+    "Mamíferos Pré-históricos": [
+        {"Nome": "Smilodon populator", "Período": "Pleistoceno", "Dieta": "Carnívoro", "Comprimento": 2.5, "Curiosidade": "Tigre dentes-de-sabre, com caninos de até 28 cm, extinto há 10 mil anos."},
+        {"Nome": "Mammuthus primigenius", "Período": "Pleistoceno", "Dieta": "Herbívoro", "Altura": 3.5, "Curiosidade": "Mamute-lanoso, adaptado ao frio, com presas enormes e uma camada de gordura."},
+        {"Nome": "Megatherium americanum", "Período": "Pleistoceno", "Dieta": "Herbívoro", "Comprimento": 6.0, "Curiosidade": "Preguiça-gigante terrestre, usava garras para derrubar árvores e se defender."},
+    ]
+}
+
+def obter_especies_pre_historicas():
+    """Retorna dicionário com grupos expandidos (répteis marinhos, pterossauros, mamíferos)."""
+    return ESPECIES_PRE_HISTORICAS
