@@ -969,8 +969,8 @@ def aba_arvore_evolutiva():
 
     # Posições espaçadas
     pos = {}
-    espacamento_vertical = 3.0
-    espacamento_horizontal = 3.5
+    espacamento_vertical = 3.5   # aumentado
+    espacamento_horizontal = 4.0  # aumentado
 
     for nivel, nos in nos_por_nivel.items():
         y_centro = (len(nos) - 1) * espacamento_vertical / 2
@@ -985,12 +985,12 @@ def aba_arvore_evolutiva():
     altura_total = max_y - min_y + 2
     largura_total = max(pos.values(), key=lambda p: p[0])[0] + 2
 
-    fig, ax = plt.subplots(figsize=(max(10, largura_total * 0.9), max(8, altura_total * 0.7)))
+    fig, ax = plt.subplots(figsize=(max(12, largura_total * 0.9), max(10, altura_total * 0.8)))
 
-    # Desenha nós com tamanho grande (6000) para caber os nomes
-    nx.draw_networkx_nodes(G, pos, node_size=6000, node_color='lightblue', edgecolors='black', linewidths=2, ax=ax)
+    # Bolotas bem grandes (9000) para caber qualquer nome
+    nx.draw_networkx_nodes(G, pos, node_size=9000, node_color='lightblue', edgecolors='black', linewidths=2, ax=ax)
 
-    # Prepara rótulos com quebra de linha
+    # Rótulos com quebra de linha, sem fundo branco (apenas texto sobre a bolota)
     labels = {}
     for node in G.nodes():
         if len(node) > 12:
@@ -1006,16 +1006,16 @@ def aba_arvore_evolutiva():
         else:
             labels[node] = node
 
-    # Desenha rótulos com fundo branco e centralizado
+    # Desenha texto centralizado, sem caixa branca (apenas sobre a bolota)
     for node, (x, y) in pos.items():
         ax.text(x, y, labels[node], ha='center', va='center', fontsize=9, fontweight='bold',
-                bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='gray', alpha=0.9))
+                color='black')   # sem bbox
 
     # Desenha arestas
-    nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=12, edge_color='gray', width=1.5, ax=ax)
+    nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=14, edge_color='gray', width=1.8, ax=ax)
 
-    ax.set_xlim(-0.5, largura_total + 0.5)
-    ax.set_ylim(min_y - 1.5, max_y + 1.5)
+    ax.set_xlim(-1, largura_total + 1)
+    ax.set_ylim(min_y - 2, max_y + 2)
     ax.axis('off')
     ax.set_title("Cladograma hierárquico (distância evolutiva vertical)", fontsize=12)
 
@@ -1032,4 +1032,4 @@ def aba_arvore_evolutiva():
     - **Pterosauria** → Répteis voadores (não dinossauros).
     - **Sauropterygia / Ichthyosauria** → Répteis marinhos.
     """)
-    st.info("Dica: Use a barra de rolagem do gráfico ou amplie a janela. Clique com o botão direito → 'Abrir imagem em nova aba' para alta resolução.")
+    st.info("Dica: Amplie a janela para ver todos os nós. Os nomes agora estão centralizados dentro das bolotas azuis.")
