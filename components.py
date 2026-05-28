@@ -955,60 +955,67 @@ def aba_arvore_evolutiva():
     G = nx.DiGraph()
     G.add_edges_from(arestas)
 
-    # Definir níveis hierárquicos (camadas)
-    niveis = {
-        "Reptilia": 0,
-        "Archosauria": 1,
-        "Pterosauria": 2,
-        "Dinosauria": 1,
-        "Saurischia": 2,
-        "Ornithischia": 2,
-        "Theropoda": 3,
-        "Sauropodomorpha": 3,
-        "Tyrannosauridae": 4,
-        "Dromaeosauridae": 4,
-        "Spinosauridae": 4,
-        "Brachiosauridae": 4,
-        "Diplodocidae": 4,
-        "Ceratopsia": 3,
-        "Ornithopoda": 3,
-        "Stegosauria": 3,
-        "Ankylosauria": 3,
-        "Sauropterygia": 1,
-        "Plesiosauria": 2,
-        "Ichthyosauria": 1,
-    }
-    # Garantir que todos os nós tenham nível
-    for node in G.nodes:
-        G.nodes[node]['layer'] = niveis.get(node, 0)
+    # Definir níveis (distância da raiz)
+    raiz = "Reptilia"
+    niveis = {raiz: 0}
+    for u, v in nx.bfs_edges(G, raiz):
+        niveis[v] = niveis[u] + 1
 
-    # Layout por camadas (multipartite)
-    pos = nx.multipartite_layout(G, subset_key='layer', align='horizontal')
-    # Espaçamento manual para evitar sobreposição
-    scale_x = 3.5
-    scale_y = 1.8
-    for node in pos:
-        x, y = pos[node]
-        pos[node] = (x * scale_x, y * scale_y)
+    # Organizar nós por nível
+    nos_por_nivel = {}
+    for node, nivel in niveis.items():
+        nos_por_nivel.setdefault(nivel, []).append(node)
 
-    # Desenho
-    fig, ax = plt.subplots(figsize=(18, 12))
-    nx.draw_networkx_nodes(G, pos, node_size=3500, node_color='lightblue', edgecolors='black', ax=ax)
-    nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=15, edge_color='gray', width=1.5, ax=ax)
+    # Ordenar alfabeticamente dentro de cada nível para consistência
+    for nivel in nos_por_nivel:
+        nos_por_nivel[nivel].sort()
+
+    # Calcular posições (x = nível, y = posição vertical espaçada)
+    pos = {}
+    espacamento_vertical = 2.5  # espaço entre nós no mesmo nível
+    espacamento_horizontal = 3.0  # espaço entre níveis
+
+    for nivel, nos in nos_por_nivel.items():
+        # Centro do nível
+        y_centro = (len(nos) - 1) * espacamento_vertical / 2
+        for i, node in enumerate(nos):
+            # y invertido para que a raiz fique em cima
+            y = - (i * espacamento_vertical - y_centro)
+            x = nivel * espacamento_horizontal
+            pos[node] = (x, y)
+
+    # Ajustar tamanho da figura conforme o número de nós
+    max_y = max(pos.values(), key=lambda p: p[1])[1]
+    min_y = min(pos.values(), key=lambda p: p[1])[1]
+    altura_total = max_y - min_y + 2
+    largura_total = max(pos.values(), key=lambda p: p[0])[0] + 2
+
+    fig, ax = plt.subplots(figsize=(max(10, largura_total * 0.8), max(8, altura_total * 0.5)))
+
+    nx.draw_networkx_nodes(G, pos, node_size=3000, node_color='lightblue', edgecolors='black', ax=ax)
+    nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=12, edge_color='gray', width=1.5, ax=ax)
 
     # Rótulos com quebra de linha para nomes longos
     labels = {}
-    for node in G.nodes:
-        if 'idae' in node:
-            labels[node] = node.replace('idae', 'idae\n')
+    for node in G.nodes():
+        if len(node) > 12:
+            # Insere quebra manual aproximada
+            words = node.split()
+            if len(words) > 1:
+                labels[node] = words[0] + "\n" + " ".join(words[1:])
+            else:
+                # Divide por sílabas grosseiras
+                mid = len(node) // 2
+                labels[node] = node[:mid] + "\n" + node[mid:]
         else:
             labels[node] = node
-    nx.draw_networkx_labels(G, pos, labels=labels, font_size=7, font_weight='bold', ax=ax)
 
-    ax.set_xlim(-6, 6)
-    ax.set_ylim(-3, 10)
+    nx.draw_networkx_labels(G, pos, labels=labels, font_size=8, font_weight='bold', ax=ax)
+
+    ax.set_xlim(-0.5, largura_total + 0.5)
+    ax.set_ylim(min_y - 1, max_y + 1)
     ax.axis('off')
-    ax.set_title("Cladograma simplificado dos répteis e dinossauros\n(Setas indicam ancestral-descendente)", fontsize=14)
+    ax.set_title("Cladograma hierárquico (distância evolutiva vertical)", fontsize=12)
 
     st.pyplot(fig)
 
@@ -1023,4 +1030,4 @@ def aba_arvore_evolutiva():
     - **Pterosauria** → Répteis voadores (não dinossauros).
     - **Sauropterygia / Ichthyosauria** → Répteis marinhos.
     """)
-    st.info("Dica: Amplie a janela do navegador ou use a barra de rolagem para visualizar melhor. Clique com o botão direito no gráfico e selecione 'Abrir imagem em nova aba' para ver em alta resolução.")
+    st.info("Dica: Use a barra de rolagem do gráfico ou amplie a janela para ver todos os nós. Clique com o botão direito → 'Abrir imagem em nova aba' para alta resolução.")
