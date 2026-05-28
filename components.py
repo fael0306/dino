@@ -670,6 +670,9 @@ def aba_quiz():
 # Enhancement 1: Linha do tempo geológica interativa
 # ============================================================
 def aba_linha_tempo():
+    from data import obter_banco_dinossauros_reais
+    import matplotlib.pyplot as plt
+
     st.header("⏳ Linha do Tempo Geológica Interativa")
     st.markdown("Navegue pelas eras e períodos da história da Terra, desde o Pré-Cambriano até o presente.")
 
@@ -713,14 +716,13 @@ def aba_linha_tempo():
             st.write(f"• {ev}")
 
     # Gráfico da linha do tempo
-    import matplotlib.pyplot as plt
     fig, ax = plt.subplots(figsize=(12, 3))
     y = 1
     for p in periodos:
         largura = p["inicio"] - p["fim"]
         ax.barh(y, largura, left=p["fim"], color=p["cor"], edgecolor='black', height=0.6)
         meio = p["fim"] + largura/2
-        if largura > 15:  # só mostra texto se espaço suficiente
+        if largura > 15:
             ax.text(meio, y, p["nome"], ha='center', va='center', fontsize=8, color='white', weight='bold')
 
     ax.set_xlim(ano_max, ano_min)
@@ -732,18 +734,28 @@ def aba_linha_tempo():
     ax.legend()
     st.pyplot(fig)
 
-    # Dinossauros do período (integração com banco)
-    from data import obter_banco_dinossauros_reais
-    todos_dinos = obter_banco_dinossauros_reais()
-    dinos_periodo = [d for d in todos_dinos if periodo_atual and periodo_atual["nome"] in d["Período"]]
-    if dinos_periodo:
-        st.subheader(f"🦕 Dinossauros do {periodo_atual['nome']}")
-        nomes = [d["Nome"] for d in dinos_periodo[:10]]
-        st.write(", ".join(nomes))
-        if len(dinos_periodo) > 10:
-            st.caption(f"mais {len(dinos_periodo)-10} espécies...")
-    else:
-        st.info("Nenhum dinossauro registrado para este período no banco de dados.")
+    # --- DINOSSAUROS DO PERÍODO (CORRIGIDO: LISTA COMPLETA) ---
+    if periodo_atual:
+        todos_dinos = obter_banco_dinossauros_reais()
+        # Filtra dinossauros cujo período contém o nome do período atual (ex: "Cretáceo" em "Cretáceo Superior")
+        dinos_periodo = [d for d in todos_dinos if periodo_atual["nome"] in d["Período"]]
+
+        st.subheader(f"🦕 Dinossauros do {periodo_atual['nome']} ({len(dinos_periodo)} espécies)")
+
+        if dinos_periodo:
+            # Organiza os nomes em colunas para melhor visualização
+            nomes = [d["Nome"] for d in dinos_periodo]
+            # Divide em 3 colunas
+            col1, col2, col3 = st.columns(3)
+            for i, nome in enumerate(nomes):
+                if i % 3 == 0:
+                    col1.write(f"- {nome}")
+                elif i % 3 == 1:
+                    col2.write(f"- {nome}")
+                else:
+                    col3.write(f"- {nome}")
+        else:
+            st.info("Nenhum dinossauro registrado para este período no banco de dados.")
 
 
 # ============================================================
@@ -921,73 +933,88 @@ def aba_arvore_evolutiva():
     st.header("🌳 Árvore Evolutiva Interativa")
     st.markdown("Explore as relações filogenéticas entre os principais grupos de dinossauros e outros répteis.")
 
-    # Dados hierárquicos para visualização
-    # Usaremos plotly para criar uma árvore radial ou treemap
+    try:
+        import networkx as nx
+        import matplotlib.pyplot as plt
+    except ImportError:
+        st.warning("Instale o networkx: `pip install networkx`")
+        return
 
-    import plotly.express as px
-    import plotly.graph_objects as go
-
-    # Estrutura simplificada da árvore dos dinossauros
-    # Formato: [pai, filho, tamanho]
-    dados_arvore = [
-        {"pai": "Reptilia", "filho": "Archosauria", "valor": 1},
-        {"pai": "Archosauria", "filho": "Dinosauria", "valor": 1},
-        {"pai": "Dinosauria", "filho": "Saurischia", "valor": 1},
-        {"pai": "Dinosauria", "filho": "Ornithischia", "valor": 1},
-        {"pai": "Saurischia", "filho": "Theropoda", "valor": 1},
-        {"pai": "Saurischia", "filho": "Sauropodomorpha", "valor": 1},
-        {"pai": "Theropoda", "filho": "Tyrannosauridae", "valor": 1},
-        {"pai": "Theropoda", "filho": "Dromaeosauridae", "valor": 1},
-        {"pai": "Theropoda", "filho": "Spinosauridae", "valor": 1},
-        {"pai": "Sauropodomorpha", "filho": "Brachiosauridae", "valor": 1},
-        {"pai": "Sauropodomorpha", "filho": "Diplodocidae", "valor": 1},
-        {"pai": "Ornithischia", "filho": "Ceratopsia", "valor": 1},
-        {"pai": "Ornithischia", "filho": "Ornithopoda", "valor": 1},
-        {"pai": "Ornithischia", "filho": "Stegosauria", "valor": 1},
-        {"pai": "Ornithischia", "filho": "Ankylosauria", "valor": 1},
-        {"pai": "Archosauria", "filho": "Pterosauria", "valor": 1},
-        {"pai": "Reptilia", "filho": "Sauropterygia", "valor": 1},
-        {"pai": "Sauropterygia", "filho": "Plesiosauria", "valor": 1},
-        {"pai": "Reptilia", "filho": "Ichthyosauria", "valor": 1},
+    # Estrutura hierárquica (pai -> filho)
+    arestas = [
+        ("Reptilia", "Archosauria"),
+        ("Archosauria", "Dinosauria"),
+        ("Archosauria", "Pterosauria"),
+        ("Dinosauria", "Saurischia"),
+        ("Dinosauria", "Ornithischia"),
+        ("Saurischia", "Theropoda"),
+        ("Saurischia", "Sauropodomorpha"),
+        ("Theropoda", "Tyrannosauridae"),
+        ("Theropoda", "Dromaeosauridae"),
+        ("Theropoda", "Spinosauridae"),
+        ("Sauropodomorpha", "Brachiosauridae"),
+        ("Sauropodomorpha", "Diplodocidae"),
+        ("Ornithischia", "Ceratopsia"),
+        ("Ornithischia", "Ornithopoda"),
+        ("Ornithischia", "Stegosauria"),
+        ("Ornithischia", "Ankylosauria"),
+        ("Reptilia", "Sauropterygia"),
+        ("Sauropterygia", "Plesiosauria"),
+        ("Reptilia", "Ichthyosauria"),
     ]
 
-    # Criar gráfico de árvore usando treemap
-    fig = go.Figure(go.Treemap(
-        labels=["Reptilia", "Archosauria", "Dinosauria", "Saurischia", "Ornithischia",
-                "Theropoda", "Sauropodomorpha", "Tyrannosauridae", "Dromaeosauridae",
-                "Spinosauridae", "Brachiosauridae", "Diplodocidae", "Ceratopsia",
-                "Ornithopoda", "Stegosauria", "Ankylosauria", "Pterosauria",
-                "Sauropterygia", "Plesiosauria", "Ichthyosauria"],
-        parents=["", "Reptilia", "Archosauria", "Dinosauria", "Dinosauria",
-                 "Saurischia", "Saurischia", "Theropoda", "Theropoda", "Theropoda",
-                 "Sauropodomorpha", "Sauropodomorpha", "Ornithischia", "Ornithischia",
-                 "Ornithischia", "Ornithischia", "Archosauria", "Reptilia",
-                 "Sauropterygia", "Reptilia"],
-        values=[20, 15, 12, 8, 8, 6, 6, 3, 3, 3, 4, 4, 4, 4, 3, 3, 5, 5, 3, 4],
-        branchvalues="total",
-        textinfo="label+value+percent parent",
-        marker=dict(colors=["lightblue"]*20),
-    ))
-    fig.update_layout(margin=dict(t=0, l=0, r=0, b=0), title="Cladograma interativo (clique nos blocos)")
-    st.plotly_chart(fig, use_container_width=True)
+    # Criar grafo direcionado
+    G = nx.DiGraph()
+    G.add_edges_from(arestas)
 
+    # Layout hierárquico (dot layout requer pygraphviz, usaremos spring com níveis manuais)
+    # Vamos definir posições manuais para garantir legibilidade
+    pos = {
+        "Reptilia": (0, 5),
+        "Archosauria": (2, 4),
+        "Pterosauria": (4, 4),
+        "Dinosauria": (2, 3),
+        "Saurischia": (1, 2),
+        "Ornithischia": (3, 2),
+        "Theropoda": (0.5, 1),
+        "Sauropodomorpha": (1.5, 1),
+        "Tyrannosauridae": (-0.5, 0),
+        "Dromaeosauridae": (0, 0),
+        "Spinosauridae": (0.5, 0),
+        "Brachiosauridae": (1, 0),
+        "Diplodocidae": (1.5, 0),
+        "Ceratopsia": (2.5, 1),
+        "Ornithopoda": (3, 1),
+        "Stegosauria": (3.5, 1),
+        "Ankylosauria": (4, 1),
+        "Sauropterygia": (0, 3),
+        "Plesiosauria": (0, 2),
+        "Ichthyosauria": (-1, 3),
+    }
+
+    # Desenhar
+    fig, ax = plt.subplots(figsize=(14, 10))
+    nx.draw_networkx_nodes(G, pos, node_size=2500, node_color='lightblue', edgecolors='black', ax=ax)
+    nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=15, edge_color='gray', width=1.5, ax=ax)
+    nx.draw_networkx_labels(G, pos, font_size=9, font_weight='bold', ax=ax)
+
+    ax.set_xlim(-2, 5.5)
+    ax.set_ylim(-0.5, 6)
+    ax.axis('off')
+    ax.set_title("Cladograma simplificado dos répteis e dinossauros\n(Setas indicam ancestral-descendente)", fontsize=14)
+
+    st.pyplot(fig)
+
+    # Explicação
     st.markdown("""
     **Legenda:**
-    - **Reptilia** – Classe dos répteis.
-    - **Archosauria** – Grupo que inclui dinossauros, pterossauros e crocodilos.
-    - **Dinosauria** – Dinossauros (divididos em Saurischia e Ornithischia).
-    - **Theropoda** – Carnívoros bípedes (T-Rex, Velociraptor, etc.).
-    - **Sauropodomorpha** – Herbívoros de pescoço longo (Braquiossauro, Diplodoco).
-    - **Ornithischia** – Dinossauros com bico (Triceratops, Estegossauro).
-    - **Pterosauria** – Répteis voadores.
-    - **Sauropterygia & Ichthyosauria** – Répteis marinhos.
+    - **Reptilia** → Classe dos répteis (ancestral comum).
+    - **Archosauria** → Grupo que inclui dinossauros, pterossauros e crocodilos.
+    - **Dinosauria** → Dinossauros (Saurischia + Ornithischia).
+    - **Theropoda** → Carnívoros bípedes (T-rex, Velociraptor).
+    - **Sauropodomorpha** → Herbívoros de pescoço longo (Braquiossauro).
+    - **Ornithischia** → Herbívoros com bico (Triceratops, Estegossauro).
+    - **Pterosauria** → Répteis voadores (não dinossauros).
+    - **Sauropterygia / Ichthyosauria** → Répteis marinhos.
     """)
-
-    # Explicação adicional com ícones
-    with st.expander("📚 Saiba mais sobre classificação dos dinossauros"):
-        st.markdown("""
-        - **Saurischia** (bacia de lagarto): inclui terópodes (carnívoros) e sauropodomorfos (herbívoros de pescoço longo).
-        - **Ornithischia** (bacia de ave): inclui ceratopsianos (Triceratops), ornitópodes (Iguanodon), estegossauros e anquilossauros.
-        - **Pterossauros** não são dinossauros, mas arcossauros voadores.
-        - **Répteis marinhos** (plesiossauros, ictiossauros) também não são dinossauros; evoluíram separadamente.
-        """)
+    st.info("Dica: Clique com o botão direito no gráfico e 'Abrir imagem em nova aba' para ampliar.")
