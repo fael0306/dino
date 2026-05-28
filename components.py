@@ -969,8 +969,8 @@ def aba_arvore_evolutiva():
 
     # Posições espaçadas
     pos = {}
-    espacamento_vertical = 3.5   # aumentado
-    espacamento_horizontal = 4.0  # aumentado
+    espacamento_vertical = 3.5
+    espacamento_horizontal = 4.0
 
     for nivel, nos in nos_por_nivel.items():
         y_centro = (len(nos) - 1) * espacamento_vertical / 2
@@ -987,10 +987,9 @@ def aba_arvore_evolutiva():
 
     fig, ax = plt.subplots(figsize=(max(12, largura_total * 0.9), max(10, altura_total * 0.8)))
 
-    # Bolotas bem grandes (9000) para caber qualquer nome
     nx.draw_networkx_nodes(G, pos, node_size=9000, node_color='lightblue', edgecolors='black', linewidths=2, ax=ax)
 
-    # Rótulos com quebra de linha, sem fundo branco (apenas texto sobre a bolota)
+    # Rótulos com quebra de linha
     labels = {}
     for node in G.nodes():
         if len(node) > 12:
@@ -1006,15 +1005,13 @@ def aba_arvore_evolutiva():
         else:
             labels[node] = node
 
-    # Desenha texto centralizado, sem caixa branca (apenas sobre a bolota)
     for node, (x, y) in pos.items():
-        ax.text(x, y, labels[node], ha='center', va='center', fontsize=9, fontweight='bold',
-                color='black')   # sem bbox
+        ax.text(x, y, labels[node], ha='center', va='center', fontsize=9, fontweight='bold', color='black')
 
-    # Desenha arestas
     nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=14, edge_color='gray', width=1.8, ax=ax)
 
-    ax.set_xlim(-1, largura_total + 1)
+    # Ajuste dos limites para não cortar a bolota esquerda (Reptilia)
+    ax.set_xlim(-1.8, largura_total + 0.8)   # ← valor negativo maior para dar folga
     ax.set_ylim(min_y - 2, max_y + 2)
     ax.axis('off')
     ax.set_title("Cladograma hierárquico (distância evolutiva vertical)", fontsize=12)
