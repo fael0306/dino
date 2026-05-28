@@ -952,49 +952,66 @@ def aba_arvore_evolutiva():
         ("Reptilia", "Ichthyosauria"),
     ]
 
-    # Criar grafo direcionado
     G = nx.DiGraph()
     G.add_edges_from(arestas)
 
-    # Layout hierárquico (dot layout requer pygraphviz, usaremos spring com níveis manuais)
-    # Vamos definir posições manuais para garantir legibilidade
-    pos = {
-        "Reptilia": (0, 5),
-        "Archosauria": (2, 4),
-        "Pterosauria": (4, 4),
-        "Dinosauria": (2, 3),
-        "Saurischia": (1, 2),
-        "Ornithischia": (3, 2),
-        "Theropoda": (0.5, 1),
-        "Sauropodomorpha": (1.5, 1),
-        "Tyrannosauridae": (-0.5, 0),
-        "Dromaeosauridae": (0, 0),
-        "Spinosauridae": (0.5, 0),
-        "Brachiosauridae": (1, 0),
-        "Diplodocidae": (1.5, 0),
-        "Ceratopsia": (2.5, 1),
-        "Ornithopoda": (3, 1),
-        "Stegosauria": (3.5, 1),
-        "Ankylosauria": (4, 1),
-        "Sauropterygia": (0, 3),
-        "Plesiosauria": (0, 2),
-        "Ichthyosauria": (-1, 3),
+    # Definir níveis hierárquicos (camadas)
+    niveis = {
+        "Reptilia": 0,
+        "Archosauria": 1,
+        "Pterosauria": 2,
+        "Dinosauria": 1,
+        "Saurischia": 2,
+        "Ornithischia": 2,
+        "Theropoda": 3,
+        "Sauropodomorpha": 3,
+        "Tyrannosauridae": 4,
+        "Dromaeosauridae": 4,
+        "Spinosauridae": 4,
+        "Brachiosauridae": 4,
+        "Diplodocidae": 4,
+        "Ceratopsia": 3,
+        "Ornithopoda": 3,
+        "Stegosauria": 3,
+        "Ankylosauria": 3,
+        "Sauropterygia": 1,
+        "Plesiosauria": 2,
+        "Ichthyosauria": 1,
     }
+    # Garantir que todos os nós tenham nível
+    for node in G.nodes:
+        G.nodes[node]['layer'] = niveis.get(node, 0)
 
-    # Desenhar
-    fig, ax = plt.subplots(figsize=(14, 10))
-    nx.draw_networkx_nodes(G, pos, node_size=2500, node_color='lightblue', edgecolors='black', ax=ax)
+    # Layout por camadas (multipartite)
+    pos = nx.multipartite_layout(G, subset_key='layer', align='horizontal')
+    # Espaçamento manual para evitar sobreposição
+    scale_x = 3.5
+    scale_y = 1.8
+    for node in pos:
+        x, y = pos[node]
+        pos[node] = (x * scale_x, y * scale_y)
+
+    # Desenho
+    fig, ax = plt.subplots(figsize=(18, 12))
+    nx.draw_networkx_nodes(G, pos, node_size=3500, node_color='lightblue', edgecolors='black', ax=ax)
     nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=15, edge_color='gray', width=1.5, ax=ax)
-    nx.draw_networkx_labels(G, pos, font_size=9, font_weight='bold', ax=ax)
 
-    ax.set_xlim(-2, 5.5)
-    ax.set_ylim(-0.5, 6)
+    # Rótulos com quebra de linha para nomes longos
+    labels = {}
+    for node in G.nodes:
+        if 'idae' in node:
+            labels[node] = node.replace('idae', 'idae\n')
+        else:
+            labels[node] = node
+    nx.draw_networkx_labels(G, pos, labels=labels, font_size=7, font_weight='bold', ax=ax)
+
+    ax.set_xlim(-6, 6)
+    ax.set_ylim(-3, 10)
     ax.axis('off')
     ax.set_title("Cladograma simplificado dos répteis e dinossauros\n(Setas indicam ancestral-descendente)", fontsize=14)
 
     st.pyplot(fig)
 
-    # Explicação
     st.markdown("""
     **Legenda:**
     - **Reptilia** → Classe dos répteis (ancestral comum).
@@ -1006,4 +1023,4 @@ def aba_arvore_evolutiva():
     - **Pterosauria** → Répteis voadores (não dinossauros).
     - **Sauropterygia / Ichthyosauria** → Répteis marinhos.
     """)
-    st.info("Dica: Clique com o botão direito no gráfico e 'Abrir imagem em nova aba' para ampliar.")
+    st.info("Dica: Amplie a janela do navegador ou use a barra de rolagem para visualizar melhor. Clique com o botão direito no gráfico e selecione 'Abrir imagem em nova aba' para ver em alta resolução.")
