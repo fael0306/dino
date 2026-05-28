@@ -929,7 +929,6 @@ def aba_arvore_evolutiva():
         st.warning("Instale o networkx: `pip install networkx`")
         return
 
-    # Estrutura hierárquica (pai -> filho)
     arestas = [
         ("Reptilia", "Archosauria"),
         ("Archosauria", "Dinosauria"),
@@ -955,65 +954,68 @@ def aba_arvore_evolutiva():
     G = nx.DiGraph()
     G.add_edges_from(arestas)
 
-    # Definir níveis (distância da raiz)
+    # Definir níveis via BFS
     raiz = "Reptilia"
     niveis = {raiz: 0}
     for u, v in nx.bfs_edges(G, raiz):
         niveis[v] = niveis[u] + 1
 
-    # Organizar nós por nível
     nos_por_nivel = {}
     for node, nivel in niveis.items():
         nos_por_nivel.setdefault(nivel, []).append(node)
 
-    # Ordenar alfabeticamente dentro de cada nível para consistência
     for nivel in nos_por_nivel:
         nos_por_nivel[nivel].sort()
 
-    # Calcular posições (x = nível, y = posição vertical espaçada)
+    # Posições espaçadas
     pos = {}
-    espacamento_vertical = 2.5  # espaço entre nós no mesmo nível
-    espacamento_horizontal = 3.0  # espaço entre níveis
+    espacamento_vertical = 3.0
+    espacamento_horizontal = 3.5
 
     for nivel, nos in nos_por_nivel.items():
-        # Centro do nível
         y_centro = (len(nos) - 1) * espacamento_vertical / 2
         for i, node in enumerate(nos):
-            # y invertido para que a raiz fique em cima
             y = - (i * espacamento_vertical - y_centro)
             x = nivel * espacamento_horizontal
             pos[node] = (x, y)
 
-    # Ajustar tamanho da figura conforme o número de nós
+    # Tamanho da figura
     max_y = max(pos.values(), key=lambda p: p[1])[1]
     min_y = min(pos.values(), key=lambda p: p[1])[1]
     altura_total = max_y - min_y + 2
     largura_total = max(pos.values(), key=lambda p: p[0])[0] + 2
 
-    fig, ax = plt.subplots(figsize=(max(10, largura_total * 0.8), max(8, altura_total * 0.5)))
+    fig, ax = plt.subplots(figsize=(max(10, largura_total * 0.9), max(8, altura_total * 0.7)))
 
-    nx.draw_networkx_nodes(G, pos, node_size=3000, node_color='lightblue', edgecolors='black', ax=ax)
-    nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=12, edge_color='gray', width=1.5, ax=ax)
+    # Desenha nós com tamanho grande (6000) para caber os nomes
+    nx.draw_networkx_nodes(G, pos, node_size=6000, node_color='lightblue', edgecolors='black', linewidths=2, ax=ax)
 
-    # Rótulos com quebra de linha para nomes longos
+    # Prepara rótulos com quebra de linha
     labels = {}
     for node in G.nodes():
         if len(node) > 12:
-            # Insere quebra manual aproximada
-            words = node.split()
-            if len(words) > 1:
-                labels[node] = words[0] + "\n" + " ".join(words[1:])
+            if 'idae' in node:
+                labels[node] = node.replace('idae', 'idae\n')
             else:
-                # Divide por sílabas grosseiras
-                mid = len(node) // 2
-                labels[node] = node[:mid] + "\n" + node[mid:]
+                words = node.split()
+                if len(words) > 1:
+                    labels[node] = words[0] + "\n" + " ".join(words[1:])
+                else:
+                    mid = len(node) // 2
+                    labels[node] = node[:mid] + "\n" + node[mid:]
         else:
             labels[node] = node
 
-    nx.draw_networkx_labels(G, pos, labels=labels, font_size=8, font_weight='bold', ax=ax)
+    # Desenha rótulos com fundo branco e centralizado
+    for node, (x, y) in pos.items():
+        ax.text(x, y, labels[node], ha='center', va='center', fontsize=9, fontweight='bold',
+                bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='gray', alpha=0.9))
+
+    # Desenha arestas
+    nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=12, edge_color='gray', width=1.5, ax=ax)
 
     ax.set_xlim(-0.5, largura_total + 0.5)
-    ax.set_ylim(min_y - 1, max_y + 1)
+    ax.set_ylim(min_y - 1.5, max_y + 1.5)
     ax.axis('off')
     ax.set_title("Cladograma hierárquico (distância evolutiva vertical)", fontsize=12)
 
@@ -1030,4 +1032,4 @@ def aba_arvore_evolutiva():
     - **Pterosauria** → Répteis voadores (não dinossauros).
     - **Sauropterygia / Ichthyosauria** → Répteis marinhos.
     """)
-    st.info("Dica: Use a barra de rolagem do gráfico ou amplie a janela para ver todos os nós. Clique com o botão direito → 'Abrir imagem em nova aba' para alta resolução.")
+    st.info("Dica: Use a barra de rolagem do gráfico ou amplie a janela. Clique com o botão direito → 'Abrir imagem em nova aba' para alta resolução.")
