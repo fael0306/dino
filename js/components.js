@@ -67,24 +67,21 @@ function renderEscalaReal() {
                 <div id="resultado-escala" class="mt-3"></div>
             </div>
             <div class="col-md-8">
-                <div id="imagem-comparacao" class="text-center" style="overflow: auto; display: flex; justify-content: center; align-items: flex-end;">
+                <div id="imagem-comparacao" class="text-center">
                     <p>Selecione um dinossauro e clique em Atualizar.</p>
                 </div>
             </div>
         </div>
     `;
-    // Preencher o select de "outro dinossauro"
     const outroSelect = document.getElementById('outro-dino-escala');
     const nomes = DINOSSAUROS_CLASSICOS.map(d => d.Nome);
     outroSelect.innerHTML = nomes.map(n => `<option value="${n}">${n}</option>`).join('');
 
-    // Mostrar/esconder outro dinossauro
     document.getElementById('ref-escala').addEventListener('change', function() {
         document.getElementById('outro-dino-container').style.display = this.value === 'Outro' ? 'block' : 'none';
     });
 }
 
-// FUNÇÃO CORRIGIDA: escala sem distorção
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
@@ -109,11 +106,9 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens (placeholders ou reais)
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-        // Definir altura máxima para a imagem maior
         const alturaMax = 400;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -124,14 +119,10 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Redimensionar mantendo a proporção
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
-
-        // Combinar lado a lado (alinhadas pela base)
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
-        // Exibir a imagem sem distorção
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
             <div style="display: inline-block; max-width: 100%;">
@@ -182,17 +173,13 @@ function renderDerivaContinental() {
     });
 
     if (typeof L === 'undefined') {
-        console.warn('Leaflet não carregado. O mapa não será exibido.');
-        document.getElementById('mapa-fosseis').innerHTML = '<p class="text-warning">Biblioteca Leaflet não carregada. Verifique sua conexão com a internet.</p>';
+        console.warn('Leaflet não carregado.');
+        document.getElementById('mapa-fosseis').innerHTML = '<p class="text-warning">Biblioteca Leaflet não carregada.</p>';
         return;
     }
 
     setTimeout(() => {
-        try {
-            atualizarMapa();
-        } catch (e) {
-            console.error('Erro ao criar mapa:', e);
-        }
+        try { atualizarMapa(); } catch(e) { console.error('Erro ao criar mapa:', e); }
     }, 500);
 }
 
@@ -264,7 +251,7 @@ let chartExtincao = null;
 window.executarSimulacao = function() {
     try {
         if (typeof Chart === 'undefined') {
-            alert('Biblioteca Chart.js não carregada. Verifique sua conexão.');
+            alert('Chart.js não carregado.');
             return;
         }
         const bloqueio = parseFloat(document.getElementById('bloqueio').value);
@@ -305,7 +292,7 @@ window.executarSimulacao = function() {
         }
     } catch (e) {
         console.error('Erro na simulação:', e);
-        document.getElementById('status-extincao').innerHTML = `<div class="alert alert-danger">Erro na simulação. Verifique o console.</div>`;
+        document.getElementById('status-extincao').innerHTML = `<div class="alert alert-danger">Erro na simulação.</div>`;
     }
 };
 
@@ -566,7 +553,7 @@ window.iniciarQuiz = function() {
         mostrarPerguntaQuiz();
     } catch (e) {
         console.error('Erro ao iniciar quiz:', e);
-        alert('Erro ao iniciar o quiz. Verifique o console.');
+        alert('Erro ao iniciar o quiz.');
     }
 };
 
@@ -807,7 +794,7 @@ function renderExportPDF() {
 window.gerarPDF = function() {
     try {
         if (typeof window.jspdf === 'undefined') {
-            alert('Biblioteca jsPDF não carregada. Verifique sua conexão.');
+            alert('jsPDF não carregado.');
             return;
         }
         const { jsPDF } = window.jspdf;
@@ -830,7 +817,7 @@ window.gerarPDF = function() {
         document.getElementById('pdf-status').innerHTML = `<div class="alert alert-success">PDF gerado com sucesso!</div>`;
     } catch (e) {
         console.error('Erro ao gerar PDF:', e);
-        document.getElementById('pdf-status').innerHTML = `<div class="alert alert-danger">Erro ao gerar PDF. Verifique o console.</div>`;
+        document.getElementById('pdf-status').innerHTML = `<div class="alert alert-danger">Erro ao gerar PDF.</div>`;
     }
 };
 
@@ -844,7 +831,7 @@ function renderArvoreEvolutiva() {
     `;
     try {
         if (typeof vis === 'undefined') {
-            document.getElementById('arvore-evolutiva').innerHTML = '<p class="text-warning">Biblioteca vis.js não carregada.</p>';
+            document.getElementById('arvore-evolutiva').innerHTML = '<p class="text-warning">vis.js não carregado.</p>';
             return;
         }
         const nodes = new vis.DataSet([

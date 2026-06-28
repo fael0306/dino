@@ -45,3 +45,16 @@ body {
     padding: 5px;
     background: #fff;
 }
+/* Garantir que a imagem de comparação não distorça */
+#imagem-comparacao img {
+    max-width: 100%;
+    height: auto !important;
+    display: block;
+}
+#imagem-comparacao {
+    overflow: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    flex-direction: column;
+}
