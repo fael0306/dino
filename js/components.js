@@ -127,14 +127,11 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens originais
         const imgDino = await carregarImagemOriginal(dinoSel);
         const imgRef = await carregarImagemOriginal(refNome);
 
-        // Altura máxima disponível (60% da altura da tela)
         const alturaMax = Math.round(window.innerHeight * 0.6);
 
-        // Calcular alturas proporcionais
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
             alturaDino = alturaMax;
@@ -144,7 +141,6 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Redimensionar imagens para essas alturas (sem limitar largura)
         function redimensionarImagem(img, altura) {
             return new Promise((resolve) => {
                 const canvas = document.createElement('canvas');
@@ -160,7 +156,6 @@ window.atualizarEscala = async function() {
         const imgDinoRedim = await redimensionarImagem(imgDino, alturaDino);
         const imgRefRedim = await redimensionarImagem(imgRef, alturaRef);
 
-        // Exibir com altura fixa e sem limite de largura (scroll se necessário)
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
             <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0; overflow: auto;">
