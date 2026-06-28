@@ -1,6 +1,9 @@
 // js/components.js
 
-// Função para renderizar cada aba
+// ============================================================
+// RENDERIZAÇÃO DAS ABAS
+// ============================================================
+
 function renderizarAbas() {
     renderEscalaReal();
     renderDerivaContinental();
@@ -62,7 +65,7 @@ function renderEscalaReal() {
     });
 }
 
-// Função chamada ao atualizar escala
+// FUNÇÃO ATUALIZADA para usar imagens reais
 window.atualizarEscala = async function() {
     const dinoSel = document.getElementById('dino-escala').value;
     const refSel = document.getElementById('ref-escala').value;
@@ -86,11 +89,11 @@ window.atualizarEscala = async function() {
     const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
     const razao = (dino.Altura / refAltura).toFixed(1);
 
-    // Gerar silhuetas (placeholder)
-    const imgDino = gerarSilhueta(dinoSel, 200, 200);
-    const imgRef = gerarSilhueta(refNome, 200, 200);
+    // Carregar imagens reais (ou placeholders)
+    const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
+    const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-    // Redimensionar para alturas proporcionais (limitar a 400px)
+    // Redimensionar para alturas proporcionais
     const alturaMax = 400;
     let alturaDino, alturaRef;
     if (dino.Altura >= refAltura) {
@@ -110,6 +113,10 @@ window.atualizarEscala = async function() {
         <p class="mt-2"><strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x</p>
     `;
 };
+
+// ============================================================
+// AS DEMAIS ABAS (mantidas exatamente como antes)
+// ============================================================
 
 // 2. Deriva Continental
 function renderDerivaContinental() {
@@ -142,13 +149,11 @@ function renderDerivaContinental() {
         </div>
     `;
 
-    // Atualizar iframe quando mudar era
     document.getElementById('era-globo').addEventListener('change', function() {
         const url = `https://dinosaurpictures.org/ancient-earth?_t=${this.value}#${this.value}`;
         document.getElementById('iframe-globo').src = url;
     });
 
-    // Inicializar mapa após um pequeno delay
     setTimeout(atualizarMapa, 300);
 }
 
@@ -200,7 +205,6 @@ function renderExtincaoKpg() {
             </div>
         </div>
     `;
-    // Atualizar valores dos sliders
     document.getElementById('bloqueio').addEventListener('input', function() {
         document.getElementById('bloqueio-val').textContent = this.value;
     });
@@ -211,11 +215,11 @@ function renderExtincaoKpg() {
 
 let chartExtincao = null;
 window.executarSimulacao = function() {
-    const bloqueio = parseFloat(document.getElementById('bloqueio').value) / 100;
-    const chuva = parseFloat(document.getElementById('chuva').value) / 100;
+    const bloqueio = parseFloat(document.getElementById('bloqueio').value);
+    const chuva = parseFloat(document.getElementById('chuva').value);
     const anos = parseInt(document.getElementById('anos-sim').value);
 
-    const dados = simularExtincao(bloqueio * 100, chuva * 100, anos);
+    const dados = simularExtincao(bloqueio, chuva, anos);
     const labels = dados.P.map((_, i) => (i * 0.5).toFixed(1));
 
     const ctx = document.getElementById('grafico-extincao').getContext('2d');
@@ -268,7 +272,6 @@ function renderIcnofosseis() {
             </div>
         </div>
     `;
-    // Inicializar estado do jogo
     if (!window.icnoEstado) {
         window.icnoEstado = { desafio: null, respostas: {} };
     }
@@ -280,11 +283,9 @@ window.novoDesafioIcnofosseis = function() {
     icnoDesafioAtual = nomes[Math.floor(Math.random() * nomes.length)];
     const info = ICNOFOSSEIS[icnoDesafioAtual];
 
-    // Mostrar imagem (placeholder)
     const imgDiv = document.getElementById('icno-imagem');
-    imgDiv.innerHTML = `<img src="${gerarSilhueta('pegada', 200, 200)}" class="img-fluid" alt="Pegada"><p>Fóssil misterioso</p>`;
+    imgDiv.innerHTML = `<img src="${gerarSilhuetaPlaceholder('pegada', 200, 200)}" class="img-fluid" alt="Pegada"><p>Fóssil misterioso</p>`;
 
-    // Gerar perguntas
     const perguntasDiv = document.getElementById('icno-perguntas');
     perguntasDiv.innerHTML = `
         <div class="mb-2">
@@ -304,7 +305,6 @@ window.novoDesafioIcnofosseis = function() {
         <div id="icno-perguntas-extra"></div>
     `;
 
-    // Adicionar perguntas condicionais
     const extra = document.getElementById('icno-perguntas-extra');
     extra.innerHTML = '';
     const dedos = parseInt(document.getElementById('icno-dedos').value);
@@ -321,7 +321,6 @@ window.novoDesafioIcnofosseis = function() {
             </div>
         `;
         if (garras) {
-            // se grande, pergunta forma
             extra.innerHTML += `
                 <div class="mb-2" id="icno-forma-container">
                     <label>4. Formato:</label>
@@ -332,7 +331,7 @@ window.novoDesafioIcnofosseis = function() {
                 </div>
             `;
         }
-    } else { // 4 dedos
+    } else {
         if (!garras) {
             extra.innerHTML += `
                 <div class="mb-2">
@@ -345,8 +344,6 @@ window.novoDesafioIcnofosseis = function() {
             `;
         }
     }
-
-    // Limpar resultado anterior
     document.getElementById('icno-resultado').innerHTML = '';
 };
 
@@ -361,7 +358,6 @@ window.identificarIcnofosseis = function() {
     const div = document.getElementById('icno-resultado');
     if (resultado === icnoDesafioAtual) {
         div.innerHTML = `<div class="alert alert-success">✅ Parabéns! Você acertou! O fóssil é *${resultado}*.</div>`;
-        // Desbloquear conquista
         desbloquearConquista('detetive_icno');
     } else {
         div.innerHTML = `<div class="alert alert-danger">❌ Você descreveu *${resultado}*, mas o fóssil é *${icnoDesafioAtual}*.</div>`;
@@ -393,7 +389,7 @@ window.sortearFossil = function() {
                         <p><strong>Peso:</strong> ${dino.Peso} ton</p>
                     </div>
                     <div class="col-md-6">
-                        <img src="${gerarSilhueta(dino.Nome, 200, 200)}" class="img-fluid" alt="${dino.Nome}">
+                        <img src="${gerarSilhuetaPlaceholder(dino.Nome, 200, 200)}" class="img-fluid" alt="${dino.Nome}">
                     </div>
                 </div>
                 <p><strong>Curiosidade:</strong> ${dino.Curiosidade}</p>
@@ -443,7 +439,6 @@ window.calcularMassa = function() {
         </div>
     `;
 
-    // Comparação
     const elefante = 6.0;
     const trex = 8.4;
     const patago = 70.0;
@@ -466,7 +461,6 @@ function renderQuiz() {
         <h4>📝 Quiz Paleontológico</h4>
         <div id="quiz-area"></div>
     `;
-    // Exibir opções de nível
     const area = document.getElementById('quiz-area');
     area.innerHTML = `
         <div class="mb-3">
@@ -548,7 +542,6 @@ function mostrarResultadoQuiz() {
             <p>Pontuação: ${pontuacao}/${total}</p>
         </div>
     `;
-    // Desbloquear conquistas
     if (quizEstado.nivel === 'Fácil' && pontuacao === total) desbloquearConquista('quiz_facil');
     if (quizEstado.nivel === 'Médio' && pontuacao === total) desbloquearConquista('quiz_medio');
     if (quizEstado.nivel === 'Difícil' && pontuacao === total) desbloquearConquista('quiz_dificil');
@@ -586,7 +579,6 @@ function atualizarLinhaTempo(idade) {
         <p>Eventos: ${periodo.eventos.join(', ')}</p>
     `;
 
-    // Gráfico simples
     const ctx = document.getElementById('grafico-tempo').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
@@ -655,7 +647,6 @@ function desbloquearConquista(id) {
     if (!conquistas[id]) {
         conquistas[id] = true;
         localStorage.setItem('conquistas', JSON.stringify(conquistas));
-        // Mostrar toast (simples)
         alert(`🏅 Conquista desbloqueada: ${id.replace('_', ' ').toUpperCase()}`);
         atualizarConquistas();
         atualizarBadgeConquistas();
@@ -701,7 +692,6 @@ window.gerarPDF = function() {
     doc.text('PaleoLab Científico - Relatório', 20, 20);
     doc.setFontSize(12);
     doc.text(`Data: ${new Date().toLocaleString()}`, 20, 30);
-    // Adicionar conquistas
     const conquistas = JSON.parse(localStorage.getItem('conquistas')) || {};
     const lista = Object.entries(conquistas).filter(([k,v]) => v).map(([k]) => k.replace('_', ' ').toUpperCase());
     if (lista.length > 0) {
@@ -724,7 +714,6 @@ function renderArvoreEvolutiva() {
         <div id="arvore-evolutiva"></div>
         <p class="mt-2">Relações filogenéticas entre os principais grupos.</p>
     `;
-    // Usar vis.js para desenhar a árvore
     const nodes = new vis.DataSet([
         {id: 'Reptilia', label: 'Reptilia'},
         {id: 'Archosauria', label: 'Archosauria'},
@@ -735,22 +724,19 @@ function renderArvoreEvolutiva() {
         {id: 'Theropoda', label: 'Theropoda'},
         {id: 'Sauropodomorpha', label: 'Sauropodomorpha'},
         {id: 'Tyrannosauridae', label: 'Tyrannosauridae'},
+        {id: 'Dromaeosauridae', label: 'Dromaeosauridae'},
+        {id: 'Spinosauridae', label: 'Spinosauridae'},
+        {id: 'Brachiosauridae', label: 'Brachiosauridae'},
+        {id: 'Diplodocidae', label: 'Diplodocidae'},
         {id: 'Ceratopsia', label: 'Ceratopsia'},
-        {id: 'Stegosauria', label: 'Stegosauria'}
+        {id: 'Ornithopoda', label: 'Ornithopoda'},
+        {id: 'Stegosauria', label: 'Stegosauria'},
+        {id: 'Ankylosauria', label: 'Ankylosauria'},
+        {id: 'Sauropterygia', label: 'Sauropterygia'},
+        {id: 'Plesiosauria', label: 'Plesiosauria'},
+        {id: 'Ichthyosauria', label: 'Ichthyosauria'}
     ]);
-    const edges = new vis.DataSet([
-        {from: 'Reptilia', to: 'Archosauria'},
-        {from: 'Archosauria', to: 'Dinosauria'},
-        {from: 'Archosauria', to: 'Pterosauria'},
-        {from: 'Dinosauria', to: 'Saurischia'},
-        {from: 'Dinosauria', to: 'Ornithischia'},
-        {from: 'Saurischia', to: 'Theropoda'},
-        {from: 'Saurischia', to: 'Sauropodomorpha'},
-        {from: 'Theropoda', to: 'Tyrannosauridae'},
-        {from: 'Ornithischia', to: 'Ceratopsia'},
-        {from: 'Ornithischia', to: 'Stegosauria'}
-    ]);
-
+    const edges = new vis.DataSet(ARVORE_ARESTAS.map(([from, to]) => ({from, to})));
     const containerDiv = document.getElementById('arvore-evolutiva');
     const data = {nodes, edges};
     const options = {
@@ -761,10 +747,11 @@ function renderArvoreEvolutiva() {
     new vis.Network(containerDiv, data, options);
 }
 
-// Inicialização
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
 document.addEventListener('DOMContentLoaded', function() {
     renderizarAbas();
     atualizarBadgeConquistas();
-    // Atualizar escala padrão
     setTimeout(atualizarEscala, 500);
 });
