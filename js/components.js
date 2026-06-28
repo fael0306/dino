@@ -82,7 +82,7 @@ function renderEscalaReal() {
     });
 }
 
-// ===== FUNÇÃO CORRIGIDA: exibe a imagem sem distorção =====
+// ===== FUNÇÃO CORRIGIDA – SEM DISTORÇÃO =====
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
@@ -126,11 +126,11 @@ window.atualizarEscala = async function() {
         // Combinar lado a lado
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
-        // Exibir a imagem SEM distorção: sem max-width forçado, apenas com height:auto e max-width:100% para não estourar
+        // ===== AQUI ESTÁ A PARTE CORRIGIDA =====
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
             <div style="display: inline-block; max-width: 100%;">
-                <img src="${combinada}" style="display: block; max-width: 100%; height: auto;" alt="Comparação">
+                <img src="${combinada}" alt="Comparação" style="display: block; width: auto; height: auto; max-width: 100%;">
             </div>
             <p class="mt-2"><strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x</p>
         `;
