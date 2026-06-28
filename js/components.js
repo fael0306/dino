@@ -118,20 +118,24 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Redimensionar mantendo a proporção
+        // Redimensionar as imagens individualmente (mantém a proporção)
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
 
-        // Combinar lado a lado
-        const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
-
-        // ===== EXIBIÇÃO SEM REDIMENSIONAMENTO =====
+        // EXIBIR AS DUAS IMAGENS SEPARADAS, LADO A LADO, ALINHADAS PELA BASE
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
-            <div style="overflow: auto; text-align: center; background: #f8f9fa; padding: 10px; border-radius: 8px; display: inline-block; max-width: 100%;">
-                <img src="${combinada}" alt="Comparação" style="display: block; width: auto; height: auto; max-width: none; max-height: none;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                <div style="text-align: center;">
+                    <img src="${imgRefRedim}" alt="${refNome}" style="display: block; height: auto; width: auto; max-width: 100%;">
+                    <p><strong>${refNome}</strong> (${refAltura}m)</p>
+                </div>
+                <div style="text-align: center;">
+                    <img src="${imgDinoRedim}" alt="${dinoSel}" style="display: block; height: auto; width: auto; max-width: 100%;">
+                    <p><strong>${dinoSel}</strong> (${dino.Altura}m)</p>
+                </div>
             </div>
-            <p class="mt-2"><strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x</p>
+            <p class="mt-2 text-center"><strong>Proporção:</strong> ${razao}x</p>
         `;
     } catch (e) {
         console.error('Erro ao atualizar escala:', e);
