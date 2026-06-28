@@ -126,11 +126,12 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens base (200x200)
+        // Carregar imagens (tamanho original 200x200)
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-        // Altura máxima de 600px para a imagem maior
+        // Definir alturas proporcionais com base na escala real
+        // A altura máxima será 600px para a maior imagem
         const alturaMax = 600;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -141,21 +142,24 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Redimensionar mantendo a proporção
+        // Redimensionar cada imagem individualmente, mantendo a proporção
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
 
-        // Combinar lado a lado
-        const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
-
-        // ---- EXIBIÇÃO SEM NENHUMA RESTRIÇÃO DE TAMANHO ----
+        // EXIBIR AS DUAS IMAGENS SEPARADAS, LADO A LADO, ALINHADAS PELA BASE
         const container = document.getElementById('imagem-comparacao');
-        // Limpa o conteúdo e insere a imagem sem nenhum div com max-width
         container.innerHTML = `
-            <img src="${combinada}" alt="Comparação" style="display: block; margin: 0 auto; width: auto; height: auto; max-width: none; max-height: none;">
-            <p style="margin-top: 10px; font-size: 1.1rem;">
-                <strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x
-            </p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0;">
+                <div style="text-align: center;">
+                    <img src="${imgRefRedim}" alt="${refNome}" style="display: block; width: auto; height: auto; max-width: 100%;">
+                    <p style="margin-top: 5px;"><strong>${refNome}</strong> (${refAltura}m)</p>
+                </div>
+                <div style="text-align: center;">
+                    <img src="${imgDinoRedim}" alt="${dinoSel}" style="display: block; width: auto; height: auto; max-width: 100%;">
+                    <p style="margin-top: 5px;"><strong>${dinoSel}</strong> (${dino.Altura}m)</p>
+                </div>
+            </div>
+            <p style="text-align: center; font-size: 1.1rem;"><strong>Proporção:</strong> ${razao}x</p>
         `;
     } catch (e) {
         console.error('Erro em atualizarEscala:', e);

@@ -2,6 +2,7 @@
 body {
     background-color: #f8f9fa;
 }
+
 .nav-pills .nav-link {
     color: #495057;
     border-radius: 0;
@@ -10,9 +11,11 @@ body {
     background-color: #2c3e50;
     color: white;
 }
+
 .tab-pane {
     padding: 15px 0;
 }
+
 .card-dino {
     border: 1px solid #dee2e6;
     border-radius: 8px;
@@ -20,6 +23,7 @@ body {
     margin-bottom: 15px;
     background: white;
 }
+
 .conquista-item {
     border-left: 4px solid #28a745;
     padding-left: 10px;
@@ -29,15 +33,18 @@ body {
     border-left-color: #dc3545;
     opacity: 0.6;
 }
+
 #mapa-fosseis {
     height: 400px;
     width: 100%;
 }
+
 #arvore-evolutiva {
     height: 600px;
     border: 1px solid #ccc;
     background: white;
 }
+
 .icno-imagem {
     max-width: 300px;
     border: 1px solid #ddd;
@@ -46,19 +53,33 @@ body {
     background: #fff;
 }
 
-/* ========================================================
-   CORREÇÃO DEFINITIVA PARA A IMAGEM DA ESCALA
-   ======================================================== */
+/* ================================================================
+   CORREÇÃO DEFINITIVA PARA A COMPARAÇÃO DE ESCALA
+   ================================================================ */
 #imagem-comparacao {
     width: 100% !important;
     text-align: center !important;
     background: #f8f9fa !important;
     padding: 20px !important;
     border-radius: 8px !important;
-    overflow: auto !important;
+    overflow: auto !important;   /* scroll se a imagem for maior que a tela */
     box-sizing: border-box !important;
 }
 
+/* Container flex para as duas imagens */
+#imagem-comparacao > div:first-child {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: flex-end !important;
+    gap: 20px !important;
+    background: #f8f9fa !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    margin: 10px 0 !important;
+}
+
+/* Cada imagem individual */
 #imagem-comparacao img {
     display: block !important;
     width: auto !important;
@@ -69,52 +90,8 @@ body {
     margin: 0 auto !important;
 }
 
-#imagem-comparacao > div {
-    display: inline-block !important;
-    max-width: 100% !important;
-}
-
-#imagem-comparacao {
-    width: 100% !important;
-    text-align: center !important;
-    background: #f8f9fa !important;
-    padding: 20px !important;
-    border-radius: 8px !important;
-    overflow: auto !important;   /* scroll horizontal e vertical */
-    box-sizing: border-box !important;
-}
-
-#imagem-comparacao img {
-    display: block !important;
-    width: auto !important;
-    height: auto !important;
-    max-height: none !important;  /* não encolher */
-    object-fit: none !important;
-    margin: 0 auto !important;
-}
-
-#imagem-comparacao > div {
-    display: inline-block !important;
-    overflow: auto !important;
-}
-
-#imagem-comparacao {
-    width: 100% !important;
-    text-align: center !important;
-    background: #f8f9fa !important;
-    padding: 20px !important;
-    border-radius: 8px !important;
-    overflow: auto !important;   /* scroll horizontal e vertical */
-    box-sizing: border-box !important;
-    /* Não defina max-width nem height */
-}
-
-#imagem-comparacao img {
-    display: block !important;
-    margin: 0 auto !important;
-    width: auto !important;
-    height: auto !important;
-    max-width: none !important;   /* NENHUMA RESTRIÇÃO */
-    max-height: none !important;
-    object-fit: none !important;
+/* Texto abaixo das imagens */
+#imagem-comparacao p {
+    margin-top: 10px !important;
+    font-size: 1.1rem !important;
 }
