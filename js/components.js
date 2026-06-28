@@ -43,8 +43,9 @@ function renderEscalaReal() {
     const container = document.getElementById('escala');
     container.innerHTML = `
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-12">
                 <h4>📏 Compare a Escala</h4>
+                <!-- LINHA DOS CONTROLES -->
                 <div class="row">
                     <div class="col-md-4">
                         <div class="mb-3">
@@ -68,13 +69,14 @@ function renderEscalaReal() {
                         <button class="btn btn-primary" onclick="atualizarEscala()">Atualizar</button>
                     </div>
                     <div class="col-md-8">
+                        <!-- Espaço para texto de resultado (opcional) -->
                         <div id="resultado-escala" class="mt-2"></div>
                     </div>
                 </div>
-                <!-- IMAGEM AQUI EMBAIXO -->
+                <!-- LINHA DA IMAGEM (EMBAIXO, OCUPANDO 100%) -->
                 <div class="row mt-4">
                     <div class="col-12">
-                        <div id="imagem-comparacao">
+                        <div id="imagem-comparacao" style="text-align:center; background:#f8f9fa; padding:20px; border-radius:8px; overflow:auto;">
                             <p>Selecione um dinossauro e clique em Atualizar.</p>
                         </div>
                     </div>
@@ -82,6 +84,7 @@ function renderEscalaReal() {
             </div>
         </div>
     `;
+    // Preencher o select de "outro dinossauro"
     const outroSelect = document.getElementById('outro-dino-escala');
     const nomes = DINOSSAUROS_CLASSICOS.map(d => d.Nome);
     outroSelect.innerHTML = nomes.map(n => `<option value="${n}">${n}</option>`).join('');
@@ -113,11 +116,9 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens (tamanho base 200x200)
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-        // Definir altura máxima (400px) para a imagem maior
         const alturaMax = 400;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -128,14 +129,10 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Redimensionar mantendo a proporção
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
-
-        // Combinar lado a lado (canvas)
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
-        // EXIBIR A IMAGEM COMBINADA EMBAIXO, SEM DISTORÇÃO
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
             <div style="display: inline-block; max-width: 100%;">
@@ -147,7 +144,7 @@ window.atualizarEscala = async function() {
         `;
     } catch (e) {
         console.error('Erro ao atualizar escala:', e);
-        document.getElementById('imagem-comparacao').innerHTML = `<div class="alert alert-danger">Erro ao carregar a comparação. Verifique o console.</div>`;
+        document.getElementById('imagem-comparacao').innerHTML = `<div class="alert alert-danger">Erro ao carregar a comparação.</div>`;
     }
 };
 
