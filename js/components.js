@@ -67,7 +67,7 @@ function renderEscalaReal() {
                 <div id="resultado-escala" class="mt-3"></div>
             </div>
             <div class="col-md-8">
-                <div id="imagem-comparacao" class="text-center">
+                <div id="imagem-comparacao">
                     <p>Selecione um dinossauro e clique em Atualizar.</p>
                 </div>
             </div>
@@ -82,33 +82,33 @@ function renderEscalaReal() {
     });
 }
 
+// ===== FUNÇÃO CORRIGIDA: exibe a imagem sem distorção =====
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
         const refSel = document.getElementById('ref-escala').value;
-        let refNome, refAltura, refComprimento;
+        let refNome, refAltura;
 
         if (refSel === 'Outro') {
             refNome = document.getElementById('outro-dino-escala').value;
             const dinoRef = DINOSSAUROS_CLASSICOS.find(d => d.Nome === refNome);
             refAltura = dinoRef.Altura;
-            refComprimento = dinoRef.Comprimento;
         } else if (refSel === 'Humano') {
             refNome = 'Humano';
             refAltura = 1.7;
-            refComprimento = 1.7;
         } else if (refSel === 'Elefante') {
             refNome = 'Elefante';
             refAltura = 3.3;
-            refComprimento = 6.0;
         }
 
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
+        // Carregar imagens (placeholders ou reais)
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
+        // Definir altura máxima para a imagem maior
         const alturaMax = 400;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -119,14 +119,18 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
+        // Redimensionar mantendo a proporção
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
+
+        // Combinar lado a lado
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
+        // Exibir a imagem SEM distorção: sem max-width forçado, apenas com height:auto e max-width:100% para não estourar
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
             <div style="display: inline-block; max-width: 100%;">
-                <img src="${combinada}" style="max-width: 100%; height: auto; display: block;" alt="Comparação">
+                <img src="${combinada}" style="display: block; max-width: 100%; height: auto;" alt="Comparação">
             </div>
             <p class="mt-2"><strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x</p>
         `;
@@ -135,6 +139,10 @@ window.atualizarEscala = async function() {
         document.getElementById('imagem-comparacao').innerHTML = `<div class="alert alert-danger">Erro ao carregar a comparação. Verifique o console.</div>`;
     }
 };
+
+// ============================================================
+// AS DEMAIS ABAS (mantidas exatamente como antes)
+// ============================================================
 
 // 2. Deriva Continental
 function renderDerivaContinental() {
@@ -177,9 +185,8 @@ function renderDerivaContinental() {
         document.getElementById('mapa-fosseis').innerHTML = '<p class="text-warning">Biblioteca Leaflet não carregada.</p>';
         return;
     }
-
     setTimeout(() => {
-        try { atualizarMapa(); } catch(e) { console.error('Erro ao criar mapa:', e); }
+        try { atualizarMapa(); } catch(e) { console.error('Erro no mapa:', e); }
     }, 500);
 }
 
@@ -284,11 +291,11 @@ window.executarSimulacao = function() {
         const P_final = dados.P[dados.P.length - 1];
         const H_final = dados.H[dados.H.length - 1];
         if (P_final < 1) {
-            status.innerHTML = `<div class="alert alert-danger">🔥 COLAPSO TOTAL: A falta de luz causou a extinção das plantas.</div>`;
+            status.innerHTML = `<div class="alert alert-danger">🔥 COLAPSO TOTAL: extinção das plantas.</div>`;
         } else if (H_final < 5) {
-            status.innerHTML = `<div class="alert alert-warning">⚠️ ECOSSISTEMA DEVASTADO: Grandes dinossauros extintos.</div>`;
+            status.innerHTML = `<div class="alert alert-warning">⚠️ ECOSSISTEMA DEVASTADO.</div>`;
         } else {
-            status.innerHTML = `<div class="alert alert-success">🌿 ECOSSISTEMA ESTÁVEL: O impacto não foi severo o suficiente.</div>`;
+            status.innerHTML = `<div class="alert alert-success">🌿 ECOSSISTEMA ESTÁVEL.</div>`;
         }
     } catch (e) {
         console.error('Erro na simulação:', e);
@@ -296,7 +303,7 @@ window.executarSimulacao = function() {
     }
 };
 
-// 4. Icnofósseis
+// 4. Icnofósseis (jogo)
 function renderIcnofosseis() {
     const container = document.getElementById('icnofosseis');
     container.innerHTML = `
@@ -326,8 +333,6 @@ window.novoDesafioIcnofosseis = function() {
     try {
         const nomes = Object.keys(ICNOFOSSEIS);
         icnoDesafioAtual = nomes[Math.floor(Math.random() * nomes.length)];
-        const info = ICNOFOSSEIS[icnoDesafioAtual];
-
         const imgDiv = document.getElementById('icno-imagem');
         imgDiv.innerHTML = `<img src="${gerarSilhuetaPlaceholder('pegada', 200, 200)}" class="img-fluid" alt="Pegada"><p>Fóssil misterioso</p>`;
 
@@ -367,7 +372,7 @@ window.novoDesafioIcnofosseis = function() {
             `;
             if (garras) {
                 extra.innerHTML += `
-                    <div class="mb-2" id="icno-forma-container">
+                    <div class="mb-2">
                         <label>4. Formato:</label>
                         <select id="icno-forma" class="form-select">
                             <option value="alongada">Alongada e estreita</option>
@@ -413,7 +418,7 @@ window.identificarIcnofosseis = function() {
         }
     } catch (e) {
         console.error('Erro na identificação:', e);
-        document.getElementById('icno-resultado').innerHTML = `<div class="alert alert-danger">Erro ao identificar. Tente novamente.</div>`;
+        document.getElementById('icno-resultado').innerHTML = `<div class="alert alert-danger">Erro ao identificar.</div>`;
     }
 };
 

@@ -45,16 +45,17 @@ body {
     padding: 5px;
     background: #fff;
 }
-/* Garantir que a imagem de comparação não distorça */
-#imagem-comparacao img {
-    max-width: 100%;
-    height: auto !important;
-    display: block;
-}
+
+/* ===== CORREÇÃO PARA NÃO DISTORCER AS IMAGENS NA ESCALA ===== */
 #imagem-comparacao {
-    overflow: auto;
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    flex-direction: column;
+    text-align: center;
+    overflow-x: auto;   /* scroll horizontal se a imagem for muito larga */
+    padding: 10px 0;
+}
+#imagem-comparacao img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto !important;  /* força a manter a proporção */
+    image-rendering: auto;    /* mantém a qualidade */
 }
