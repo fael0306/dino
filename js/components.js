@@ -106,7 +106,6 @@ function renderEscalaReal() {
 
 // ===== FUNÇÃO ATUALIZAR ESCALA – CORRIGIDA =====
 window.atualizarEscala = async function() {
-    console.log('🔄 atualizarEscala() iniciado');
     try {
         const dinoSel = document.getElementById('dino-escala').value;
         const refSel = document.getElementById('ref-escala').value;
@@ -127,14 +126,12 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        console.log(`📊 Comparando ${dinoSel} (${dino.Altura}m) com ${refNome} (${refAltura}m)`);
-
         // Carregar imagens
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-        // Definir alturas proporcionais (máx 400px)
-        const alturaMax = 400;
+        // ALTURA MÁXIMA AUMENTADA PARA 600px
+        const alturaMax = 600;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
             alturaDino = alturaMax;
@@ -144,37 +141,23 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        console.log(`📐 Alturas: Dino=${alturaDino}px, Ref=${alturaRef}px`);
-
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
-        console.log('🖼️ Imagem combinada gerada com sucesso');
-
+        // EXIBIR A IMAGEM EM TAMANHO NATURAL, COM SCROLL
         const container = document.getElementById('imagem-comparacao');
-        // Forçar a imagem a ficar embaixo e sem distorção com CSS inline + !important via style
         container.innerHTML = `
-            <div style="display: inline-block; max-width: 100%;">
-                <img src="${combinada}" alt="Comparação" style="
-                    display: block !important;
-                    width: auto !important;
-                    height: auto !important;
-                    max-width: 100% !important;
-                    max-height: none !important;
-                    object-fit: none !important;
-                ">
+            <div style="display: inline-block; max-width: 100%; overflow: auto;">
+                <img src="${combinada}" alt="Comparação" style="display: block; width: auto; height: auto; max-width: none; max-height: none;">
             </div>
             <p style="margin-top: 10px; font-size: 1.1rem;">
                 <strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x
             </p>
         `;
-        console.log('✅ atualizarEscala() concluído');
     } catch (e) {
-        console.error('❌ Erro em atualizarEscala:', e);
-        document.getElementById('imagem-comparacao').innerHTML = `
-            <div class="alert alert-danger">Erro ao carregar a comparação. Verifique o console.</div>
-        `;
+        console.error('Erro em atualizarEscala:', e);
+        document.getElementById('imagem-comparacao').innerHTML = `<div class="alert alert-danger">Erro ao carregar a comparação.</div>`;
     }
 };
 
