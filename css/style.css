@@ -47,13 +47,13 @@ body {
 }
 
 /* ================================================================
-   COMPARAÇÃO DE ESCALA – AJUSTE AUTOMÁTICO PARA QUALQUER TELA
+   COMPARAÇÃO DE ESCALA – CORRIGIDA
    ================================================================ */
 #imagem-comparacao {
     width: 100% !important;
     padding: 10px 0 !important;
     box-sizing: border-box !important;
-    overflow: auto !important; /* scroll se necessário, mas evita cortes */
+    overflow: auto !important; /* scroll horizontal se necessário */
 }
 
 #imagem-comparacao > div:first-child {
@@ -66,16 +66,17 @@ body {
     padding: 20px !important;
     border-radius: 8px !important;
     margin: 10px 0 !important;
+    overflow: auto !important; /* permite scroll se a imagem for muito larga */
 }
 
 /* CORREÇÃO: as imagens terão altura fixa via style inline,
-   mas garantimos que não ultrapassem os limites da tela */
+   e não terão limite de largura para não comprimir a altura */
 #imagem-comparacao img {
     display: block !important;
     height: auto !important;      /* será sobrescrito pelo style inline */
     width: auto !important;
-    max-width: 45vw !important;   /* 45% da largura da viewport */
-    max-height: 60vh !important;  /* 60% da altura da viewport – segurança extra */
+    /* max-width removido para não interferir na altura */
+    max-height: 60vh !important;  /* segurança extra, mas a altura já é fixa */
     object-fit: contain !important;
     margin: 0 auto !important;
 }

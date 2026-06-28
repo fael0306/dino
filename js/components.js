@@ -127,43 +127,24 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens ORIGINAIS (com dimensões reais)
+        // Carregar imagens originais
         const imgDino = await carregarImagemOriginal(dinoSel);
         const imgRef = await carregarImagemOriginal(refNome);
 
-        // Limites da tela (em pixels)
+        // Altura máxima disponível (60% da altura da tela)
         const alturaMax = Math.round(window.innerHeight * 0.6);
-        const larguraMax = Math.round(window.innerWidth * 0.45);
 
-        // Função que calcula a altura final respeitando AMBOS os limites
-        function calcularAlturaFinal(img, alturaProporcional) {
-            // alturaProporcional é a altura que queremos (baseada na escala)
-            // Calcula a largura que essa altura geraria
-            const larguraResultante = img.width * (alturaProporcional / img.height);
-            if (larguraResultante <= larguraMax) {
-                // Cabe na largura, mantém a altura proposta
-                return alturaProporcional;
-            } else {
-                // Reduz a altura para que a largura caiba exatamente no limite
-                return Math.round(larguraMax * (img.height / img.width));
-            }
-        }
-
-        // Calcular alturas proporcionais (como antes)
-        let alturaDinoProp, alturaRefProp;
+        // Calcular alturas proporcionais
+        let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
-            alturaDinoProp = alturaMax;
-            alturaRefProp = Math.round(alturaMax * (refAltura / dino.Altura));
+            alturaDino = alturaMax;
+            alturaRef = Math.round(alturaMax * (refAltura / dino.Altura));
         } else {
-            alturaRefProp = alturaMax;
-            alturaDinoProp = Math.round(alturaMax * (dino.Altura / refAltura));
+            alturaRef = alturaMax;
+            alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Ajustar para respeitar a largura máxima (afeta principalmente imagens largas como T-Rex)
-        const alturaDinoFinal = calcularAlturaFinal(imgDino, alturaDinoProp);
-        const alturaRefFinal = calcularAlturaFinal(imgRef, alturaRefProp);
-
-        // Redimensionar imagens para as alturas finais (mantendo proporção)
+        // Redimensionar imagens para essas alturas (sem limitar largura)
         function redimensionarImagem(img, altura) {
             return new Promise((resolve) => {
                 const canvas = document.createElement('canvas');
@@ -176,21 +157,21 @@ window.atualizarEscala = async function() {
             });
         }
 
-        const imgDinoRedim = await redimensionarImagem(imgDino, alturaDinoFinal);
-        const imgRefRedim = await redimensionarImagem(imgRef, alturaRefFinal);
+        const imgDinoRedim = await redimensionarImagem(imgDino, alturaDino);
+        const imgRefRedim = await redimensionarImagem(imgRef, alturaRef);
 
-        // Exibir as imagens – agora elas já cabem nos limites, sem redução extra
+        // Exibir com altura fixa e sem limite de largura (scroll se necessário)
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0; overflow: auto;">
                 <div style="text-align: center; flex: 0 1 auto;">
                     <img src="${imgRefRedim}" alt="${refNome}" 
-                         style="display: block; height: ${alturaRefFinal}px; width: auto; max-width: 45vw; max-height: 60vh; object-fit: contain;">
+                         style="display: block; height: ${alturaRef}px; width: auto; max-height: 60vh; object-fit: contain;">
                     <p style="margin-top: 5px;"><strong>${refNome}</strong> (${refAltura}m)</p>
                 </div>
                 <div style="text-align: center; flex: 0 1 auto;">
                     <img src="${imgDinoRedim}" alt="${dinoSel}" 
-                         style="display: block; height: ${alturaDinoFinal}px; width: auto; max-width: 45vw; max-height: 60vh; object-fit: contain;">
+                         style="display: block; height: ${alturaDino}px; width: auto; max-height: 60vh; object-fit: contain;">
                     <p style="margin-top: 5px;"><strong>${dinoSel}</strong> (${dino.Altura}m)</p>
                 </div>
             </div>
