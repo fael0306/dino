@@ -126,11 +126,11 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens
+        // Carregar imagens base (200x200)
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-        // ALTURA MÁXIMA AUMENTADA PARA 600px
+        // Altura máxima de 600px para a imagem maior
         const alturaMax = 600;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -141,16 +141,18 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
+        // Redimensionar mantendo a proporção
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
+
+        // Combinar lado a lado
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
-        // EXIBIR A IMAGEM EM TAMANHO NATURAL, COM SCROLL
+        // ---- EXIBIÇÃO SEM NENHUMA RESTRIÇÃO DE TAMANHO ----
         const container = document.getElementById('imagem-comparacao');
+        // Limpa o conteúdo e insere a imagem sem nenhum div com max-width
         container.innerHTML = `
-            <div style="display: inline-block; max-width: 100%; overflow: auto;">
-                <img src="${combinada}" alt="Comparação" style="display: block; width: auto; height: auto; max-width: none; max-height: none;">
-            </div>
+            <img src="${combinada}" alt="Comparação" style="display: block; margin: 0 auto; width: auto; height: auto; max-width: none; max-height: none;">
             <p style="margin-top: 10px; font-size: 1.1rem;">
                 <strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x
             </p>
