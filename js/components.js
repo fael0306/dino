@@ -67,7 +67,7 @@ function renderEscalaReal() {
                 <div id="resultado-escala" class="mt-3"></div>
             </div>
             <div class="col-md-8">
-                <div id="imagem-comparacao" class="text-center">
+                <div id="imagem-comparacao" class="text-center" style="overflow: auto; display: flex; justify-content: center; align-items: flex-end;">
                     <p>Selecione um dinossauro e clique em Atualizar.</p>
                 </div>
             </div>
@@ -84,7 +84,7 @@ function renderEscalaReal() {
     });
 }
 
-// FUNÇÃO ATUALIZADA para usar imagens reais (com fallback)
+// FUNÇÃO CORRIGIDA: escala sem distorção
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
@@ -109,11 +109,11 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens reais (ou placeholders)
+        // Carregar imagens (placeholders ou reais)
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-        // Redimensionar para alturas proporcionais
+        // Definir altura máxima para a imagem maior
         const alturaMax = 400;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -124,12 +124,19 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
+        // Redimensionar mantendo a proporção
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
+
+        // Combinar lado a lado (alinhadas pela base)
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
-        document.getElementById('imagem-comparacao').innerHTML = `
-            <img src="${combinada}" class="img-fluid" alt="Comparação">
+        // Exibir a imagem sem distorção
+        const container = document.getElementById('imagem-comparacao');
+        container.innerHTML = `
+            <div style="display: inline-block; max-width: 100%;">
+                <img src="${combinada}" style="max-width: 100%; height: auto; display: block;" alt="Comparação">
+            </div>
             <p class="mt-2"><strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x</p>
         `;
     } catch (e) {
@@ -174,14 +181,12 @@ function renderDerivaContinental() {
         document.getElementById('iframe-globo').src = url;
     });
 
-    // Aguardar o DOM ser atualizado e a biblioteca Leaflet carregar
     if (typeof L === 'undefined') {
         console.warn('Leaflet não carregado. O mapa não será exibido.');
         document.getElementById('mapa-fosseis').innerHTML = '<p class="text-warning">Biblioteca Leaflet não carregada. Verifique sua conexão com a internet.</p>';
         return;
     }
 
-    // Pequeno delay para garantir que o elemento #mapa-fosseis exista
     setTimeout(() => {
         try {
             atualizarMapa();
@@ -206,7 +211,6 @@ window.atualizarMapa = function() {
                 attribution: '© OpenStreetMap'
             }).addTo(mapaLeaflet);
         }
-        // Limpar marcadores antigos (mantendo o tileLayer)
         mapaLeaflet.eachLayer(layer => {
             if (layer instanceof L.Marker) mapaLeaflet.removeLayer(layer);
         });
@@ -305,7 +309,7 @@ window.executarSimulacao = function() {
     }
 };
 
-// 4. Icnofósseis (jogo)
+// 4. Icnofósseis
 function renderIcnofosseis() {
     const container = document.getElementById('icnofosseis');
     container.innerHTML = `
@@ -327,7 +331,6 @@ function renderIcnofosseis() {
     if (!window.icnoEstado) {
         window.icnoEstado = { desafio: null, respostas: {} };
     }
-    // Iniciar com um desafio automático
     setTimeout(novoDesafioIcnofosseis, 100);
 }
 
@@ -435,7 +438,6 @@ function renderFosseisReais() {
         <button class="btn btn-primary mb-3" onclick="sortearFossil()">🎲 Sortear Dinossauro Real</button>
         <div id="fossil-detalhe"></div>
     `;
-    // Mostrar um primeiro fóssil automaticamente
     setTimeout(sortearFossil, 100);
 }
 
@@ -673,7 +675,6 @@ function atualizarLinhaTempo(idade) {
         `;
 
         const ctx = document.getElementById('grafico-tempo').getContext('2d');
-        // Destruir gráfico anterior se existir
         if (window.tempoChart) window.tempoChart.destroy();
         window.tempoChart = new Chart(ctx, {
             type: 'bar',
@@ -710,7 +711,6 @@ function renderClima() {
         <button class="btn btn-primary mt-2" onclick="atualizarClima()">Atualizar</button>
         <div id="clima-info" class="mt-3"></div>
     `;
-    // Mostrar clima inicial
     setTimeout(atualizarClima, 100);
 }
 
@@ -890,7 +890,6 @@ function renderArvoreEvolutiva() {
 document.addEventListener('DOMContentLoaded', function() {
     renderizarAbas();
     atualizarBadgeConquistas();
-    // Tentar carregar a escala após um tempo
     setTimeout(() => {
         try { atualizarEscala(); } catch(e) { console.error('Erro na escala inicial:', e); }
     }, 800);

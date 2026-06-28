@@ -238,7 +238,7 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
 }
 
 // ============================================================
-// DEMAIS FUNÇÕES UTILITÁRIAS (mantidas)
+// DEMAIS FUNÇÕES UTILITÁRIAS
 // ============================================================
 
 function redimensionarParaAltura(dataURL, alturaAlvo) {
@@ -267,10 +267,16 @@ function combinarLadoALado(dataURL1, dataURL2) {
             if (loaded === 2) {
                 const canvas = document.createElement('canvas');
                 const altura = Math.max(img1.height, img2.height);
-                canvas.width = img1.width + img2.width;
+                const largura = img1.width + img2.width;
+                canvas.width = largura;
                 canvas.height = altura;
                 const ctx = canvas.getContext('2d');
+                // Fundo branco
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, largura, altura);
+                // Desenhar imagem 1 alinhada pela base
                 ctx.drawImage(img1, 0, altura - img1.height);
+                // Desenhar imagem 2 alinhada pela base
                 ctx.drawImage(img2, img1.width, altura - img2.height);
                 resolve(canvas.toDataURL('image/png'));
             }
