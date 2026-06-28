@@ -2,7 +2,6 @@
 body {
     background-color: #f8f9fa;
 }
-
 .nav-pills .nav-link {
     color: #495057;
     border-radius: 0;
@@ -11,11 +10,9 @@ body {
     background-color: #2c3e50;
     color: white;
 }
-
 .tab-pane {
     padding: 15px 0;
 }
-
 .card-dino {
     border: 1px solid #dee2e6;
     border-radius: 8px;
@@ -23,7 +20,6 @@ body {
     margin-bottom: 15px;
     background: white;
 }
-
 .conquista-item {
     border-left: 4px solid #28a745;
     padding-left: 10px;
@@ -33,18 +29,15 @@ body {
     border-left-color: #dc3545;
     opacity: 0.6;
 }
-
 #mapa-fosseis {
     height: 400px;
     width: 100%;
 }
-
 #arvore-evolutiva {
     height: 600px;
     border: 1px solid #ccc;
     background: white;
 }
-
 .icno-imagem {
     max-width: 300px;
     border: 1px solid #ddd;
@@ -54,22 +47,19 @@ body {
 }
 
 /* ================================================================
-   CORREÇÃO DEFINITIVA PARA A COMPARAÇÃO DE ESCALA
+   CORREÇÃO DEFINITIVA – COMPARAÇÃO DE ESCALA (CAIBE NA TELA)
    ================================================================ */
 #imagem-comparacao {
     width: 100% !important;
-    text-align: center !important;
-    background: #f8f9fa !important;
-    padding: 20px !important;
-    border-radius: 8px !important;
-    overflow: auto !important;   /* scroll se a imagem for maior que a tela */
+    overflow: auto !important;
+    padding: 10px 0 !important;
     box-sizing: border-box !important;
 }
 
-/* Container flex para as duas imagens */
+/* Container flex das imagens */
 #imagem-comparacao > div:first-child {
     display: flex !important;
-    flex-wrap: wrap !important;
+    flex-wrap: wrap !important;          /* quebra para linha seguinte se não couber */
     justify-content: center !important;
     align-items: flex-end !important;
     gap: 20px !important;
@@ -82,35 +72,16 @@ body {
 /* Cada imagem individual */
 #imagem-comparacao img {
     display: block !important;
-    width: auto !important;
     height: auto !important;
-    max-width: 100% !important;
-    max-height: none !important;
-    object-fit: none !important;
+    width: auto !important;
+    max-width: 100% !important;    /* NUNCA ULTRAPASSA A LARGURA DO CONTAINER */
+    max-height: 600px !important;  /* LIMITE DE ALTURA PARA NÃO FICAR GIGANTE */
+    object-fit: contain !important;
     margin: 0 auto !important;
 }
 
-/* Texto abaixo das imagens */
+/* Texto abaixo */
 #imagem-comparacao p {
     margin-top: 10px !important;
     font-size: 1.1rem !important;
-}
-
-/* css/style.css (mantenha tudo o que já tem e adicione no final) */
-
-/* ================================================================
-   CORREÇÃO PARA A COMPARAÇÃO DE ESCALA (IMAGENS ORIGINAIS)
-   ================================================================ */
-#imagem-comparacao {
-    width: 100% !important;
-    overflow: auto !important;
-    padding: 10px 0 !important;
-}
-
-#imagem-comparacao img {
-    display: block !important;
-    height: auto !important;
-    width: auto !important;
-    max-width: 100% !important;
-    object-fit: none !important;
 }
