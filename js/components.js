@@ -105,6 +105,10 @@ function renderEscalaReal() {
 }
 
 // ===== FUNÇÃO ATUALIZAR ESCALA – CORRIGIDA =====
+// js/components.js
+
+// ... (mantenha todo o resto do arquivo, apenas substitua a função abaixo)
+
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
@@ -126,12 +130,11 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens (tamanho original 200x200)
-        const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
-        const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
+        // Carregar imagens ORIGINAIS (sem redimensionar para 200x200)
+        const imgDino = await carregarImagemOriginal(dinoSel);
+        const imgRef = await carregarImagemOriginal(refNome);
 
-        // Definir alturas proporcionais com base na escala real
-        // A altura máxima será 600px para a maior imagem
+        // Definir altura máxima para a imagem maior (ex: 600px)
         const alturaMax = 600;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -142,11 +145,23 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Redimensionar cada imagem individualmente, mantendo a proporção
-        const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
-        const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
+        // Função auxiliar para redimensionar uma imagem para uma altura específica (preservando proporção)
+        function redimensionarImagem(img, altura) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ratio = altura / img.height;
+                canvas.width = Math.round(img.width * ratio);
+                canvas.height = altura;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/png'));
+            });
+        }
 
-        // EXIBIR AS DUAS IMAGENS SEPARADAS, LADO A LADO, ALINHADAS PELA BASE
+        const imgDinoRedim = await redimensionarImagem(imgDino, alturaDino);
+        const imgRefRedim = await redimensionarImagem(imgRef, alturaRef);
+
+        // EXIBIR AS DUAS IMAGENS LADO A LADO (SEM CANVAS COMBINADO)
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
             <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0;">
@@ -163,7 +178,12 @@ window.atualizarEscala = async function() {
         `;
     } catch (e) {
         console.error('Erro em atualizarEscala:', e);
-        document.getElementById('imagem-comparacao').innerHTML = `<div class="alert alert-danger">Erro ao carregar a comparação.</div>`;
+        document.getElementById('imagem-comparacao').innerHTML = `
+            <div class="alert alert-danger">
+                Erro ao carregar a comparação. Verifique se as imagens existem na pasta assets/ e tente novamente.
+                <br><small>Detalhe: ${e.message}</small>
+            </div>
+        `;
     }
 };
 

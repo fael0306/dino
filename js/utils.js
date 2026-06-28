@@ -340,3 +340,43 @@ function identificarIcnogenus(dedos, garras, tamanho, forma, proporcao) {
         }
     }
 }
+
+// js/utils.js
+
+// ============================================================
+// FUNÇÃO PARA CARREGAR IMAGEM ORIGINAL (SEM REDIMENSIONAR)
+// ============================================================
+function carregarImagemOriginal(nome) {
+    return new Promise((resolve, reject) => {
+        const mapa = {
+            "Tyrannosaurus rex": "trex.png",
+            "Triceratops": "triceratops.png",
+            "Velociraptor": "velociraptor.png",
+            "Brachiosaurus": "brachiosaurus.png",
+            "Stegosaurus": "stegosaurus.png",
+            "Spinosaurus": "spinosaurus.png",
+            "Patagotitan": "patagotitan.png",
+            "Humano": "human.png",
+            "Elefante": "elephant.png"
+        };
+        const nomeArquivo = mapa[nome] || nome.toLowerCase().replace(/ /g, '_') + '.png';
+        const caminho = `assets/${nomeArquivo}`;
+        const img = new Image();
+        img.onload = function() {
+            resolve(img); // retorna o elemento Image
+        };
+        img.onerror = function() {
+            // Fallback: usar placeholder
+            const placeholder = gerarSilhuetaPlaceholder(nome, 200, 200);
+            const imgFallback = new Image();
+            imgFallback.onload = function() {
+                resolve(imgFallback);
+            };
+            imgFallback.src = placeholder;
+        };
+        img.src = caminho;
+    });
+}
+
+// (As demais funções permanecem iguais)
+// ... (carregarImagemOuPlaceholder, gerarSilhuetaPlaceholder, redimensionarParaAltura, combinarLadoALado, etc.)
