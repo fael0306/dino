@@ -107,7 +107,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     ctx.stroke();
 
     if (!nome.toLowerCase().includes('humano') && !nome.toLowerCase().includes('elefante')) {
-        // Desenho do pescoço, cabeça, pernas e cauda (mantido do original)
         ctx.beginPath();
         ctx.moveTo(cx - 10*escala, cy - 40*escala);
         ctx.quadraticCurveTo(cx - 20*escala, cy - 70*escala, cx + 10*escala, cy - 90*escala);

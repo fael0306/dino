@@ -47,13 +47,13 @@ body {
 }
 
 /* ================================================================
-   CORREÇÃO FINAL – COMPARAÇÃO DE ESCALA (ADAPTÁVEL À TELA)
+   COMPARAÇÃO DE ESCALA – AJUSTE AUTOMÁTICO PARA QUALQUER TELA
    ================================================================ */
 #imagem-comparacao {
     width: 100% !important;
-    overflow: auto !important;
     padding: 10px 0 !important;
     box-sizing: border-box !important;
+    overflow: auto !important; /* scroll se necessário, mas evita cortes */
 }
 
 #imagem-comparacao > div:first-child {
@@ -72,8 +72,8 @@ body {
     display: block !important;
     height: auto !important;
     width: auto !important;
-    max-width: 45vw !important;    /* no máximo 45% da largura da tela */
-    max-height: 70vh !important;   /* no máximo 70% da altura da tela */
+    max-width: 45vw !important;   /* 45% da largura da viewport */
+    max-height: 60vh !important;  /* 60% da altura da viewport */
     object-fit: contain !important;
     margin: 0 auto !important;
 }
