@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaleoLab Científico – Web</title>
+
+    <!-- Bootstrap 5 + Ícones -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Leaflet (mapas) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- vis.js (árvore evolutiva) -->
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <!-- jsPDF (exportar PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Nosso CSS e JS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Barra de navegação superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="bi bi-bug"></i> PaleoLab Científico</a>
+            <span class="navbar-text text-light" id="conquista-badge">
+                <i class="bi bi-trophy"></i> <span id="conquista-count">0</span>
+            </span>
+        </div>
+    </nav>
+
+    <!-- Abas (tabs) -->
+    <div class="container-fluid mt-3">
+        <ul class="nav nav-pills nav-fill flex-wrap" id="paleo-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#escala" type="button" role="tab">📏 Escala Real</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#deriva" type="button" role="tab">🗺️ Deriva Continental</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#extincao" type="button" role="tab">🦠 Extinção K‑Pg</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#icnofosseis" type="button" role="tab">👣 Icnofósseis</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fosseis" type="button" role="tab">🦴 Fósseis Reais</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#massa" type="button" role="tab">⚖️ Massa Corporal</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#quiz" type="button" role="tab">📝 Quiz</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tempo" type="button" role="tab">⏳ Linha do Tempo</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#clima" type="button" role="tab">🌍 Clima Mesozóico</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#conquistas" type="button" role="tab">🏆 Conquistas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pdf" type="button" role="tab">📄 Exportar PDF</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#arvore" type="button" role="tab">🌳 Árvore Evolutiva</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3" id="paleo-tab-content">
+            <!-- Cada aba será preenchida via JavaScript para manter o HTML limpo -->
+            <div class="tab-pane fade show active" id="escala" role="tabpanel"></div>
+            <div class="tab-pane fade" id="deriva" role="tabpanel"></div>
+            <div class="tab-pane fade" id="extincao" role="tabpanel"></div>
+            <div class="tab-pane fade" id="icnofosseis" role="tabpanel"></div>
+            <div class="tab-pane fade" id="fosseis" role="tabpanel"></div>
+            <div class="tab-pane fade" id="massa" role="tabpanel"></div>
+            <div class="tab-pane fade" id="quiz" role="tabpanel"></div>
+            <div class="tab-pane fade" id="tempo" role="tabpanel"></div>
+            <div class="tab-pane fade" id="clima" role="tabpanel"></div>
+            <div class="tab-pane fade" id="conquistas" role="tabpanel"></div>
+            <div class="tab-pane fade" id="pdf" role="tabpanel"></div>
+            <div class="tab-pane fade" id="arvore" role="tabpanel"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
