@@ -46,9 +46,23 @@ body {
     background: #fff;
 }
 
-/* ===== CONTAINER DA COMPARAÇÃO ===== */
+/* ===== CORREÇÃO PARA NÃO DISTORCER A IMAGEM NA ESCALA ===== */
 #imagem-comparacao {
-    width: 100%;
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
     overflow: auto;
-    padding: 10px 0;
+}
+#imagem-comparacao img {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    object-fit: none !important;
+}
+#imagem-comparacao > div {
+    display: inline-block !important;
+    max-width: 100% !important;
 }

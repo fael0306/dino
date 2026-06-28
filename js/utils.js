@@ -44,6 +44,7 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     canvas.height = altura;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, largura, altura);
+
     ctx.fillStyle = '#e9ecef';
     ctx.fillRect(0, 0, largura, altura);
 
@@ -60,7 +61,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     const cy = altura / 2;
     const escala = Math.min(largura, altura) / 200;
 
-    // Desenho genérico de dinossauro (perfil)
     ctx.beginPath();
     ctx.moveTo(cx - 60*escala, cy + 40*escala);
     ctx.quadraticCurveTo(cx - 80*escala, cy - 10*escala, cx - 50*escala, cy - 40*escala);
@@ -71,7 +71,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     ctx.fill();
     ctx.stroke();
 
-    // Pescoço e cabeça (exceto humano/elefante)
     if (!nome.toLowerCase().includes('humano') && !nome.toLowerCase().includes('elefante')) {
         ctx.beginPath();
         ctx.moveTo(cx - 10*escala, cy - 40*escala);
@@ -81,7 +80,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        // Olho
         ctx.fillStyle = 'white';
         ctx.beginPath();
         ctx.arc(cx + 30*escala, cy - 85*escala, 6*escala, 0, 2 * Math.PI);
@@ -90,7 +88,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.beginPath();
         ctx.arc(cx + 32*escala, cy - 85*escala, 3*escala, 0, 2 * Math.PI);
         ctx.fill();
-        // Pernas
         ctx.fillStyle = cor;
         ctx.strokeStyle = '#212529';
         ctx.lineWidth = 2;
@@ -110,7 +107,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        // Cauda
         ctx.beginPath();
         ctx.moveTo(cx - 60*escala, cy + 20*escala);
         ctx.quadraticCurveTo(cx - 90*escala, cy + 30*escala, cx - 100*escala, cy + 10*escala);
@@ -119,7 +115,7 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.fill();
         ctx.stroke();
     } else if (nome.toLowerCase().includes('humano')) {
-        // Desenho humano simplificado (apenas corpo)
+        // Desenho humano simplificado
         ctx.fillStyle = cor;
         ctx.strokeStyle = '#212529';
         ctx.lineWidth = 2;
@@ -135,7 +131,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        // Braços
         ctx.beginPath();
         ctx.moveTo(cx - 15*escala, cy - 10*escala);
         ctx.lineTo(cx - 40*escala, cy + 10*escala);
@@ -152,7 +147,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        // Pernas
         ctx.beginPath();
         ctx.moveTo(cx - 10*escala, cy + 30*escala);
         ctx.lineTo(cx - 15*escala, cy + 70*escala);
@@ -182,7 +176,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.arc(cx + 50*escala, cy - 20*escala, 30*escala, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
-        // Tromba
         ctx.beginPath();
         ctx.moveTo(cx + 70*escala, cy - 10*escala);
         ctx.quadraticCurveTo(cx + 90*escala, cy + 20*escala, cx + 80*escala, cy + 40*escala);
@@ -191,7 +184,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        // Olho
         ctx.fillStyle = 'white';
         ctx.beginPath();
         ctx.arc(cx + 60*escala, cy - 25*escala, 6*escala, 0, 2 * Math.PI);
@@ -200,7 +192,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.beginPath();
         ctx.arc(cx + 62*escala, cy - 25*escala, 3*escala, 0, 2 * Math.PI);
         ctx.fill();
-        // Pernas
         const pernas = [[-30, 40, -25, 70], [30, 40, 25, 70], [-20, 40, -15, 70], [20, 40, 15, 70]];
         pernas.forEach(([x1, y1, x2, y2]) => {
             ctx.beginPath();
@@ -212,7 +203,6 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
             ctx.fill();
             ctx.stroke();
         });
-        // Orelha
         ctx.beginPath();
         ctx.ellipse(cx + 40*escala, cy - 20*escala, 15*escala, 25*escala, -0.3, 0, 2 * Math.PI);
         ctx.fill();
