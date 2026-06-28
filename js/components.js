@@ -131,19 +131,20 @@ window.atualizarEscala = async function() {
         const imgDino = await carregarImagemOriginal(dinoSel);
         const imgRef = await carregarImagemOriginal(refNome);
 
-        // Limites da tela
+        // Limites da tela (em pixels)
         const alturaMax = Math.round(window.innerHeight * 0.6);
         const larguraMax = Math.round(window.innerWidth * 0.45);
 
-        // Função que calcula a altura final respeitando ambos os limites
+        // Função que calcula a altura final respeitando AMBOS os limites
         function calcularAlturaFinal(img, alturaProporcional) {
             // alturaProporcional é a altura que queremos (baseada na escala)
-            // Verifica se a largura resultante ultrapassa larguraMax
+            // Calcula a largura que essa altura geraria
             const larguraResultante = img.width * (alturaProporcional / img.height);
             if (larguraResultante <= larguraMax) {
+                // Cabe na largura, mantém a altura proposta
                 return alturaProporcional;
             } else {
-                // Reduz a altura para que a largura caiba exatamente em larguraMax
+                // Reduz a altura para que a largura caiba exatamente no limite
                 return Math.round(larguraMax * (img.height / img.width));
             }
         }
@@ -158,7 +159,7 @@ window.atualizarEscala = async function() {
             alturaDinoProp = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Ajustar para respeitar a largura máxima
+        // Ajustar para respeitar a largura máxima (afeta principalmente imagens largas como T-Rex)
         const alturaDinoFinal = calcularAlturaFinal(imgDino, alturaDinoProp);
         const alturaRefFinal = calcularAlturaFinal(imgRef, alturaRefProp);
 
@@ -178,7 +179,7 @@ window.atualizarEscala = async function() {
         const imgDinoRedim = await redimensionarImagem(imgDino, alturaDinoFinal);
         const imgRefRedim = await redimensionarImagem(imgRef, alturaRefFinal);
 
-        // Exibir as duas imagens lado a lado – agora elas já cabem nos limites
+        // Exibir as imagens – agora elas já cabem nos limites, sem redução extra
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
             <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0;">
