@@ -68,12 +68,14 @@ body {
     margin: 10px 0 !important;
 }
 
+/* CORREÇÃO: as imagens terão altura fixa via style inline,
+   mas garantimos que não ultrapassem os limites da tela */
 #imagem-comparacao img {
     display: block !important;
-    height: auto !important;
+    height: auto !important;      /* será sobrescrito pelo style inline */
     width: auto !important;
     max-width: 45vw !important;   /* 45% da largura da viewport */
-    max-height: 60vh !important;  /* 60% da altura da viewport */
+    max-height: 60vh !important;  /* 60% da altura da viewport – segurança extra */
     object-fit: contain !important;
     margin: 0 auto !important;
 }

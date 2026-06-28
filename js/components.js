@@ -104,6 +104,8 @@ function renderEscalaReal() {
     console.log('✅ renderEscalaReal() concluído');
 }
 
+// Substitua todo o conteúdo de `atualizarEscala` por este código:
+
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
@@ -156,16 +158,18 @@ window.atualizarEscala = async function() {
         const imgDinoRedim = await redimensionarImagem(imgDino, alturaDino);
         const imgRefRedim = await redimensionarImagem(imgRef, alturaRef);
 
-        // Exibir as duas imagens lado a lado
+        // Exibir as duas imagens lado a lado com altura FIXA
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
             <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0;">
                 <div style="text-align: center; flex: 0 1 auto;">
-                    <img src="${imgRefRedim}" alt="${refNome}" style="display: block; height: auto; width: auto; max-width: 45vw; max-height: 60vh;">
+                    <img src="${imgRefRedim}" alt="${refNome}" 
+                         style="display: block; height: ${alturaRef}px; width: auto; max-width: 45vw; max-height: 60vh; object-fit: contain;">
                     <p style="margin-top: 5px;"><strong>${refNome}</strong> (${refAltura}m)</p>
                 </div>
                 <div style="text-align: center; flex: 0 1 auto;">
-                    <img src="${imgDinoRedim}" alt="${dinoSel}" style="display: block; height: auto; width: auto; max-width: 45vw; max-height: 60vh;">
+                    <img src="${imgDinoRedim}" alt="${dinoSel}" 
+                         style="display: block; height: ${alturaDino}px; width: auto; max-width: 45vw; max-height: 60vh; object-fit: contain;">
                     <p style="margin-top: 5px;"><strong>${dinoSel}</strong> (${dino.Altura}m)</p>
                 </div>
             </div>
