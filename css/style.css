@@ -47,7 +47,7 @@ body {
 }
 
 /* ================================================================
-   CORREÇÃO DEFINITIVA – COMPARAÇÃO DE ESCALA (CAIBE NA TELA)
+   CORREÇÃO FINAL – COMPARAÇÃO DE ESCALA (ADAPTÁVEL À TELA)
    ================================================================ */
 #imagem-comparacao {
     width: 100% !important;
@@ -56,10 +56,9 @@ body {
     box-sizing: border-box !important;
 }
 
-/* Container flex das imagens */
 #imagem-comparacao > div:first-child {
     display: flex !important;
-    flex-wrap: wrap !important;          /* quebra para linha seguinte se não couber */
+    flex-wrap: wrap !important;
     justify-content: center !important;
     align-items: flex-end !important;
     gap: 20px !important;
@@ -69,18 +68,16 @@ body {
     margin: 10px 0 !important;
 }
 
-/* Cada imagem individual */
 #imagem-comparacao img {
     display: block !important;
     height: auto !important;
     width: auto !important;
-    max-width: 100% !important;    /* NUNCA ULTRAPASSA A LARGURA DO CONTAINER */
-    max-height: 600px !important;  /* LIMITE DE ALTURA PARA NÃO FICAR GIGANTE */
+    max-width: 45vw !important;    /* no máximo 45% da largura da tela */
+    max-height: 70vh !important;   /* no máximo 70% da altura da tela */
     object-fit: contain !important;
     margin: 0 auto !important;
 }
 
-/* Texto abaixo */
 #imagem-comparacao p {
     margin-top: 10px !important;
     font-size: 1.1rem !important;

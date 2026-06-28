@@ -129,12 +129,12 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carregar imagens ORIGINAIS (sem redimensionar para 200x200)
+        // Carregar imagens ORIGINAIS
         const imgDino = await carregarImagemOriginal(dinoSel);
         const imgRef = await carregarImagemOriginal(refNome);
 
-        // Definir altura máxima de 600px para a MAIOR imagem
-        const alturaMax = 600;
+        // Definir altura máxima como 70% da altura da tela
+        const alturaMax = Math.round(window.innerHeight * 0.7);
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
             alturaDino = alturaMax;
@@ -144,7 +144,6 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // Função auxiliar para redimensionar imagem para altura específica
         function redimensionarImagem(img, altura) {
             return new Promise((resolve) => {
                 const canvas = document.createElement('canvas');
@@ -160,16 +159,15 @@ window.atualizarEscala = async function() {
         const imgDinoRedim = await redimensionarImagem(imgDino, alturaDino);
         const imgRefRedim = await redimensionarImagem(imgRef, alturaRef);
 
-        // EXIBIR AS DUAS IMAGENS LADO A LADO (com flex-wrap para caber)
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0;">
-                <div style="text-align: center; flex: 0 1 auto; max-width: 100%;">
-                    <img src="${imgRefRedim}" alt="${refNome}" style="display: block; height: auto; width: auto; max-width: 100%; max-height: 600px;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0; max-width: 100%;">
+                <div style="text-align: center; flex: 0 1 auto; max-width: 45%;">
+                    <img src="${imgRefRedim}" alt="${refNome}" style="display: block; height: auto; width: auto; max-width: 100%; max-height: ${alturaRef}px;">
                     <p style="margin-top: 5px;"><strong>${refNome}</strong> (${refAltura}m)</p>
                 </div>
-                <div style="text-align: center; flex: 0 1 auto; max-width: 100%;">
-                    <img src="${imgDinoRedim}" alt="${dinoSel}" style="display: block; height: auto; width: auto; max-width: 100%; max-height: 600px;">
+                <div style="text-align: center; flex: 0 1 auto; max-width: 45%;">
+                    <img src="${imgDinoRedim}" alt="${dinoSel}" style="display: block; height: auto; width: auto; max-width: 100%; max-height: ${alturaDino}px;">
                     <p style="margin-top: 5px;"><strong>${dinoSel}</strong> (${dino.Altura}m)</p>
                 </div>
             </div>
