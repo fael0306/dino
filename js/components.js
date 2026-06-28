@@ -1,10 +1,13 @@
 // js/components.js
 
+console.log('🔄 components.js carregado');
+
 // ============================================================
 // RENDERIZAÇÃO DAS ABAS (com isolamento de erros)
 // ============================================================
 
 function renderizarAbas() {
+    console.log('▶️ renderizarAbas() iniciado');
     const renderizadores = [
         { fn: renderEscalaReal, id: 'escala' },
         { fn: renderDerivaContinental, id: 'deriva' },
@@ -22,68 +25,73 @@ function renderizarAbas() {
 
     renderizadores.forEach(({ fn, id }) => {
         try {
+            console.log(`📌 Renderizando aba: ${id}`);
             fn();
         } catch (e) {
-            console.error(`Erro ao renderizar aba "${id}":`, e);
+            console.error(`❌ Erro ao renderizar aba "${id}":`, e);
             const container = document.getElementById(id);
             if (container) {
                 container.innerHTML = `
-                    <div class="alert alert-warning">
+                    <div class="alert alert-danger">
                         <strong>⚠️ Erro ao carregar esta aba.</strong><br>
-                        Detalhe: ${e.message || 'Verifique o console para mais informações.'}
+                        ${e.message || 'Verifique o console.'}
                     </div>
                 `;
             }
         }
     });
+    console.log('✅ renderizarAbas() concluído');
 }
 
-// 1. Escala Real – IMAGEM EMBAIXO
+// ============================================================
+// 1. ESCALA REAL – CORRIGIDA DEFINITIVAMENTE
+// ============================================================
 function renderEscalaReal() {
+    console.log('🔧 renderEscalaReal()');
     const container = document.getElementById('escala');
     container.innerHTML = `
-        <div class="row">
-            <div class="col-12">
-                <h4>📏 Compare a Escala</h4>
-                <!-- LINHA DOS CONTROLES -->
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label class="form-label">Escolha um dinossauro:</label>
-                            <select id="dino-escala" class="form-select">
-                                ${DINOSSAUROS_CLASSICOS.map(d => `<option value="${d.Nome}">${d.Nome}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Comparar com:</label>
-                            <select id="ref-escala" class="form-select">
-                                <option value="Humano">Humano (1.7m)</option>
-                                <option value="Elefante">Elefante (3.3m)</option>
-                                <option value="Outro">Outro dinossauro...</option>
-                            </select>
-                        </div>
-                        <div id="outro-dino-container" style="display:none;">
-                            <label class="form-label">Selecione o outro dinossauro:</label>
-                            <select id="outro-dino-escala" class="form-select"></select>
-                        </div>
-                        <button class="btn btn-primary" onclick="atualizarEscala()">Atualizar</button>
-                    </div>
-                    <div class="col-md-8">
-                        <!-- Espaço para texto de resultado (opcional) -->
-                        <div id="resultado-escala" class="mt-2"></div>
-                    </div>
+        <div style="display: flex; flex-direction: column; width: 100%;">
+            <h4>📏 Compare a Escala</h4>
+            <!-- CONTROLES (em cima) -->
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label class="form-label">Escolha um dinossauro:</label>
+                    <select id="dino-escala" class="form-select">
+                        ${DINOSSAUROS_CLASSICOS.map(d => `<option value="${d.Nome}">${d.Nome}</option>`).join('')}
+                    </select>
                 </div>
-                <!-- LINHA DA IMAGEM (EMBAIXO, OCUPANDO 100%) -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div id="imagem-comparacao" style="text-align:center; background:#f8f9fa; padding:20px; border-radius:8px; overflow:auto;">
-                            <p>Selecione um dinossauro e clique em Atualizar.</p>
-                        </div>
-                    </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label class="form-label">Comparar com:</label>
+                    <select id="ref-escala" class="form-select">
+                        <option value="Humano">Humano (1.7m)</option>
+                        <option value="Elefante">Elefante (3.3m)</option>
+                        <option value="Outro">Outro dinossauro...</option>
+                    </select>
                 </div>
+                <div id="outro-dino-container" style="display:none; flex:1; min-width:200px;">
+                    <label class="form-label">Selecione o outro dinossauro:</label>
+                    <select id="outro-dino-escala" class="form-select"></select>
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn btn-primary" onclick="atualizarEscala()">Atualizar</button>
+                </div>
+            </div>
+            <!-- IMAGEM (embaixo, ocupando 100%) -->
+            <div id="imagem-comparacao" style="
+                width: 100%;
+                text-align: center;
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                overflow: auto;
+                box-sizing: border-box;
+                min-height: 100px;
+            ">
+                <p>Selecione um dinossauro e clique em Atualizar.</p>
             </div>
         </div>
     `;
+
     // Preencher o select de "outro dinossauro"
     const outroSelect = document.getElementById('outro-dino-escala');
     const nomes = DINOSSAUROS_CLASSICOS.map(d => d.Nome);
@@ -92,10 +100,13 @@ function renderEscalaReal() {
     document.getElementById('ref-escala').addEventListener('change', function() {
         document.getElementById('outro-dino-container').style.display = this.value === 'Outro' ? 'block' : 'none';
     });
+
+    console.log('✅ renderEscalaReal() concluído');
 }
 
-// ===== FUNÇÃO CORRIGIDA – IMAGEM EMBAIXO, SEM DISTORÇÃO =====
+// ===== FUNÇÃO ATUALIZAR ESCALA – CORRIGIDA =====
 window.atualizarEscala = async function() {
+    console.log('🔄 atualizarEscala() iniciado');
     try {
         const dinoSel = document.getElementById('dino-escala').value;
         const refSel = document.getElementById('ref-escala').value;
@@ -116,9 +127,13 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
+        console.log(`📊 Comparando ${dinoSel} (${dino.Altura}m) com ${refNome} (${refAltura}m)`);
+
+        // Carregar imagens
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
+        // Definir alturas proporcionais (máx 400px)
         const alturaMax = 400;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -129,27 +144,47 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
+        console.log(`📐 Alturas: Dino=${alturaDino}px, Ref=${alturaRef}px`);
+
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
+        console.log('🖼️ Imagem combinada gerada com sucesso');
+
         const container = document.getElementById('imagem-comparacao');
+        // Forçar a imagem a ficar embaixo e sem distorção com CSS inline + !important via style
         container.innerHTML = `
             <div style="display: inline-block; max-width: 100%;">
-                <img src="${combinada}" alt="Comparação" style="display: block; width: auto; height: auto; max-width: 100%;">
+                <img src="${combinada}" alt="Comparação" style="
+                    display: block !important;
+                    width: auto !important;
+                    height: auto !important;
+                    max-width: 100% !important;
+                    max-height: none !important;
+                    object-fit: none !important;
+                ">
             </div>
             <p style="margin-top: 10px; font-size: 1.1rem;">
                 <strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x
             </p>
         `;
+        console.log('✅ atualizarEscala() concluído');
     } catch (e) {
-        console.error('Erro ao atualizar escala:', e);
-        document.getElementById('imagem-comparacao').innerHTML = `<div class="alert alert-danger">Erro ao carregar a comparação.</div>`;
+        console.error('❌ Erro em atualizarEscala:', e);
+        document.getElementById('imagem-comparacao').innerHTML = `
+            <div class="alert alert-danger">Erro ao carregar a comparação. Verifique o console.</div>
+        `;
     }
 };
 
+// ============================================================
+// AS DEMAIS ABAS (MANTIDAS, MAS COM TRATAMENTO DE ERRO)
+// ============================================================
+
 // 2. Deriva Continental
 function renderDerivaContinental() {
+    console.log('🔧 renderDerivaContinental()');
     const container = document.getElementById('deriva');
     container.innerHTML = `
         <h4>🗺️ Globo Interativo da Terra Antiga</h4>
@@ -185,7 +220,7 @@ function renderDerivaContinental() {
     });
 
     if (typeof L === 'undefined') {
-        console.warn('Leaflet não carregado.');
+        console.warn('⚠️ Leaflet não carregado.');
         document.getElementById('mapa-fosseis').innerHTML = '<p class="text-warning">Biblioteca Leaflet não carregada.</p>';
         return;
     }
@@ -229,6 +264,7 @@ window.atualizarMapa = function() {
 
 // 3. Extinção K-Pg
 function renderExtincaoKpg() {
+    console.log('🔧 renderExtincaoKpg()');
     const container = document.getElementById('extincao');
     container.innerHTML = `
         <h4>🦠 Simulador do Fim do Cretáceo</h4>
@@ -307,8 +343,9 @@ window.executarSimulacao = function() {
     }
 };
 
-// 4. Icnofósseis (jogo)
+// 4. Icnofósseis (jogo) – versão resumida para não alongar, mas funcional
 function renderIcnofosseis() {
+    console.log('🔧 renderIcnofosseis()');
     const container = document.getElementById('icnofosseis');
     container.innerHTML = `
         <h4>👣 Paleo-Detetive: Identifique a Pegada</h4>
@@ -428,6 +465,7 @@ window.identificarIcnofosseis = function() {
 
 // 5. Fósseis Reais
 function renderFosseisReais() {
+    console.log('🔧 renderFosseisReais()');
     const container = document.getElementById('fosseis');
     container.innerHTML = `
         <h4>🦴 Museu de Fósseis Reais</h4>
@@ -468,6 +506,7 @@ window.sortearFossil = function() {
 
 // 6. Massa Corporal
 function renderMassaCorporal() {
+    console.log('🔧 renderMassaCorporal()');
     const container = document.getElementById('massa');
     container.innerHTML = `
         <h4>⚖️ Estimativa de Massa Corporal</h4>
@@ -525,10 +564,11 @@ window.calcularMassa = function() {
     }
 };
 
-// 7. Quiz
+// 7. Quiz (resumido, mas funcional)
 let quizEstado = { nivel: null, indice: 0, pontuacao: 0, perguntas: [], respostas: [], concluido: false };
 
 function renderQuiz() {
+    console.log('🔧 renderQuiz()');
     const container = document.getElementById('quiz');
     container.innerHTML = `
         <h4>📝 Quiz Paleontológico</h4>
@@ -635,6 +675,7 @@ function mostrarResultadoQuiz() {
 
 // 8. Linha do Tempo
 function renderLinhaTempo() {
+    console.log('🔧 renderLinhaTempo()');
     const container = document.getElementById('tempo');
     container.innerHTML = `
         <h4>⏳ Linha do Tempo Geológica</h4>
@@ -696,6 +737,7 @@ function atualizarLinhaTempo(idade) {
 
 // 9. Clima Mesozóico
 function renderClima() {
+    console.log('🔧 renderClima()');
     const container = document.getElementById('clima');
     container.innerHTML = `
         <h4>🌍 Simulação Climática do Mesozóico</h4>
@@ -733,6 +775,7 @@ window.atualizarClima = function() {
 
 // 10. Conquistas
 function renderConquistas() {
+    console.log('🔧 renderConquistas()');
     const container = document.getElementById('conquistas');
     container.innerHTML = `
         <h4>🏆 Suas Conquistas</h4>
@@ -792,6 +835,7 @@ function atualizarBadgeConquistas() {
 
 // 11. Exportar PDF
 function renderExportPDF() {
+    console.log('🔧 renderExportPDF()');
     const container = document.getElementById('pdf');
     container.innerHTML = `
         <h4>📄 Exportar Relatório Científico (PDF)</h4>
@@ -832,6 +876,7 @@ window.gerarPDF = function() {
 
 // 12. Árvore Evolutiva
 function renderArvoreEvolutiva() {
+    console.log('🔧 renderArvoreEvolutiva()');
     const container = document.getElementById('arvore');
     container.innerHTML = `
         <h4>🌳 Árvore Evolutiva Interativa</h4>
@@ -884,6 +929,7 @@ function renderArvoreEvolutiva() {
 // INICIALIZAÇÃO
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOMContentLoaded – inicializando PaleoLab');
     renderizarAbas();
     atualizarBadgeConquistas();
     setTimeout(() => {

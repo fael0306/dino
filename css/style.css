@@ -46,14 +46,19 @@ body {
     background: #fff;
 }
 
-/* ===== CORREÇÃO PARA NÃO DISTORCER A IMAGEM NA ESCALA ===== */
+/* ========================================================
+   CORREÇÃO DEFINITIVA PARA A IMAGEM DA ESCALA
+   ======================================================== */
 #imagem-comparacao {
-    text-align: center;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    overflow: auto;
+    width: 100% !important;
+    text-align: center !important;
+    background: #f8f9fa !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    overflow: auto !important;
+    box-sizing: border-box !important;
 }
+
 #imagem-comparacao img {
     display: block !important;
     width: auto !important;
@@ -61,7 +66,9 @@ body {
     max-width: 100% !important;
     max-height: none !important;
     object-fit: none !important;
+    margin: 0 auto !important;
 }
+
 #imagem-comparacao > div {
     display: inline-block !important;
     max-width: 100% !important;
