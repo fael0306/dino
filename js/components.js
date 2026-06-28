@@ -104,10 +104,6 @@ function renderEscalaReal() {
     console.log('✅ renderEscalaReal() concluído');
 }
 
-// ===== FUNÇÃO ATUALIZAR ESCALA – CORRIGIDA =====
-// js/components.js
-
-// ... (mantenha todo o resto do arquivo, apenas substitua a função abaixo)
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
