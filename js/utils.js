@@ -22,7 +22,6 @@ function carregarImagemOuPlaceholder(nome, largura = 200, altura = 200) {
 
         const img = new Image();
         img.onload = function() {
-            // Redimensionar para a largura/altura desejada (opcional)
             const canvas = document.createElement('canvas');
             canvas.width = largura;
             canvas.height = altura;
@@ -31,7 +30,6 @@ function carregarImagemOuPlaceholder(nome, largura = 200, altura = 200) {
             resolve(canvas.toDataURL('image/png'));
         };
         img.onerror = function() {
-            // Se falhar, usa o placeholder genérico
             resolve(gerarSilhuetaPlaceholder(nome, largura, altura));
         };
         img.src = caminho;
@@ -39,7 +37,7 @@ function carregarImagemOuPlaceholder(nome, largura = 200, altura = 200) {
 }
 
 // ============================================================
-// FUNÇÃO AUXILIAR: gera silhueta placeholder (fallback)
+// FUNÇÃO AUXILIAR: gera silhueta placeholder melhorada (dinossauro estilizado)
 // ============================================================
 function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     const canvas = document.createElement('canvas');
@@ -47,38 +45,202 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     canvas.height = altura;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, largura, altura);
-    ctx.fillStyle = '#4a4a4a';
-    ctx.strokeStyle = '#000';
+    
+    // Fundo claro (opcional)
+    ctx.fillStyle = '#e9ecef';
+    ctx.fillRect(0, 0, largura, altura);
+    
+    // Cor do dinossauro (varia conforme o nome para dar variedade)
+    const cores = ['#6c757d', '#495057', '#343a40', '#5a6268', '#4e555b'];
+    let cor = cores[Math.floor(Math.random() * cores.length)];
+    // Se for humano, usar uma cor diferente
+    if (nome.toLowerCase().includes('humano')) cor = '#f8c291';
+    if (nome.toLowerCase().includes('elefante')) cor = '#6b5b4f';
+    
+    ctx.fillStyle = cor;
+    ctx.strokeStyle = '#212529';
     ctx.lineWidth = 2;
-    // Desenha uma silhueta genérica (pode personalizar por nome)
+    
+    // Desenha uma silhueta de dinossauro simplificada (perfil)
+    const cx = largura / 2;
+    const cy = altura / 2;
+    const escala = Math.min(largura, altura) / 200;
+    
     ctx.beginPath();
-    ctx.moveTo(50, 180);
-    ctx.lineTo(150, 180);
-    ctx.lineTo(170, 120);
-    ctx.lineTo(140, 70);
-    ctx.lineTo(100, 50);
-    ctx.lineTo(60, 70);
-    ctx.lineTo(30, 120);
+    // Corpo
+    ctx.moveTo(cx - 60*escala, cy + 40*escala);
+    ctx.quadraticCurveTo(cx - 80*escala, cy - 10*escala, cx - 50*escala, cy - 40*escala);
+    ctx.quadraticCurveTo(cx - 20*escala, cy - 70*escala, cx + 20*escala, cy - 60*escala);
+    ctx.quadraticCurveTo(cx + 60*escala, cy - 50*escala, cx + 80*escala, cy - 10*escala);
+    ctx.quadraticCurveTo(cx + 90*escala, cy + 20*escala, cx + 70*escala, cy + 40*escala);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-    // Olho
-    ctx.fillStyle = 'white';
-    ctx.beginPath();
-    ctx.arc(130, 100, 10, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.fillStyle = 'black';
-    ctx.beginPath();
-    ctx.arc(132, 102, 4, 0, 2 * Math.PI);
-    ctx.fill();
+    
+    // Pescoço e cabeça (para dinossauros, exceto humanos/elefantes)
+    if (!nome.toLowerCase().includes('humano') && !nome.toLowerCase().includes('elefante')) {
+        ctx.beginPath();
+        ctx.moveTo(cx - 10*escala, cy - 40*escala);
+        ctx.quadraticCurveTo(cx - 20*escala, cy - 70*escala, cx + 10*escala, cy - 90*escala);
+        ctx.quadraticCurveTo(cx + 40*escala, cy - 100*escala, cx + 50*escala, cy - 80*escala);
+        ctx.quadraticCurveTo(cx + 30*escala, cy - 60*escala, cx + 20*escala, cy - 50*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        // Olho
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(cx + 30*escala, cy - 85*escala, 6*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillStyle = '#212529';
+        ctx.beginPath();
+        ctx.arc(cx + 32*escala, cy - 85*escala, 3*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Pernas (dianteiras e traseiras)
+        ctx.fillStyle = cor;
+        ctx.strokeStyle = '#212529';
+        ctx.lineWidth = 2;
+        // Perna dianteira
+        ctx.beginPath();
+        ctx.moveTo(cx - 40*escala, cy + 40*escala);
+        ctx.lineTo(cx - 50*escala, cy + 70*escala);
+        ctx.lineTo(cx - 30*escala, cy + 70*escala);
+        ctx.lineTo(cx - 20*escala, cy + 40*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Perna traseira
+        ctx.beginPath();
+        ctx.moveTo(cx + 40*escala, cy + 40*escala);
+        ctx.lineTo(cx + 50*escala, cy + 70*escala);
+        ctx.lineTo(cx + 70*escala, cy + 70*escala);
+        ctx.lineTo(cx + 60*escala, cy + 40*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        // Cauda
+        ctx.beginPath();
+        ctx.moveTo(cx - 60*escala, cy + 20*escala);
+        ctx.quadraticCurveTo(cx - 90*escala, cy + 30*escala, cx - 100*escala, cy + 10*escala);
+        ctx.quadraticCurveTo(cx - 80*escala, cy - 10*escala, cx - 50*escala, cy + 10*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    } else if (nome.toLowerCase().includes('humano')) {
+        // Desenho simplificado de humano
+        ctx.fillStyle = cor;
+        ctx.strokeStyle = '#212529';
+        ctx.lineWidth = 2;
+        // Cabeça
+        ctx.beginPath();
+        ctx.arc(cx, cy - 50*escala, 25*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        // Corpo
+        ctx.beginPath();
+        ctx.moveTo(cx - 20*escala, cy - 30*escala);
+        ctx.lineTo(cx - 15*escala, cy + 30*escala);
+        ctx.lineTo(cx + 15*escala, cy + 30*escala);
+        ctx.lineTo(cx + 20*escala, cy - 30*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Braços
+        ctx.beginPath();
+        ctx.moveTo(cx - 15*escala, cy - 10*escala);
+        ctx.lineTo(cx - 40*escala, cy + 10*escala);
+        ctx.lineTo(cx - 30*escala, cy + 20*escala);
+        ctx.lineTo(cx - 10*escala, cy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx + 15*escala, cy - 10*escala);
+        ctx.lineTo(cx + 40*escala, cy + 10*escala);
+        ctx.lineTo(cx + 30*escala, cy + 20*escala);
+        ctx.lineTo(cx + 10*escala, cy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Pernas
+        ctx.beginPath();
+        ctx.moveTo(cx - 10*escala, cy + 30*escala);
+        ctx.lineTo(cx - 15*escala, cy + 70*escala);
+        ctx.lineTo(cx + 5*escala, cy + 70*escala);
+        ctx.lineTo(cx + 5*escala, cy + 30*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx + 10*escala, cy + 30*escala);
+        ctx.lineTo(cx + 15*escala, cy + 70*escala);
+        ctx.lineTo(cx + 30*escala, cy + 70*escala);
+        ctx.lineTo(cx + 20*escala, cy + 30*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    } else if (nome.toLowerCase().includes('elefante')) {
+        // Desenho simplificado de elefante
+        ctx.fillStyle = cor;
+        ctx.strokeStyle = '#212529';
+        ctx.lineWidth = 2;
+        // Corpo
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 10*escala, 50*escala, 35*escala, 0, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        // Cabeça
+        ctx.beginPath();
+        ctx.arc(cx + 50*escala, cy - 20*escala, 30*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        // Tromba
+        ctx.beginPath();
+        ctx.moveTo(cx + 70*escala, cy - 10*escala);
+        ctx.quadraticCurveTo(cx + 90*escala, cy + 20*escala, cx + 80*escala, cy + 40*escala);
+        ctx.lineTo(cx + 70*escala, cy + 30*escala);
+        ctx.quadraticCurveTo(cx + 75*escala, cy + 10*escala, cx + 65*escala, cy - 5*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Olho
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(cx + 60*escala, cy - 25*escala, 6*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillStyle = '#212529';
+        ctx.beginPath();
+        ctx.arc(cx + 62*escala, cy - 25*escala, 3*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        // Pernas
+        const pernas = [[-30, 40, -25, 70], [30, 40, 25, 70], [-20, 40, -15, 70], [20, 40, 15, 70]];
+        pernas.forEach(([x1, y1, x2, y2]) => {
+            ctx.beginPath();
+            ctx.moveTo(cx + x1*escala, cy + y1*escala);
+            ctx.lineTo(cx + x2*escala, cy + y2*escala);
+            ctx.lineTo(cx + (x2+10)*escala, cy + y2*escala);
+            ctx.lineTo(cx + (x1+10)*escala, cy + y1*escala);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        });
+        // Orelha
+        ctx.beginPath();
+        ctx.ellipse(cx + 40*escala, cy - 20*escala, 15*escala, 25*escala, -0.3, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+    }
+    
     return canvas.toDataURL('image/png');
 }
 
 // ============================================================
-// DEMAIS FUNÇÕES UTILITÁRIAS (já existentes, mantidas)
+// DEMAIS FUNÇÕES UTILITÁRIAS (mantidas)
 // ============================================================
 
-// Redimensiona imagem para altura (promise)
 function redimensionarParaAltura(dataURL, alturaAlvo) {
     return new Promise((resolve) => {
         const img = new Image();
@@ -95,7 +257,6 @@ function redimensionarParaAltura(dataURL, alturaAlvo) {
     });
 }
 
-// Combina duas imagens lado a lado
 function combinarLadoALado(dataURL1, dataURL2) {
     return new Promise((resolve) => {
         const img1 = new Image();
@@ -119,7 +280,6 @@ function combinarLadoALado(dataURL1, dataURL2) {
     });
 }
 
-// Simulação RK4 para extinção K-Pg
 function simularExtincao(bloqueioSolar, chuvaAcida, anos) {
     const P0 = 100, H0 = 50, C0 = 20;
     const r = 0.4 * (1 - bloqueioSolar / 100);
@@ -171,7 +331,6 @@ function lotkaVolterra(state, r, a, b, d, e, f, g) {
     ];
 }
 
-// Identificação de icnofósseis
 function identificarIcnogenus(dedos, garras, tamanho, forma, proporcao) {
     if (dedos === 3) {
         if (garras) {
@@ -191,9 +350,4 @@ function identificarIcnogenus(dedos, garras, tamanho, forma, proporcao) {
             else return "Parabrontopodus";
         }
     }
-}
-
-// (Opcional) Função antiga mantida para compatibilidade, se necessário
-function gerarSilhueta(nome, largura, altura) {
-    return gerarSilhuetaPlaceholder(nome, largura, altura);
 }
