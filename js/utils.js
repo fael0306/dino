@@ -1,18 +1,56 @@
 // js/utils.js
 
-// Gera uma silhueta placeholder via canvas (fallback para imagens)
-function gerarSilhueta(nome, largura = 200, altura = 200) {
+// ============================================================
+// FUNÇÃO PRINCIPAL: tenta carregar imagem real, fallback para placeholder
+// ============================================================
+function carregarImagemOuPlaceholder(nome, largura = 200, altura = 200) {
+    return new Promise((resolve) => {
+        // Mapeamento dos nomes para arquivos (ajuste conforme seus arquivos)
+        const mapa = {
+            "Tyrannosaurus rex": "trex.png",
+            "Triceratops": "triceratops.png",
+            "Velociraptor": "velociraptor.png",
+            "Brachiosaurus": "brachiosaurus.png",
+            "Stegosaurus": "stegosaurus.png",
+            "Spinosaurus": "spinosaurus.png",
+            "Patagotitan": "patagotitan.png",
+            "Humano": "human.png",
+            "Elefante": "elephant.png"
+        };
+        const nomeArquivo = mapa[nome] || nome.toLowerCase().replace(/ /g, '_') + '.png';
+        const caminho = `assets/${nomeArquivo}`;
+
+        const img = new Image();
+        img.onload = function() {
+            // Redimensionar para a largura/altura desejada (opcional)
+            const canvas = document.createElement('canvas');
+            canvas.width = largura;
+            canvas.height = altura;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, largura, altura);
+            resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = function() {
+            // Se falhar, usa o placeholder genérico
+            resolve(gerarSilhuetaPlaceholder(nome, largura, altura));
+        };
+        img.src = caminho;
+    });
+}
+
+// ============================================================
+// FUNÇÃO AUXILIAR: gera silhueta placeholder (fallback)
+// ============================================================
+function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     const canvas = document.createElement('canvas');
     canvas.width = largura;
     canvas.height = altura;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, largura, altura);
-
     ctx.fillStyle = '#4a4a4a';
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 2;
-
-    // Polígono genérico
+    // Desenha uma silhueta genérica (pode personalizar por nome)
     ctx.beginPath();
     ctx.moveTo(50, 180);
     ctx.lineTo(150, 180);
@@ -24,7 +62,7 @@ function gerarSilhueta(nome, largura = 200, altura = 200) {
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
-
+    // Olho
     ctx.fillStyle = 'white';
     ctx.beginPath();
     ctx.arc(130, 100, 10, 0, 2 * Math.PI);
@@ -33,26 +71,12 @@ function gerarSilhueta(nome, largura = 200, altura = 200) {
     ctx.beginPath();
     ctx.arc(132, 102, 4, 0, 2 * Math.PI);
     ctx.fill();
-
     return canvas.toDataURL('image/png');
 }
 
-// Carrega imagem de um dinossauro (se não existir, gera placeholder)
-function carregarImagemDino(nome) {
-    const mapa = {
-        "Tyrannosaurus rex": "trex.png",
-        "Triceratops": "triceratops.png",
-        "Velociraptor": "velociraptor.png",
-        "Brachiosaurus": "brachiosaurus.png",
-        "Stegosaurus": "stegosaurus.png",
-        "Spinosaurus": "spinosaurus.png",
-        "Patagotitan": "patagotitan.png",
-        "Humano": "human.png",
-        "Elefante": "elephant.png"
-    };
-    const arquivo = mapa[nome] || nome.toLowerCase().replace(/ /g, '_') + '.png';
-    return `assets/${arquivo}`;
-}
+// ============================================================
+// DEMAIS FUNÇÕES UTILITÁRIAS (já existentes, mantidas)
+// ============================================================
 
 // Redimensiona imagem para altura (promise)
 function redimensionarParaAltura(dataURL, alturaAlvo) {
@@ -167,4 +191,9 @@ function identificarIcnogenus(dedos, garras, tamanho, forma, proporcao) {
             else return "Parabrontopodus";
         }
     }
+}
+
+// (Opcional) Função antiga mantida para compatibilidade, se necessário
+function gerarSilhueta(nome, largura, altura) {
+    return gerarSilhuetaPlaceholder(nome, largura, altura);
 }
