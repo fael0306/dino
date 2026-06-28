@@ -44,12 +44,9 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     canvas.height = altura;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, largura, altura);
-
-    // Fundo claro
     ctx.fillStyle = '#e9ecef';
     ctx.fillRect(0, 0, largura, altura);
 
-    // Cor do dinossauro (varia conforme o nome)
     const cores = ['#6c757d', '#495057', '#343a40', '#5a6268', '#4e555b'];
     let cor = cores[Math.floor(Math.random() * cores.length)];
     if (nome.toLowerCase().includes('humano')) cor = '#f8c291';
@@ -122,7 +119,7 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.fill();
         ctx.stroke();
     } else if (nome.toLowerCase().includes('humano')) {
-        // Desenho humano simplificado
+        // Desenho humano simplificado (apenas corpo)
         ctx.fillStyle = cor;
         ctx.strokeStyle = '#212529';
         ctx.lineWidth = 2;
@@ -138,11 +135,88 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
-        // Braços e pernas...
-        // (código completo omitido por brevidade, mas você pode manter o original)
+        // Braços
+        ctx.beginPath();
+        ctx.moveTo(cx - 15*escala, cy - 10*escala);
+        ctx.lineTo(cx - 40*escala, cy + 10*escala);
+        ctx.lineTo(cx - 30*escala, cy + 20*escala);
+        ctx.lineTo(cx - 10*escala, cy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx + 15*escala, cy - 10*escala);
+        ctx.lineTo(cx + 40*escala, cy + 10*escala);
+        ctx.lineTo(cx + 30*escala, cy + 20*escala);
+        ctx.lineTo(cx + 10*escala, cy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Pernas
+        ctx.beginPath();
+        ctx.moveTo(cx - 10*escala, cy + 30*escala);
+        ctx.lineTo(cx - 15*escala, cy + 70*escala);
+        ctx.lineTo(cx + 5*escala, cy + 70*escala);
+        ctx.lineTo(cx + 5*escala, cy + 30*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx + 10*escala, cy + 30*escala);
+        ctx.lineTo(cx + 15*escala, cy + 70*escala);
+        ctx.lineTo(cx + 30*escala, cy + 70*escala);
+        ctx.lineTo(cx + 20*escala, cy + 30*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
     } else if (nome.toLowerCase().includes('elefante')) {
         // Desenho elefante simplificado
-        // (código completo omitido por brevidade, mantenha o original)
+        ctx.fillStyle = cor;
+        ctx.strokeStyle = '#212529';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 10*escala, 50*escala, 35*escala, 0, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx + 50*escala, cy - 20*escala, 30*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+        // Tromba
+        ctx.beginPath();
+        ctx.moveTo(cx + 70*escala, cy - 10*escala);
+        ctx.quadraticCurveTo(cx + 90*escala, cy + 20*escala, cx + 80*escala, cy + 40*escala);
+        ctx.lineTo(cx + 70*escala, cy + 30*escala);
+        ctx.quadraticCurveTo(cx + 75*escala, cy + 10*escala, cx + 65*escala, cy - 5*escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Olho
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(cx + 60*escala, cy - 25*escala, 6*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.fillStyle = '#212529';
+        ctx.beginPath();
+        ctx.arc(cx + 62*escala, cy - 25*escala, 3*escala, 0, 2 * Math.PI);
+        ctx.fill();
+        // Pernas
+        const pernas = [[-30, 40, -25, 70], [30, 40, 25, 70], [-20, 40, -15, 70], [20, 40, 15, 70]];
+        pernas.forEach(([x1, y1, x2, y2]) => {
+            ctx.beginPath();
+            ctx.moveTo(cx + x1*escala, cy + y1*escala);
+            ctx.lineTo(cx + x2*escala, cy + y2*escala);
+            ctx.lineTo(cx + (x2+10)*escala, cy + y2*escala);
+            ctx.lineTo(cx + (x1+10)*escala, cy + y1*escala);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        });
+        // Orelha
+        ctx.beginPath();
+        ctx.ellipse(cx + 40*escala, cy - 20*escala, 15*escala, 25*escala, -0.3, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
     }
 
     return canvas.toDataURL('image/png');
@@ -157,11 +231,14 @@ function redimensionarParaAltura(dataURL, alturaAlvo) {
         img.onload = function() {
             const canvas = document.createElement('canvas');
             const ratio = alturaAlvo / img.height;
-            canvas.width = img.width * ratio;
+            canvas.width = Math.round(img.width * ratio);
             canvas.height = alturaAlvo;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = function() {
+            resolve(gerarSilhuetaPlaceholder('erro', 200, 200));
         };
         img.src = dataURL;
     });
