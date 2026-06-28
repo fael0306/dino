@@ -82,8 +82,6 @@ function renderEscalaReal() {
     });
 }
 
-// ===== FUNÇÃO CORRIGIDA – SEM DISTORÇÃO =====
-// ===== FUNÇÃO CORRIGIDA – EXIBE A IMAGEM SEM DISTORÇÃO =====
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
@@ -105,9 +103,11 @@ window.atualizarEscala = async function() {
         const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
+        // Carregar imagens (tamanho base 200x200)
         const imgDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const imgRef = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
+        // Definir altura máxima para a imagem maior (400px)
         const alturaMax = 400;
         let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
@@ -118,27 +118,21 @@ window.atualizarEscala = async function() {
             alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
+        // Redimensionar mantendo a proporção
         const imgDinoRedim = await redimensionarParaAltura(imgDino, alturaDino);
         const imgRefRedim = await redimensionarParaAltura(imgRef, alturaRef);
+
+        // Combinar lado a lado
         const combinada = await combinarLadoALado(imgRefRedim, imgDinoRedim);
 
-        // ===== AGORA COM ATRIBUTOS width e height =====
-        // Criamos uma imagem temporária para obter as dimensões reais
-        const imgTemp = new Image();
-        imgTemp.onload = function() {
-            const container = document.getElementById('imagem-comparacao');
-            container.innerHTML = `
-                <div style="display: inline-block; max-width: 100%; overflow: auto;">
-                    <img src="${combinada}" 
-                         alt="Comparação" 
-                         width="${imgTemp.width}" 
-                         height="${imgTemp.height}" 
-                         style="display: block;">
-                </div>
-                <p class="mt-2"><strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x</p>
-            `;
-        };
-        imgTemp.src = combinada;
+        // ===== EXIBIÇÃO SEM REDIMENSIONAMENTO =====
+        const container = document.getElementById('imagem-comparacao');
+        container.innerHTML = `
+            <div style="overflow: auto; text-align: center; background: #f8f9fa; padding: 10px; border-radius: 8px; display: inline-block; max-width: 100%;">
+                <img src="${combinada}" alt="Comparação" style="display: block; width: auto; height: auto; max-width: none; max-height: none;">
+            </div>
+            <p class="mt-2"><strong>${refNome}</strong> (${refAltura}m) | <strong>${dinoSel}</strong> (${dino.Altura}m) — Proporção: ${razao}x</p>
+        `;
     } catch (e) {
         console.error('Erro ao atualizar escala:', e);
         document.getElementById('imagem-comparacao').innerHTML = `<div class="alert alert-danger">Erro ao carregar a comparação. Verifique o console.</div>`;
