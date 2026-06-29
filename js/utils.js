@@ -1,6 +1,20 @@
 // js/utils.js
 
 // ============================================================
+// MAPEAMENTO PARA ICNOFÓSSEIS
+// ============================================================
+const MAPA_ICNOFOSSEIS = {
+    "Grallator": "grallator.png",
+    "Eubrontes": "eubrontes.png",
+    "Megalosauripus": "megalosauripus.png",
+    "Wintonopus": "wintonopus.png",
+    "Amblydactylus": "amblydactylus.png",
+    "Anomoepus": "anomoepus.png",
+    "Brontopodus": "brontopodus.png",
+    "Parabrontopodus": "parabrontopodus.png"
+};
+
+// ============================================================
 // CARREGA A IMAGEM ORIGINAL DA PASTA assets/ (SEM REDIMENSIONAR)
 // ============================================================
 function carregarImagemOriginal(nome) {
@@ -26,7 +40,7 @@ function carregarImagemOriginal(nome) {
             "Stegosaurus":       [2, 1],
             "Spinosaurus":       [2, 1],
             "Patagotitan":       [3, 1],
-            "Humano":            [1, 2],   // mais alto que largo
+            "Humano":            [1, 2],
             "Elefante":          [2, 1]
         };
 
@@ -86,7 +100,64 @@ function carregarImagemOuPlaceholder(nome, largura = 200, altura = 200) {
 }
 
 // ============================================================
-// SILHUETA PLACEHOLDER (desenho estilizado de dinossauro)
+// CARREGA IMAGEM DE ICNOFÓSSIL (real ou placeholder)
+// ============================================================
+function carregarImagemIcnofossil(nome) {
+    return new Promise((resolve) => {
+        const nomeArquivo = MAPA_ICNOFOSSEIS[nome];
+        if (!nomeArquivo) {
+            resolve(gerarSilhuetaPlaceholder('pegada', 200, 200));
+            return;
+        }
+        const caminho = `assets/${nomeArquivo}`;
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 200;
+            canvas.height = 200;
+            const ctx = canvas.getContext('2d');
+            const ratio = Math.min(200 / img.width, 200 / img.height);
+            const w = img.width * ratio;
+            const h = img.height * ratio;
+            const x = (200 - w) / 2;
+            const y = (200 - h) / 2;
+            ctx.drawImage(img, x, y, w, h);
+            resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = function() {
+            resolve(gerarSilhuetaPlaceholder('pegada', 200, 200));
+        };
+        img.src = caminho;
+    });
+}
+
+// ============================================================
+// CARREGA IMAGEM DE FÓSSIL REAL (esqueleto)
+// ============================================================
+function carregarImagemFossilReal(nome) {
+    return new Promise((resolve) => {
+        const nomeFormatado = nome.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/g, '');
+        const caminho = `assets/real_${nomeFormatado}.png`;
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxWidth = 300;
+            const ratio = Math.min(maxWidth / img.width, 1);
+            canvas.width = img.width * ratio;
+            canvas.height = img.height * ratio;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/png'));
+        };
+        img.onerror = function() {
+            resolve(gerarSilhuetaPlaceholder(nome, 300, 200));
+        };
+        img.src = caminho;
+    });
+}
+
+// ============================================================
+// SILHUETA PLACEHOLDER (desenho estilizado)
 // ============================================================
 function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     const canvas = document.createElement('canvas');
@@ -98,6 +169,91 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     ctx.fillStyle = '#e9ecef';
     ctx.fillRect(0, 0, largura, altura);
 
+    // ============================================================
+    // PEGADA (icnofóssil)
+    // ============================================================
+    if (nome.toLowerCase().includes('pegada')) {
+        const cx = largura / 2;
+        const cy = altura / 2;
+        const escala = Math.min(largura, altura) / 200;
+
+        ctx.fillStyle = '#495057';
+        ctx.strokeStyle = '#212529';
+        ctx.lineWidth = 2;
+
+        // Palma
+        ctx.beginPath();
+        ctx.ellipse(cx, cy + 10 * escala, 25 * escala, 15 * escala, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // Dedo 1 (esquerdo)
+        ctx.beginPath();
+        ctx.moveTo(cx - 20 * escala, cy + 5 * escala);
+        ctx.lineTo(cx - 35 * escala, cy - 30 * escala);
+        ctx.lineTo(cx - 25 * escala, cy - 35 * escala);
+        ctx.lineTo(cx - 10 * escala, cy - 5 * escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx - 35 * escala, cy - 30 * escala);
+        ctx.lineTo(cx - 40 * escala, cy - 40 * escala);
+        ctx.lineTo(cx - 30 * escala, cy - 35 * escala);
+        ctx.closePath();
+        ctx.fillStyle = '#e9ecef';
+        ctx.fill();
+        ctx.strokeStyle = '#212529';
+        ctx.fillStyle = '#495057';
+
+        // Dedo 2 (central)
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 5 * escala);
+        ctx.lineTo(cx, cy - 40 * escala);
+        ctx.lineTo(cx + 10 * escala, cy - 45 * escala);
+        ctx.lineTo(cx + 10 * escala, cy);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 40 * escala);
+        ctx.lineTo(cx - 5 * escala, cy - 50 * escala);
+        ctx.lineTo(cx + 5 * escala, cy - 45 * escala);
+        ctx.closePath();
+        ctx.fillStyle = '#e9ecef';
+        ctx.fill();
+        ctx.strokeStyle = '#212529';
+        ctx.fillStyle = '#495057';
+
+        // Dedo 3 (direito)
+        ctx.beginPath();
+        ctx.moveTo(cx + 20 * escala, cy + 5 * escala);
+        ctx.lineTo(cx + 35 * escala, cy - 30 * escala);
+        ctx.lineTo(cx + 25 * escala, cy - 35 * escala);
+        ctx.lineTo(cx + 10 * escala, cy - 5 * escala);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(cx + 35 * escala, cy - 30 * escala);
+        ctx.lineTo(cx + 40 * escala, cy - 40 * escala);
+        ctx.lineTo(cx + 30 * escala, cy - 35 * escala);
+        ctx.closePath();
+        ctx.fillStyle = '#e9ecef';
+        ctx.fill();
+        ctx.strokeStyle = '#212529';
+
+        ctx.fillStyle = '#6c757d';
+        ctx.font = `${14 * escala}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText('👣', cx, cy + 60 * escala);
+
+        return canvas.toDataURL('image/png');
+    }
+
+    // ============================================================
+    // CORES E ESTILOS PARA OUTROS
+    // ============================================================
     const cores = ['#6c757d', '#495057', '#343a40', '#5a6268', '#4e555b'];
     let cor = cores[Math.floor(Math.random() * cores.length)];
     if (nome.toLowerCase().includes('humano')) cor = '#f8c291';
@@ -111,6 +267,7 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     const cy = altura / 2;
     const escala = Math.min(largura, altura) / 200;
 
+    // Desenho genérico de dinossauro
     ctx.beginPath();
     ctx.moveTo(cx - 60*escala, cy + 40*escala);
     ctx.quadraticCurveTo(cx - 80*escala, cy - 10*escala, cx - 50*escala, cy - 40*escala);
@@ -122,6 +279,7 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     ctx.stroke();
 
     if (!nome.toLowerCase().includes('humano') && !nome.toLowerCase().includes('elefante')) {
+        // desenho de cabeça e detalhes de dinossauro
         ctx.beginPath();
         ctx.moveTo(cx - 10*escala, cy - 40*escala);
         ctx.quadraticCurveTo(cx - 20*escala, cy - 70*escala, cx + 10*escala, cy - 90*escala);
@@ -165,7 +323,7 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.fill();
         ctx.stroke();
     } else if (nome.toLowerCase().includes('humano')) {
-        // Desenho humano simplificado
+        // Desenho humano
         ctx.fillStyle = cor;
         ctx.strokeStyle = '#212529';
         ctx.lineWidth = 2;
@@ -214,7 +372,7 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
         ctx.fill();
         ctx.stroke();
     } else if (nome.toLowerCase().includes('elefante')) {
-        // Desenho elefante simplificado
+        // Desenho elefante
         ctx.fillStyle = cor;
         ctx.strokeStyle = '#212529';
         ctx.lineWidth = 2;

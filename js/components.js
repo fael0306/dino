@@ -52,7 +52,6 @@ function renderEscalaReal() {
     container.innerHTML = `
         <div style="display: flex; flex-direction: column; width: 100%;">
             <h4>📏 Compare a Escala</h4>
-            <!-- CONTROLES (em cima) -->
             <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
                 <div style="flex: 1; min-width: 200px;">
                     <label class="form-label">Escolha um dinossauro:</label>
@@ -76,7 +75,6 @@ function renderEscalaReal() {
                     <button class="btn btn-primary" onclick="atualizarEscala()">Atualizar</button>
                 </div>
             </div>
-            <!-- IMAGEM (embaixo, ocupando 100%) -->
             <div id="imagem-comparacao" style="
                 width: 100%;
                 text-align: center;
@@ -92,7 +90,6 @@ function renderEscalaReal() {
         </div>
     `;
 
-    // Preencher o select de "outro dinossauro"
     const outroSelect = document.getElementById('outro-dino-escala');
     const nomes = DINOSSAUROS_CLASSICOS.map(d => d.Nome);
     outroSelect.innerHTML = nomes.map(n => `<option value="${n}">${n}</option>`).join('');
@@ -133,11 +130,9 @@ window.atualizarEscala = async function() {
             alturaDinoPx = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        // carregarImagemOriginal preserva as proporções reais do arquivo
         const imgDino = await carregarImagemOriginal(dinoSel);
         const imgRef  = await carregarImagemOriginal(refNome);
 
-        // Converte para dataURL redimensionando só a altura, largura livre (proporcional)
         function imgParaDataUrl(img, altura) {
             const ratio  = altura / img.height;
             const canvas = document.createElement('canvas');
@@ -172,10 +167,8 @@ window.atualizarEscala = async function() {
 };
 
 // ============================================================
-// AS DEMAIS ABAS (MANTIDAS, MAS COM TRATAMENTO DE ERRO)
+// 2. DERIVA CONTINENTAL
 // ============================================================
-
-// 2. Deriva Continental
 function renderDerivaContinental() {
     console.log('🔧 renderDerivaContinental()');
     const container = document.getElementById('deriva');
@@ -255,7 +248,9 @@ window.atualizarMapa = function() {
     }
 };
 
-// 3. Extinção K-Pg
+// ============================================================
+// 3. EXTINÇÃO K-PG
+// ============================================================
 function renderExtincaoKpg() {
     console.log('🔧 renderExtincaoKpg()');
     const container = document.getElementById('extincao');
@@ -336,7 +331,9 @@ window.executarSimulacao = function() {
     }
 };
 
-// 4. Icnofósseis (jogo) – versão resumida para não alongar, mas funcional
+// ============================================================
+// 4. ICNOFÓSSEIS (com imagens reais)
+// ============================================================
 function renderIcnofosseis() {
     console.log('🔧 renderIcnofosseis()');
     const container = document.getElementById('icnofosseis');
@@ -363,12 +360,16 @@ function renderIcnofosseis() {
 }
 
 let icnoDesafioAtual = null;
-window.novoDesafioIcnofosseis = function() {
+
+window.novoDesafioIcnofosseis = async function() {
     try {
         const nomes = Object.keys(ICNOFOSSEIS);
         icnoDesafioAtual = nomes[Math.floor(Math.random() * nomes.length)];
         const imgDiv = document.getElementById('icno-imagem');
-        imgDiv.innerHTML = `<img src="${gerarSilhuetaPlaceholder('pegada', 200, 200)}" class="img-fluid" alt="Pegada"><p>Fóssil misterioso</p>`;
+
+        // Carrega a imagem real do icnogênero
+        const imgSrc = await carregarImagemIcnofossil(icnoDesafioAtual);
+        imgDiv.innerHTML = `<img src="${imgSrc}" class="img-fluid" alt="Pegada de ${icnoDesafioAtual}"><p>Fóssil misterioso</p>`;
 
         const perguntasDiv = document.getElementById('icno-perguntas');
         perguntasDiv.innerHTML = `
@@ -456,7 +457,9 @@ window.identificarIcnofosseis = function() {
     }
 };
 
-// 5. Fósseis Reais
+// ============================================================
+// 5. FÓSSEIS REAIS (com imagens reais)
+// ============================================================
 function renderFosseisReais() {
     console.log('🔧 renderFosseisReais()');
     const container = document.getElementById('fosseis');
@@ -468,10 +471,14 @@ function renderFosseisReais() {
     setTimeout(sortearFossil, 100);
 }
 
-window.sortearFossil = function() {
+window.sortearFossil = async function() {
     try {
         const dino = DINOSSAUROS_REAIS[Math.floor(Math.random() * DINOSSAUROS_REAIS.length)];
         const div = document.getElementById('fossil-detalhe');
+
+        // Carrega a imagem real (esqueleto)
+        const imgSrc = await carregarImagemFossilReal(dino.Nome);
+
         div.innerHTML = `
             <div class="card">
                 <div class="card-body">
@@ -484,7 +491,7 @@ window.sortearFossil = function() {
                             <p><strong>Peso:</strong> ${dino.Peso} ton</p>
                         </div>
                         <div class="col-md-6">
-                            <img src="${gerarSilhuetaPlaceholder(dino.Nome, 200, 200)}" class="img-fluid" alt="${dino.Nome}">
+                            <img src="${imgSrc}" class="img-fluid" alt="${dino.Nome}">
                         </div>
                     </div>
                     <p><strong>Curiosidade:</strong> ${dino.Curiosidade}</p>
@@ -497,7 +504,9 @@ window.sortearFossil = function() {
     }
 };
 
-// 6. Massa Corporal
+// ============================================================
+// 6. MASSA CORPORAL
+// ============================================================
 function renderMassaCorporal() {
     console.log('🔧 renderMassaCorporal()');
     const container = document.getElementById('massa');
@@ -557,7 +566,9 @@ window.calcularMassa = function() {
     }
 };
 
-// 7. Quiz (resumido, mas funcional)
+// ============================================================
+// 7. QUIZ
+// ============================================================
 let quizEstado = { nivel: null, indice: 0, pontuacao: 0, perguntas: [], respostas: [], concluido: false };
 
 function renderQuiz() {
@@ -666,7 +677,9 @@ function mostrarResultadoQuiz() {
     if (quizEstado.nivel === 'Difícil' && pontuacao === total) desbloquearConquista('quiz_dificil');
 }
 
-// 8. Linha do Tempo
+// ============================================================
+// 8. LINHA DO TEMPO
+// ============================================================
 function renderLinhaTempo() {
     console.log('🔧 renderLinhaTempo()');
     const container = document.getElementById('tempo');
@@ -728,7 +741,9 @@ function atualizarLinhaTempo(idade) {
     }
 }
 
-// 9. Clima Mesozóico
+// ============================================================
+// 9. CLIMA MESOZÓICO
+// ============================================================
 function renderClima() {
     console.log('🔧 renderClima()');
     const container = document.getElementById('clima');
@@ -766,7 +781,9 @@ window.atualizarClima = function() {
     }
 };
 
-// 10. Conquistas
+// ============================================================
+// 10. CONQUISTAS
+// ============================================================
 function renderConquistas() {
     console.log('🔧 renderConquistas()');
     const container = document.getElementById('conquistas');
@@ -826,7 +843,9 @@ function atualizarBadgeConquistas() {
     }
 }
 
-// 11. Exportar PDF
+// ============================================================
+// 11. EXPORTAR PDF
+// ============================================================
 function renderExportPDF() {
     console.log('🔧 renderExportPDF()');
     const container = document.getElementById('pdf');
@@ -867,7 +886,9 @@ window.gerarPDF = function() {
     }
 };
 
-// 12. Árvore Evolutiva
+// ============================================================
+// 12. ÁRVORE EVOLUTIVA
+// ============================================================
 function renderArvoreEvolutiva() {
     console.log('🔧 renderArvoreEvolutiva()');
     const container = document.getElementById('arvore');
