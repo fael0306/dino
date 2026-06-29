@@ -16,6 +16,20 @@ function carregarImagemOriginal(nome) {
             "Humano": "human.png",
             "Elefante": "elephant.png"
         };
+
+        // Proporções naturais de cada ser (largura x altura)
+        const proporcoes = {
+            "Tyrannosaurus rex": [2, 1],
+            "Triceratops":       [2, 1],
+            "Velociraptor":      [2, 1],
+            "Brachiosaurus":     [2, 1],
+            "Stegosaurus":       [2, 1],
+            "Spinosaurus":       [2, 1],
+            "Patagotitan":       [3, 1],
+            "Humano":            [1, 2],   // mais alto que largo
+            "Elefante":          [2, 1]
+        };
+
         const nomeArquivo = mapa[nome] || nome.toLowerCase().replace(/ /g, '_') + '.png';
         const caminho = `assets/${nomeArquivo}`;
         const img = new Image();
@@ -23,12 +37,13 @@ function carregarImagemOriginal(nome) {
             resolve(img);
         };
         img.onerror = function() {
-            // Fallback: gerar placeholder
-            const placeholder = gerarSilhuetaPlaceholder(nome, 200, 200);
+            const [pw, ph] = proporcoes[nome] || [1, 1];
+            const base = 200;
+            const largura = base * pw;
+            const altura  = base * ph;
+            const placeholder = gerarSilhuetaPlaceholder(nome, largura, altura);
             const imgFallback = new Image();
-            imgFallback.onload = function() {
-                resolve(imgFallback);
-            };
+            imgFallback.onload = function() { resolve(imgFallback); };
             imgFallback.src = placeholder;
         };
         img.src = caminho;
