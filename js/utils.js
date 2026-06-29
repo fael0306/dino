@@ -136,8 +136,66 @@ function carregarImagemIcnofossil(nome) {
 // ============================================================
 function carregarImagemFossilReal(nome) {
     return new Promise((resolve) => {
-        const nomeFormatado = nome.toLowerCase().replace(/ /g, '_').replace(/[^a-z0-9_]/g, '');
-        const caminho = `assets/real_${nomeFormatado}.png`;
+        const mapa = {
+            "Tyrannosaurus rex":                 "real_tyrannosaurus_rex.png",
+            "Triceratops horridus":              "real_triceratops_horridus.png",
+            "Velociraptor mongoliensis":         "real_velociraptor_mongoliensis.png",
+            "Brachiosaurus altithorax":          "real_brachiosaurus_altithorax.png",
+            "Stegosaurus stenops":               "real_stegosaurus_stenops.png",
+            "Spinosaurus aegyptiacus":           "real_spinosaurus_aegyptiacus.png",
+            "Patagotitan mayorum":               "real_patagotitan_mayorum.png",
+            "Allosaurus fragilis":               "real_allosaurus_fragilis.png",
+            "Diplodocus longus":                 "real_diplodocus_longus.png",
+            "Ankylosaurus magniventris":         "real_ankylosaurus_magniventris.png",
+            "Parasaurolophus walkeri":           "real_parasaurolophus_walkeri.png",
+            "Pachycephalosaurus wyomingensis":   "real_pachycephalosaurus_wyomingensis.png",
+            "Carnotaurus sastrei":               "real_carnotaurus_sastrei.png",
+            "Therizinosaurus cheloniformis":     "real_therizinosaurus_cheloniformis.png",
+            "Deinonychus antirrhopus":           "real_deinonychus_antirrhopus.png",
+            "Iguanodon bernissartensis":         "real_iguanodon_bernissartensis.png",
+            "Baryonyx walkeri":                  "real_baryonyx_walkeri.png",
+            "Microraptor gui":                   "real_microraptor_gui.png",
+            "Archaeopteryx lithographica":       "real_archaeopteryx_lithographica.png",
+            "Coelophysis bauri":                 "real_coelophysis_bauri.png",
+            "Plateosaurus engelhardti":          "real_plateosaurus_engelhardti.png",
+            "Apatosaurus louisae":               "real_apatosaurus_louisae.png",
+            "Camarasaurus grandis":              "real_camarasaurus_grandis.png",
+            "Giganotosaurus carolinii":          "real_giganotosaurus_carolinii.png",
+            "Carcharodontosaurus saharicus":     "real_carcharodontosaurus_saharicus.png",
+            "Utahraptor ostrommaysorum":         "real_utahraptor_ostrommaysorum.png",
+            "Dilophosaurus wetherilli":          "real_dilophosaurus_wetherilli.png",
+            "Ceratosaurus nasicornis":           "real_ceratosaurus_nasicornis.png",
+            "Edmontosaurus annectens":           "real_edmontosaurus_annectens.png",
+            "Lambeosaurus lambei":               "real_lambeosaurus_lambei.png",
+            "Corythosaurus casuarius":           "real_corythosaurus_casuarius.png",
+            "Styracosaurus albertensis":         "real_styracosaurus_albertensis.png",
+            "Chasmosaurus belli":                "real_chasmosaurus_belli.png",
+            "Protoceratops andrewsi":            "real_protoceratops_andrewsi.png",
+            "Psittacosaurus mongoliensis":       "real_psittacosaurus_mongoliensis.png",
+            "Euoplocephalus tutus":              "real_euoplocephalus_tutus.png",
+            "Gallimimus bullatus":               "real_gallimimus_bullatus.png",
+            "Ornithomimus velox":                "real_ornithomimus_velox.png",
+            "Struthiomimus altus":               "real_struthiomimus_altus.png",
+            "Oviraptor philoceratops":           "real_oviraptor_philoceratops.png",
+            "Citipati osmolskae":                "real_citipati_osmolskae.png",
+            "Maiasaura peeblesorum":             "real_maiasaura_peeblesorum.png",
+            "Shantungosaurus giganteus":         "real_shantungosaurus_giganteus.png",
+            "Mamenchisaurus hochuanensis":       "real_mamenchisaurus_hochuanensis.png",
+            "Sauroposeidon proteles":            "real_sauroposeidon_proteles.png",
+            "Amargasaurus cazaui":               "real_amargasaurus_cazaui.png",
+            "Kentrosaurus aethiopicus":          "real_kentrosaurus_aethiopicus.png",
+            "Tuojiangosaurus multispinus":       "real_tuojiangosaurus_multispinus.png",
+            "Euhelopus zdanskyi":                "real_euhelopus_zdanskyi.png",
+            "Herrerasaurus ischigualastensis":   null  // não existe na pasta
+        };
+
+        const nomeArquivo = mapa[nome];
+        if (!nomeArquivo) {
+            resolve(gerarSilhuetaPlaceholder(nome, 300, 200));
+            return;
+        }
+
+        const caminho = `assets/${nomeArquivo}`;
         const img = new Image();
         img.onload = function() {
             const canvas = document.createElement('canvas');
@@ -145,8 +203,7 @@ function carregarImagemFossilReal(nome) {
             const ratio = Math.min(maxWidth / img.width, 1);
             canvas.width = img.width * ratio;
             canvas.height = img.height * ratio;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
             resolve(canvas.toDataURL('image/png'));
         };
         img.onerror = function() {
