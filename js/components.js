@@ -125,9 +125,6 @@ window.atualizarEscala = async function() {
         const dataUrlDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
         const dataUrlRef  = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-        // Altura máxima: 55% da viewport, nunca passando de 500px
-        const alturaMax = Math.min(Math.round(window.innerHeight * 0.55), 500);
-
         let alturaDinoPx, alturaRefPx;
         if (dino.Altura >= refAltura) {
             alturaDinoPx = alturaMax;
