@@ -133,11 +133,22 @@ window.atualizarEscala = async function() {
             alturaDinoPx = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
-        const dataUrlDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
-        const dataUrlRef  = await carregarImagemOuPlaceholder(refNome,  200, 200);
+        // carregarImagemOriginal preserva as proporções reais do arquivo
+        const imgDino = await carregarImagemOriginal(dinoSel);
+        const imgRef  = await carregarImagemOriginal(refNome);
 
-        const dataUrlDinoRedim = await redimensionarParaAltura(dataUrlDino, alturaDinoPx);
-        const dataUrlRefRedim  = await redimensionarParaAltura(dataUrlRef,  alturaRefPx);
+        // Converte para dataURL redimensionando só a altura, largura livre (proporcional)
+        function imgParaDataUrl(img, altura) {
+            const ratio  = altura / img.height;
+            const canvas = document.createElement('canvas');
+            canvas.width  = Math.round(img.width * ratio);
+            canvas.height = altura;
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/png');
+        }
+
+        const dataUrlDinoRedim = imgParaDataUrl(imgDino, alturaDinoPx);
+        const dataUrlRefRedim  = imgParaDataUrl(imgRef,  alturaRefPx);
 
         const dataUrlFinal = await combinarLadoALado(dataUrlRefRedim, dataUrlDinoRedim);
 
