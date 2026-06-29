@@ -104,8 +104,6 @@ function renderEscalaReal() {
     console.log('✅ renderEscalaReal() concluído');
 }
 
-// Substitua todo o conteúdo de `atualizarEscala` por este código:
-
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
@@ -124,14 +122,13 @@ window.atualizarEscala = async function() {
         const dino  = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        // Carrega as imagens (ou placeholder)
-        const dataUrlDino = await carregarImagemOuPlaceholder(dinoSel,  200, 200);
-        const dataUrlRef  = await carregarImagemOuPlaceholder(refNome,  200, 200);
+        const dataUrlDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
+        const dataUrlRef  = await carregarImagemOuPlaceholder(refNome, 200, 200);
 
-        // Altura em pixels proporcional à altura real do animal
-        const alturaMax = Math.round(window.innerHeight * 0.6);
+        // Altura máxima: 55% da viewport, nunca passando de 500px
+        const alturaMax = Math.min(Math.round(window.innerHeight * 0.55), 500);
+
         let alturaDinoPx, alturaRefPx;
-
         if (dino.Altura >= refAltura) {
             alturaDinoPx = alturaMax;
             alturaRefPx  = Math.round(alturaMax * (refAltura / dino.Altura));
@@ -142,26 +139,25 @@ window.atualizarEscala = async function() {
 
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
-            <div style="display:flex; flex-wrap:wrap; justify-content:center;
+            <div style="display:flex; flex-wrap:nowrap; justify-content:center;
                         align-items:flex-end; gap:20px; background:#f8f9fa;
-                        padding:20px; border-radius:8px; margin:10px 0;">
-                <div style="text-align:center;">
+                        padding:20px; border-radius:8px; margin:10px 0;
+                        overflow-x:auto;">
+                <div style="text-align:center; flex-shrink:0;">
                     <img src="${dataUrlRef}"
                          style="display:block;
                                 height:${alturaRefPx}px;
                                 width:auto;
-                                max-height:60vh;
                                 object-fit:contain;">
                     <p style="margin-top:5px;">
                         <strong>${refNome}</strong> (${refAltura}m)
                     </p>
                 </div>
-                <div style="text-align:center;">
+                <div style="text-align:center; flex-shrink:0;">
                     <img src="${dataUrlDino}"
                          style="display:block;
                                 height:${alturaDinoPx}px;
                                 width:auto;
-                                max-height:60vh;
                                 object-fit:contain;">
                     <p style="margin-top:5px;">
                         <strong>${dinoSel}</strong> (${dino.Altura}m)
