@@ -122,9 +122,10 @@ window.atualizarEscala = async function() {
         const dino  = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        const dataUrlDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
-        const dataUrlRef  = await carregarImagemOuPlaceholder(refNome, 200, 200);
+        // Altura máxima para o maior dos dois
+        const alturaMax = 300;
 
+        // Calcula alturas proporcionais
         let alturaDinoPx, alturaRefPx;
         if (dino.Altura >= refAltura) {
             alturaDinoPx = alturaMax;
@@ -134,35 +135,23 @@ window.atualizarEscala = async function() {
             alturaDinoPx = Math.round(alturaMax * (dino.Altura / refAltura));
         }
 
+        // Carrega e redimensiona cada imagem para sua altura proporcional
+        const dataUrlDino = await carregarImagemOuPlaceholder(dinoSel, 200, 200);
+        const dataUrlRef  = await carregarImagemOuPlaceholder(refNome,  200, 200);
+
+        const dataUrlDinoRedim = await redimensionarParaAltura(dataUrlDino, alturaDinoPx);
+        const dataUrlRefRedim  = await redimensionarParaAltura(dataUrlRef,  alturaRefPx);
+
+        // Combina os dois num único canvas (alinhados pela base)
+        const dataUrlFinal = await combinarLadoALado(dataUrlRefRedim, dataUrlDinoRedim);
+
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
-            <div style="display:flex; flex-wrap:nowrap; justify-content:center;
-                        align-items:flex-end; gap:20px; background:#f8f9fa;
-                        padding:20px; border-radius:8px; margin:10px 0;
-                        overflow-x:auto;">
-                <div style="text-align:center; flex-shrink:0;">
-                    <img src="${dataUrlRef}"
-                         style="display:block;
-                                height:${alturaRefPx}px;
-                                width:auto;
-                                object-fit:contain;">
-                    <p style="margin-top:5px;">
-                        <strong>${refNome}</strong> (${refAltura}m)
-                    </p>
-                </div>
-                <div style="text-align:center; flex-shrink:0;">
-                    <img src="${dataUrlDino}"
-                         style="display:block;
-                                height:${alturaDinoPx}px;
-                                width:auto;
-                                object-fit:contain;">
-                    <p style="margin-top:5px;">
-                        <strong>${dinoSel}</strong> (${dino.Altura}m)
-                    </p>
-                </div>
-            </div>
-            <p style="text-align:center; font-size:1.1rem;">
-                <strong>Proporção:</strong> ${razao}x
+            <img src="${dataUrlFinal}" style="max-width:100%; display:block; margin:0 auto;">
+            <p style="text-align:center; margin-top:8px;">
+                <strong>${refNome}</strong> (${refAltura}m) &nbsp;×&nbsp;
+                <strong>${dinoSel}</strong> (${dino.Altura}m) —
+                proporção <strong>${razao}x</strong>
             </p>
         `;
     } catch (e) {
