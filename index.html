@@ -6,7 +6,7 @@
     <title>PaleoLab — Laboratório Virtual</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <!-- Bootstrap Icons (opcional, mas usado para ícones) -->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Bibliotecas externas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
@@ -37,7 +37,7 @@
         </div>
     </header>
 
-    <!-- MENU DE ABAS (com scroll suave) -->
+    <!-- MENU DE ABAS -->
     <nav class="paleo-nav" id="paleo-nav">
         <div class="container">
             <ul class="nav-list" id="nav-list">
@@ -60,7 +60,6 @@
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="paleo-main">
         <div class="container">
-            <!-- Cada aba é uma seção com id="tab-..." -->
             <section id="tab-escala" class="tab-panel active"></section>
             <section id="tab-deriva" class="tab-panel"></section>
             <section id="tab-extincao" class="tab-panel"></section>
@@ -76,24 +75,21 @@
         </div>
     </main>
 
-    <!-- CONTROLE DE ABAS (JavaScript mínimo) -->
+    <!-- Controle de abas -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const navItems = document.querySelectorAll('.nav-item');
             const panels = document.querySelectorAll('.tab-panel');
 
             function activateTab(tabId) {
-                // Remove active de todos
                 navItems.forEach(item => item.classList.remove('active'));
                 panels.forEach(p => p.classList.remove('active'));
 
-                // Ativa o botão e o painel
                 const activeBtn = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
                 if (activeBtn) activeBtn.classList.add('active');
                 const activePanel = document.getElementById(`tab-${tabId}`);
                 if (activePanel) activePanel.classList.add('active');
 
-                // Dispara evento para recarregar gráficos, etc.
                 window.dispatchEvent(new CustomEvent('tabchange', { detail: { tab: tabId } }));
             }
 
@@ -105,20 +101,12 @@
                 });
             });
 
-            // Ativa a primeira aba por padrão (já está marcada como active no HTML)
-            // Mas se não houver active, pega o primeiro
-            if (!document.querySelector('.nav-item.active')) {
-                const first = document.querySelector('.nav-item');
-                if (first) activateTab(first.dataset.tab);
-            } else {
-                // Se já tiver um active, ativa o painel correspondente
-                const activeTab = document.querySelector('.nav-item.active').dataset.tab;
-                activateTab(activeTab);
-            }
+            // Ativa a primeira aba (já marcada como active no HTML)
+            const activeTab = document.querySelector('.nav-item.active');
+            if (activeTab) activateTab(activeTab.dataset.tab);
         });
     </script>
 
-    <!-- SCRIPTS DO PROJETO -->
     <script src="js/data.js" defer></script>
     <script src="js/utils.js" defer></script>
     <script src="js/components.js" defer></script>
