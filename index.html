@@ -3,58 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PaleoLab Científico</title>
-
-    <!-- Bootstrap 5 (apenas grid e utilitários) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <title>PaleoLab — Laboratório Virtual</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons (opcional, mas usado para ícones) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Bibliotecas externas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-    <!-- CSS principal -->
+    <!-- Nosso CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <!-- HEADER -->
-    <header class="main-header">
-        <div class="container-fluid d-flex justify-content-between align-items-center">
-            <div class="logo">
-                <i class="bi bi-bug"></i>
-                <span>PaleoLab</span>
-                <small>Científico</small>
-            </div>
-            <div class="conquista-badge" id="conquista-badge">
-                <i class="bi bi-trophy-fill"></i>
-                <span id="conquista-count">0</span>
+    <header class="paleo-header">
+        <div class="container">
+            <div class="header-inner">
+                <div class="logo">
+                    <i class="bi bi-bug-fill"></i>
+                    <span>Paleo<span class="highlight">Lab</span></span>
+                    <small>científico</small>
+                </div>
+                <div class="header-actions">
+                    <span class="conquista-badge" id="conquista-badge">
+                        <i class="bi bi-trophy-fill"></i>
+                        <span id="conquista-count">0</span>
+                    </span>
+                </div>
             </div>
         </div>
     </header>
 
-    <!-- NAVEGAÇÃO POR ABAS (menu superior) -->
-    <nav class="tab-nav" id="tab-nav">
-        <div class="nav-scroll">
-            <button class="tab-btn active" data-tab="escala"><i class="bi bi-rulers"></i> Escala</button>
-            <button class="tab-btn" data-tab="deriva"><i class="bi bi-globe2"></i> Deriva</button>
-            <button class="tab-btn" data-tab="extincao"><i class="bi bi-biohazard"></i> K‑Pg</button>
-            <button class="tab-btn" data-tab="icnofosseis"><i class="bi bi-footprints"></i> Icnofósseis</button>
-            <button class="tab-btn" data-tab="fosseis"><i class="bi bi-bone"></i> Fósseis</button>
-            <button class="tab-btn" data-tab="massa"><i class="bi bi-weight-scale"></i> Massa</button>
-            <button class="tab-btn" data-tab="quiz"><i class="bi bi-question-circle"></i> Quiz</button>
-            <button class="tab-btn" data-tab="tempo"><i class="bi bi-clock-history"></i> Tempo</button>
-            <button class="tab-btn" data-tab="clima"><i class="bi bi-cloud-sun"></i> Clima</button>
-            <button class="tab-btn" data-tab="conquistas"><i class="bi bi-trophy"></i> Conquistas</button>
-            <button class="tab-btn" data-tab="pdf"><i class="bi bi-file-pdf"></i> PDF</button>
-            <button class="tab-btn" data-tab="arvore"><i class="bi bi-diagram-3"></i> Árvore</button>
+    <!-- MENU DE ABAS (com scroll suave) -->
+    <nav class="paleo-nav" id="paleo-nav">
+        <div class="container">
+            <ul class="nav-list" id="nav-list">
+                <li><button class="nav-item active" data-tab="escala"><i class="bi bi-rulers"></i><span>Escala</span></button></li>
+                <li><button class="nav-item" data-tab="deriva"><i class="bi bi-globe2"></i><span>Deriva</span></button></li>
+                <li><button class="nav-item" data-tab="extincao"><i class="bi bi-biohazard"></i><span>K‑Pg</span></button></li>
+                <li><button class="nav-item" data-tab="icnofosseis"><i class="bi bi-footprints"></i><span>Icnofósseis</span></button></li>
+                <li><button class="nav-item" data-tab="fosseis"><i class="bi bi-bone"></i><span>Fósseis</span></button></li>
+                <li><button class="nav-item" data-tab="massa"><i class="bi bi-weight-scale"></i><span>Massa</span></button></li>
+                <li><button class="nav-item" data-tab="quiz"><i class="bi bi-question-circle"></i><span>Quiz</span></button></li>
+                <li><button class="nav-item" data-tab="tempo"><i class="bi bi-clock-history"></i><span>Tempo</span></button></li>
+                <li><button class="nav-item" data-tab="clima"><i class="bi bi-cloud-sun"></i><span>Clima</span></button></li>
+                <li><button class="nav-item" data-tab="conquistas"><i class="bi bi-trophy"></i><span>Conquistas</span></button></li>
+                <li><button class="nav-item" data-tab="pdf"><i class="bi bi-file-pdf"></i><span>PDF</span></button></li>
+                <li><button class="nav-item" data-tab="arvore"><i class="bi bi-diagram-3"></i><span>Árvore</span></button></li>
+            </ul>
         </div>
     </nav>
 
     <!-- CONTEÚDO PRINCIPAL -->
-    <main class="main-content">
-        <div class="container-fluid">
-            <!-- Cada aba é uma seção -->
+    <main class="paleo-main">
+        <div class="container">
+            <!-- Cada aba é uma seção com id="tab-..." -->
             <section id="tab-escala" class="tab-panel active"></section>
             <section id="tab-deriva" class="tab-panel"></section>
             <section id="tab-extincao" class="tab-panel"></section>
@@ -70,26 +76,49 @@
         </div>
     </main>
 
-    <!-- SCRIPTS -->
+    <!-- CONTROLE DE ABAS (JavaScript mínimo) -->
     <script>
-        // Controle de abas (sem Bootstrap JS)
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tabId = this.dataset.tab;
-                // Remove active de todos os botões e painéis
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-                // Ativa o selecionado
-                this.classList.add('active');
-                document.getElementById('tab-' + tabId).classList.add('active');
-                // Dispara evento para possíveis recarregamentos
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const panels = document.querySelectorAll('.tab-panel');
+
+            function activateTab(tabId) {
+                // Remove active de todos
+                navItems.forEach(item => item.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+
+                // Ativa o botão e o painel
+                const activeBtn = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
+                if (activeBtn) activeBtn.classList.add('active');
+                const activePanel = document.getElementById(`tab-${tabId}`);
+                if (activePanel) activePanel.classList.add('active');
+
+                // Dispara evento para recarregar gráficos, etc.
                 window.dispatchEvent(new CustomEvent('tabchange', { detail: { tab: tabId } }));
+            }
+
+            navItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tabId = this.dataset.tab;
+                    activateTab(tabId);
+                });
             });
+
+            // Ativa a primeira aba por padrão (já está marcada como active no HTML)
+            // Mas se não houver active, pega o primeiro
+            if (!document.querySelector('.nav-item.active')) {
+                const first = document.querySelector('.nav-item');
+                if (first) activateTab(first.dataset.tab);
+            } else {
+                // Se já tiver um active, ativa o painel correspondente
+                const activeTab = document.querySelector('.nav-item.active').dataset.tab;
+                activateTab(activeTab);
+            }
         });
-        // Ativa a primeira aba por padrão
-        document.querySelector('.tab-btn.active')?.click();
     </script>
 
+    <!-- SCRIPTS DO PROJETO -->
     <script src="js/data.js" defer></script>
     <script src="js/utils.js" defer></script>
     <script src="js/components.js" defer></script>

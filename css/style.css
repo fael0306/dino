@@ -2,47 +2,61 @@
    RESET E VARIÁVEIS
    ============================================================ */
 :root {
-    --primary: #2c3e50;
-    --primary-light: #3e5a70;
-    --secondary: #e67e22;
-    --accent: #16a085;
-    --bg-light: #f4f6f9;
-    --text-dark: #2c3e50;
-    --text-muted: #7f8c8d;
-    --shadow: 0 4px 20px rgba(0,0,0,0.08);
-    --radius: 16px;
-    --transition: 0.25s ease;
+    --primary: #1a2a3a;       /* azul petróleo escuro */
+    --primary-light: #2c4a5a;
+    --secondary: #d4a373;     /* dourado terroso */
+    --secondary-light: #f0d5b0;
+    --accent: #e76f51;        /* laranja queimado */
+    --bg: #f4f1ea;            /* fundo creme */
+    --card-bg: rgba(255,255,255,0.8);
+    --text-dark: #1e2a36;
+    --text-muted: #5a6a7a;
+    --shadow: 0 8px 32px rgba(0,0,0,0.08);
+    --radius: 20px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg-light);
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
     color: var(--text-dark);
-    line-height: 1.6;
-    padding-top: 70px; /* espaço para header fixo */
+    line-height: 1.5;
+    padding-top: 72px; /* header fixo */
+    -webkit-font-smoothing: antialiased;
 }
 
 /* ============================================================
    HEADER
    ============================================================ */
-.main-header {
+.paleo-header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    background: white;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    padding: 0.5rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
     height: 64px;
     display: flex;
     align-items: center;
+}
+
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    width: 100%;
 }
 
 .logo {
@@ -50,40 +64,49 @@ body {
     align-items: baseline;
     gap: 6px;
     font-weight: 700;
-    font-size: 1.4rem;
-    color: var(--primary);
+    font-size: 1.6rem;
+    letter-spacing: -0.5px;
 }
 .logo i {
     font-size: 1.8rem;
     color: var(--secondary);
+    animation: pulse-icon 3s infinite;
+}
+@keyframes pulse-icon {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+.logo .highlight {
+    color: var(--secondary);
 }
 .logo small {
     font-weight: 400;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-left: 2px;
+    font-size: 0.7rem;
+    opacity: 0.7;
+    margin-left: 4px;
+    letter-spacing: 0.3px;
 }
 
 .conquista-badge {
-    background: var(--primary);
-    color: white;
-    padding: 0.3rem 0.9rem;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+    padding: 0.3rem 1rem;
     border-radius: 40px;
     font-size: 0.9rem;
     display: flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 2px 8px rgba(44,62,80,0.25);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 .conquista-badge i {
-    font-size: 1.1rem;
     color: #f1c40f;
+    font-size: 1.2rem;
 }
 
 /* ============================================================
-   NAVEGAÇÃO POR ABAS
+   NAVEGAÇÃO (ABAS)
    ============================================================ */
-.tab-nav {
+.paleo-nav {
     position: fixed;
     top: 64px;
     left: 0;
@@ -91,27 +114,32 @@ body {
     z-index: 999;
     background: white;
     border-bottom: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     padding: 0 1rem;
     overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: thin;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
 }
-.tab-nav::-webkit-scrollbar {
+.paleo-nav::-webkit-scrollbar {
     height: 4px;
 }
-.tab-nav::-webkit-scrollbar-thumb {
+.paleo-nav::-webkit-scrollbar-thumb {
     background: #ccc;
     border-radius: 4px;
 }
 
-.nav-scroll {
+.nav-list {
     display: flex;
     gap: 2px;
-    padding: 0.4rem 0;
+    list-style: none;
+    padding: 0.5rem 0;
+    margin: 0;
+    white-space: nowrap;
+    justify-content: center;
+    flex-wrap: nowrap;
 }
 
-.tab-btn {
+.nav-item {
     background: transparent;
     border: none;
     padding: 0.5rem 1.2rem;
@@ -124,41 +152,43 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    font-family: inherit;
 }
-.tab-btn i {
-    font-size: 1.1rem;
+.nav-item i {
+    font-size: 1.2rem;
 }
-.tab-btn:hover {
-    background: #eef2f7;
+.nav-item:hover {
+    background: #f0f2f5;
     color: var(--primary);
 }
-.tab-btn.active {
+.nav-item.active {
     background: var(--primary);
     color: white;
-    box-shadow: 0 2px 8px rgba(44,62,80,0.3);
+    box-shadow: 0 4px 12px rgba(26,42,58,0.3);
+}
+.nav-item.active i {
+    color: var(--secondary);
 }
 
 /* ============================================================
    CONTEÚDO PRINCIPAL
    ============================================================ */
-.main-content {
-    margin-top: 20px;
-    padding: 1.5rem 1rem;
+.paleo-main {
+    padding: 1.5rem 0 3rem;
     max-width: 1400px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
 }
 
 .tab-panel {
     display: none;
-    animation: fadeIn 0.3s ease;
+    animation: fadeUp 0.4s ease;
 }
 .tab-panel.active {
     display: block;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -166,44 +196,68 @@ body {
    CARDS E COMPONENTES REUTILIZÁVEIS
    ============================================================ */
 .card-paleo {
-    background: white;
+    background: var(--card-bg);
+    backdrop-filter: blur(4px);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    padding: 1.5rem;
+    padding: 2rem;
     margin-bottom: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.5);
     transition: var(--transition);
 }
 .card-paleo:hover {
-    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.card-paleo h4 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary);
+}
+.card-paleo h4 i {
+    color: var(--secondary);
+    font-size: 1.8rem;
 }
 
 .btn-paleo {
     background: var(--primary);
     color: white;
     border: none;
-    padding: 0.6rem 1.8rem;
+    padding: 0.6rem 2rem;
     border-radius: 40px;
     font-weight: 500;
     transition: var(--transition);
     cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(26,42,58,0.2);
 }
 .btn-paleo:hover {
     background: var(--primary-light);
     transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(26,42,58,0.3);
 }
 .btn-paleo i {
-    margin-right: 6px;
+    font-size: 1.2rem;
 }
 
 .btn-outline-paleo {
     background: transparent;
     border: 2px solid var(--primary);
     color: var(--primary);
-    padding: 0.5rem 1.6rem;
+    padding: 0.5rem 1.8rem;
     border-radius: 40px;
     font-weight: 500;
     transition: var(--transition);
     cursor: pointer;
+    font-family: inherit;
 }
 .btn-outline-paleo:hover {
     background: var(--primary);
@@ -216,8 +270,8 @@ body {
 #imagem-comparacao img {
     max-width: 100%;
     height: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
 }
 
 /* ============================================================
@@ -229,11 +283,16 @@ body {
     box-shadow: var(--shadow);
     padding: 1rem;
     text-align: center;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 .icno-imagem img {
     max-width: 100%;
-    height: auto;
-    border-radius: 8px;
+    max-height: 250px;
+    border-radius: 12px;
 }
 
 /* ============================================================
@@ -243,11 +302,11 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 0.7rem 1rem;
+    padding: 0.8rem 1rem;
     background: #f8f9fa;
-    border-radius: 10px;
+    border-radius: 12px;
     margin-bottom: 0.5rem;
-    border-left: 4px solid var(--accent);
+    border-left: 4px solid var(--secondary);
     transition: var(--transition);
 }
 .conquista-item.conquista-bloqueada {
@@ -257,51 +316,81 @@ body {
 .conquista-item i {
     font-size: 1.4rem;
 }
+.conquista-item .bi-check-circle-fill { color: #28a745; }
+.conquista-item .bi-x-circle-fill { color: #dc3545; }
+
+/* ============================================================
+   ÁRVORE EVOLUTIVA
+   ============================================================ */
+#arvore-evolutiva {
+    width: 100%;
+    height: 600px;
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+}
 
 /* ============================================================
    RESPONSIVIDADE
    ============================================================ */
-@media (max-width: 768px) {
-    .main-header {
-        padding: 0 1rem;
-        height: 56px;
+@media (max-width: 992px) {
+    .nav-list {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
     }
-    body {
-        padding-top: 62px;
+    .nav-item {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.9rem;
     }
-    .tab-nav {
-        top: 56px;
+    .nav-item span {
+        display: none; /* esconde texto, mostra só ícone */
     }
-    .tab-btn {
-        font-size: 0.75rem;
-        padding: 0.4rem 0.8rem;
-    }
-    .tab-btn i {
-        font-size: 0.9rem;
-    }
-    .logo {
-        font-size: 1.1rem;
-    }
-    .logo i {
+    .nav-item i {
         font-size: 1.4rem;
     }
-    .main-content {
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 60px;
+    }
+    .paleo-header {
+        height: 56px;
+    }
+    .paleo-nav {
+        top: 56px;
+    }
+    .logo {
+        font-size: 1.3rem;
+    }
+    .logo i {
+        font-size: 1.5rem;
+    }
+    .card-paleo {
+        padding: 1.2rem;
+    }
+    .card-paleo h4 {
+        font-size: 1.2rem;
+    }
+    .conquista-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.7rem;
+    }
+    #arvore-evolutiva {
+        height: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .paleo-main {
         padding: 1rem 0.5rem;
     }
     .card-paleo {
         padding: 1rem;
     }
-}
-
-@media (max-width: 480px) {
-    .tab-btn span {
-        display: none; /* esconde texto, mostra apenas ícone */
-    }
-    .tab-btn i {
-        font-size: 1.3rem;
-    }
-    .conquista-badge {
-        font-size: 0.75rem;
-        padding: 0.2rem 0.6rem;
+    .btn-paleo {
+        width: 100%;
+        justify-content: center;
     }
 }

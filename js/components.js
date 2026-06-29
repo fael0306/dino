@@ -891,51 +891,71 @@ window.gerarPDF = function() {
 // ============================================================
 function renderArvoreEvolutiva() {
     console.log('🔧 renderArvoreEvolutiva()');
-    const container = document.getElementById('arvore');
+    const container = document.getElementById('tab-arvore');
     container.innerHTML = `
-        <h4>🌳 Árvore Evolutiva Interativa</h4>
-        <div id="arvore-evolutiva"></div>
-        <p class="mt-2">Relações filogenéticas entre os principais grupos.</p>
+        <div class="card-paleo">
+            <h4><i class="bi bi-diagram-3"></i> Árvore Evolutiva Interativa</h4>
+            <div id="arvore-evolutiva"></div>
+            <p class="mt-2 text-muted" style="font-size:0.9rem;">Relações filogenéticas entre os principais grupos de répteis.</p>
+        </div>
     `;
     try {
         if (typeof vis === 'undefined') {
-            document.getElementById('arvore-evolutiva').innerHTML = '<p class="text-warning">vis.js não carregado.</p>';
+            document.getElementById('arvore-evolutiva').innerHTML = `
+                <div class="alert alert-warning">Biblioteca vis.js não carregada. Verifique sua conexão.</div>
+            `;
             return;
         }
         const nodes = new vis.DataSet([
-            {id: 'Reptilia', label: 'Reptilia'},
-            {id: 'Archosauria', label: 'Archosauria'},
-            {id: 'Dinosauria', label: 'Dinosauria'},
-            {id: 'Pterosauria', label: 'Pterosauria'},
-            {id: 'Saurischia', label: 'Saurischia'},
-            {id: 'Ornithischia', label: 'Ornithischia'},
-            {id: 'Theropoda', label: 'Theropoda'},
-            {id: 'Sauropodomorpha', label: 'Sauropodomorpha'},
-            {id: 'Tyrannosauridae', label: 'Tyrannosauridae'},
-            {id: 'Dromaeosauridae', label: 'Dromaeosauridae'},
-            {id: 'Spinosauridae', label: 'Spinosauridae'},
-            {id: 'Brachiosauridae', label: 'Brachiosauridae'},
-            {id: 'Diplodocidae', label: 'Diplodocidae'},
-            {id: 'Ceratopsia', label: 'Ceratopsia'},
-            {id: 'Ornithopoda', label: 'Ornithopoda'},
-            {id: 'Stegosauria', label: 'Stegosauria'},
-            {id: 'Ankylosauria', label: 'Ankylosauria'},
-            {id: 'Sauropterygia', label: 'Sauropterygia'},
-            {id: 'Plesiosauria', label: 'Plesiosauria'},
-            {id: 'Ichthyosauria', label: 'Ichthyosauria'}
+            {id: 'Reptilia', label: 'Reptilia', color: '#2c3e50'},
+            {id: 'Archosauria', label: 'Archosauria', color: '#34495e'},
+            {id: 'Dinosauria', label: 'Dinosauria', color: '#16a085'},
+            {id: 'Pterosauria', label: 'Pterosauria', color: '#2980b9'},
+            {id: 'Saurischia', label: 'Saurischia', color: '#27ae60'},
+            {id: 'Ornithischia', label: 'Ornithischia', color: '#e67e22'},
+            {id: 'Theropoda', label: 'Theropoda', color: '#c0392b'},
+            {id: 'Sauropodomorpha', label: 'Sauropodomorpha', color: '#8e44ad'},
+            {id: 'Tyrannosauridae', label: 'Tyrannosauridae', color: '#e74c3c'},
+            {id: 'Dromaeosauridae', label: 'Dromaeosauridae', color: '#f39c12'},
+            {id: 'Spinosauridae', label: 'Spinosauridae', color: '#d35400'},
+            {id: 'Brachiosauridae', label: 'Brachiosauridae', color: '#2ecc71'},
+            {id: 'Diplodocidae', label: 'Diplodocidae', color: '#1abc9c'},
+            {id: 'Ceratopsia', label: 'Ceratopsia', color: '#3498db'},
+            {id: 'Ornithopoda', label: 'Ornithopoda', color: '#9b59b6'},
+            {id: 'Stegosauria', label: 'Stegosauria', color: '#f1c40f'},
+            {id: 'Ankylosauria', label: 'Ankylosauria', color: '#e67e22'},
+            {id: 'Sauropterygia', label: 'Sauropterygia', color: '#1abc9c'},
+            {id: 'Plesiosauria', label: 'Plesiosauria', color: '#16a085'},
+            {id: 'Ichthyosauria', label: 'Ichthyosauria', color: '#2980b9'}
         ]);
         const edges = new vis.DataSet(ARVORE_ARESTAS.map(([from, to]) => ({from, to})));
         const containerDiv = document.getElementById('arvore-evolutiva');
         const data = {nodes, edges};
         const options = {
-            layout: { hierarchical: { direction: 'LR', sortMethod: 'directed' } },
+            layout: {
+                hierarchical: {
+                    direction: 'LR',
+                    sortMethod: 'directed',
+                    nodeSpacing: 120,
+                    levelSeparation: 80
+                }
+            },
             physics: { enabled: false },
-            edges: { arrows: 'to' }
+            edges: { arrows: 'to', smooth: true },
+            nodes: {
+                shape: 'box',
+                margin: 10,
+                font: { size: 14, color: '#2c3e50' },
+                borderWidth: 2,
+                shadow: true
+            }
         };
         new vis.Network(containerDiv, data, options);
     } catch (e) {
         console.error('Erro na árvore evolutiva:', e);
-        document.getElementById('arvore-evolutiva').innerHTML = `<div class="alert alert-danger">Erro ao carregar árvore.</div>`;
+        document.getElementById('arvore-evolutiva').innerHTML = `
+            <div class="alert alert-danger">Erro ao carregar a árvore: ${e.message}</div>
+        `;
     }
 }
 
