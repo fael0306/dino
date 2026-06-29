@@ -109,75 +109,74 @@ function renderEscalaReal() {
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
-        const refSel = document.getElementById('ref-escala').value;
+        const refSel  = document.getElementById('ref-escala').value;
         let refNome, refAltura;
 
         if (refSel === 'Outro') {
-            refNome = document.getElementById('outro-dino-escala').value;
-            const dinoRef = DINOSSAUROS_CLASSICOS.find(d => d.Nome === refNome);
-            refAltura = dinoRef.Altura;
+            refNome   = document.getElementById('outro-dino-escala').value;
+            refAltura = DINOSSAUROS_CLASSICOS.find(d => d.Nome === refNome).Altura;
         } else if (refSel === 'Humano') {
-            refNome = 'Humano';
-            refAltura = 1.7;
-        } else if (refSel === 'Elefante') {
-            refNome = 'Elefante';
-            refAltura = 3.3;
+            refNome = 'Humano'; refAltura = 1.7;
+        } else {
+            refNome = 'Elefante'; refAltura = 3.3;
         }
 
-        const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
+        const dino  = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
         const razao = (dino.Altura / refAltura).toFixed(1);
 
-        const imgDino = await carregarImagemOriginal(dinoSel);
-        const imgRef = await carregarImagemOriginal(refNome);
+        // Carrega as imagens (ou placeholder)
+        const dataUrlDino = await carregarImagemOuPlaceholder(dinoSel,  200, 200);
+        const dataUrlRef  = await carregarImagemOuPlaceholder(refNome,  200, 200);
 
+        // Altura em pixels proporcional à altura real do animal
         const alturaMax = Math.round(window.innerHeight * 0.6);
+        let alturaDinoPx, alturaRefPx;
 
-        let alturaDino, alturaRef;
         if (dino.Altura >= refAltura) {
-            alturaDino = alturaMax;
-            alturaRef = Math.round(alturaMax * (refAltura / dino.Altura));
+            alturaDinoPx = alturaMax;
+            alturaRefPx  = Math.round(alturaMax * (refAltura / dino.Altura));
         } else {
-            alturaRef = alturaMax;
-            alturaDino = Math.round(alturaMax * (dino.Altura / refAltura));
+            alturaRefPx  = alturaMax;
+            alturaDinoPx = Math.round(alturaMax * (dino.Altura / refAltura));
         }
-
-        function redimensionarImagem(img, altura) {
-            return new Promise((resolve) => {
-                const canvas = document.createElement('canvas');
-                const ratio = altura / img.height;
-                canvas.width = Math.round(img.width * ratio);
-                canvas.height = altura;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/png'));
-            });
-        }
-
-        const imgDinoRedim = await redimensionarImagem(imgDino, alturaDino);
-        const imgRefRedim = await redimensionarImagem(imgRef, alturaRef);
 
         const container = document.getElementById('imagem-comparacao');
         container.innerHTML = `
-            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 20px; background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 10px 0; overflow: auto;">
-                <div style="text-align: center; flex: 0 1 auto;">
-                    <img src="${imgRefRedim}" alt="${refNome}" 
-                         style="display: block; height: ${alturaRef}px; width: auto; max-height: 60vh; object-fit: contain;">
-                    <p style="margin-top: 5px;"><strong>${refNome}</strong> (${refAltura}m)</p>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center;
+                        align-items:flex-end; gap:20px; background:#f8f9fa;
+                        padding:20px; border-radius:8px; margin:10px 0;">
+                <div style="text-align:center;">
+                    <img src="${dataUrlRef}"
+                         style="display:block;
+                                height:${alturaRefPx}px;
+                                width:auto;
+                                max-height:60vh;
+                                object-fit:contain;">
+                    <p style="margin-top:5px;">
+                        <strong>${refNome}</strong> (${refAltura}m)
+                    </p>
                 </div>
-                <div style="text-align: center; flex: 0 1 auto;">
-                    <img src="${imgDinoRedim}" alt="${dinoSel}" 
-                         style="display: block; height: ${alturaDino}px; width: auto; max-height: 60vh; object-fit: contain;">
-                    <p style="margin-top: 5px;"><strong>${dinoSel}</strong> (${dino.Altura}m)</p>
+                <div style="text-align:center;">
+                    <img src="${dataUrlDino}"
+                         style="display:block;
+                                height:${alturaDinoPx}px;
+                                width:auto;
+                                max-height:60vh;
+                                object-fit:contain;">
+                    <p style="margin-top:5px;">
+                        <strong>${dinoSel}</strong> (${dino.Altura}m)
+                    </p>
                 </div>
             </div>
-            <p style="text-align: center; font-size: 1.1rem;"><strong>Proporção:</strong> ${razao}x</p>
+            <p style="text-align:center; font-size:1.1rem;">
+                <strong>Proporção:</strong> ${razao}x
+            </p>
         `;
     } catch (e) {
         console.error('Erro em atualizarEscala:', e);
         document.getElementById('imagem-comparacao').innerHTML = `
             <div class="alert alert-danger">
-                Erro ao carregar a comparação. Verifique se as imagens existem na pasta assets/.
-                <br><small>Detalhe: ${e.message}</small>
+                Erro ao carregar a comparação.<br><small>${e.message}</small>
             </div>
         `;
     }
