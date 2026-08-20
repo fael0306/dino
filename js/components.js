@@ -3,9 +3,38 @@
 console.log('🔄 components.js carregado (versão UI renovada)');
 
 // ============================================================
+// FUNÇÃO AUXILIAR DE FALLBACK PARA BIBLIOTECAS EXTERNAS
+// ============================================================
+function verificarBiblioteca(nome, objeto, containerId) {
+    if (typeof objeto !== 'undefined') return true;
+
+    const mensagem = `
+        <div class="card-paleo" style="border-left: 4px solid #e74c3c; background: #fdf0ed;">
+            <h5><i class="bi bi-exclamation-triangle" style="color: #e74c3c;"></i> Biblioteca não carregada</h5>
+            <p>A biblioteca <strong>${nome}</strong> não pôde ser carregada. Verifique sua conexão com a internet e recarregue a página.</p>
+            <p><small>Se o problema persistir, tente usar um navegador atualizado ou entre em contato com o suporte.</small></p>
+            <button class="btn-paleo" onclick="location.reload()"><i class="bi bi-arrow-clockwise"></i> Recarregar página</button>
+        </div>
+    `;
+
+    if (containerId) {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = mensagem;
+        } else {
+            console.warn(`Biblioteca ${nome} não disponível e container #${containerId} não encontrado.`);
+            alert(`A biblioteca ${nome} não pôde ser carregada. Verifique sua conexão.`);
+        }
+    } else {
+        console.warn(`Biblioteca ${nome} não disponível.`);
+        alert(`A biblioteca ${nome} não pôde ser carregada. Verifique sua conexão.`);
+    }
+    return false;
+}
+
+// ============================================================
 // RENDERIZAÇÃO DAS ABAS (com isolamento de erros)
 // ============================================================
-
 function renderizarAbas() {
     console.log('▶️ renderizarAbas() iniciado');
     const renderizadores = [
@@ -92,7 +121,6 @@ function renderEscalaReal() {
     console.log('✅ renderEscalaReal() concluído');
 }
 
-// (atualizarEscala permanece inalterado, mas vou manter como referência)
 window.atualizarEscala = async function() {
     try {
         const dinoSel = document.getElementById('dino-escala').value;
@@ -191,16 +219,16 @@ function renderDerivaContinental() {
         </div>
     `;
 
+    // VERIFICAÇÃO DE FALLBACK: Leaflet
+    if (!verificarBiblioteca('Leaflet', L, 'tab-deriva')) {
+        return;
+    }
+
     document.getElementById('era-globo').addEventListener('change', function() {
         const url = `https://dinosaurpictures.org/ancient-earth?_t=${this.value}#${this.value}`;
         document.getElementById('iframe-globo').src = url;
     });
 
-    if (typeof L === 'undefined') {
-        console.warn('⚠️ Leaflet não carregado.');
-        document.getElementById('mapa-fosseis').innerHTML = '<p class="text-warning">Biblioteca Leaflet não carregada.</p>';
-        return;
-    }
     setTimeout(() => {
         try { atualizarMapa(); } catch(e) { console.error('Erro no mapa:', e); }
     }, 500);
@@ -214,6 +242,12 @@ window.atualizarMapa = function() {
         const coords = COORDENADAS_DINOSSAUROS[dino] || [];
         const container = document.getElementById('mapa-fosseis');
         if (!container) return;
+
+        // Verificação extra para Leaflet dentro da ação
+        if (typeof L === 'undefined') {
+            container.innerHTML = '<p class="text-danger">Leaflet não está disponível. Verifique sua conexão.</p>';
+            return;
+        }
 
         if (!mapaLeaflet) {
             mapaLeaflet = L.map(container).setView([0, 0], 2);
@@ -261,12 +295,20 @@ function renderExtincaoKpg() {
                     <button class="btn-paleo mt-3" onclick="executarSimulacao()"><i class="bi bi-play-circle"></i> Simular</button>
                 </div>
                 <div class="col-md-8">
-                    <canvas id="grafico-extincao" width="400" height="300"></canvas>
+                    <div id="grafico-container">
+                        <canvas id="grafico-extincao" width="400" height="300"></canvas>
+                    </div>
                     <div id="status-extincao" class="mt-3"></div>
                 </div>
             </div>
         </div>
     `;
+
+    // VERIFICAÇÃO DE FALLBACK: Chart.js
+    if (!verificarBiblioteca('Chart.js', Chart, 'tab-extincao')) {
+        return;
+    }
+
     document.getElementById('bloqueio').addEventListener('input', function() {
         document.getElementById('bloqueio-val').textContent = this.value;
     });
@@ -279,7 +321,7 @@ let chartExtincao = null;
 window.executarSimulacao = function() {
     try {
         if (typeof Chart === 'undefined') {
-            alert('Chart.js não carregado.');
+            alert('Chart.js não carregado. Verifique sua conexão e recarregue a página.');
             return;
         }
         const bloqueio = parseFloat(document.getElementById('bloqueio').value);
@@ -699,8 +741,8 @@ function renderLinhaTempo() {
 
 function atualizarLinhaTempo(idade) {
     try {
-        if (typeof Chart === 'undefined') {
-            document.getElementById('tempo-info').innerHTML = '<p class="text-warning">Chart.js não carregado.</p>';
+        // VERIFICAÇÃO DE FALLBACK: Chart.js
+        if (!verificarBiblioteca('Chart.js', Chart, 'tab-tempo')) {
             return;
         }
         const info = document.getElementById('tempo-info');
@@ -868,11 +910,11 @@ function renderExportPDF() {
 }
 
 window.gerarPDF = function() {
+    // VERIFICAÇÃO DE FALLBACK: jsPDF
+    if (!verificarBiblioteca('jsPDF', window.jspdf, 'tab-pdf')) {
+        return;
+    }
     try {
-        if (typeof window.jspdf === 'undefined') {
-            alert('jsPDF não carregado.');
-            return;
-        }
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         doc.setFontSize(16);
@@ -910,13 +952,13 @@ function renderArvoreEvolutiva() {
             <p class="mt-2 text-muted" style="font-size:0.9rem;">Relações filogenéticas entre os principais grupos de répteis.</p>
         </div>
     `;
+
+    // VERIFICAÇÃO DE FALLBACK: vis.js
+    if (!verificarBiblioteca('vis.js', vis, 'tab-arvore')) {
+        return;
+    }
+
     try {
-        if (typeof vis === 'undefined') {
-            document.getElementById('arvore-evolutiva').innerHTML = `
-                <div class="alert alert-warning">Biblioteca vis.js não carregada. Verifique sua conexão.</div>
-            `;
-            return;
-        }
         const nodes = new vis.DataSet([
             {id: 'Reptilia', label: 'Reptilia', color: '#2c3e50'},
             {id: 'Archosauria', label: 'Archosauria', color: '#34495e'},

@@ -14,6 +14,18 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
     <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+    
+    <!-- Captura global de falhas de carregamento de scripts -->
+    <script>
+        document.addEventListener('error', function(e) {
+            const target = e.target;
+            if (target.tagName === 'SCRIPT' && target.src) {
+                console.warn('⚠️ Falha ao carregar script externo:', target.src);
+                // A função verificarBiblioteca (em components.js) exibirá mensagens específicas por aba.
+            }
+        }, true);
+    </script>
+
     <!-- Nosso CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
