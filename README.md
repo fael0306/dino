@@ -1,8 +1,18 @@
-# 🦴 PaleoLab Científico – v1.3.0 (Web Estática)
+# 🦴 PaleoLab Científico – v1.4.0 (Web Estática)
 
 Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem necessidade de servidor backend**.
 
 <img width="1366" alt="PaleoLab Screenshot" src="https://github.com/user-attachments/assets/562b697e-8bf7-4e40-86ed-75411c365425" />
+
+---
+
+## ✨ Novidades da v1.4.0
+
+- **🎯 Jogo de Icnofósseis dinâmico** – as perguntas extras (tamanho, forma, proporção) agora se atualizam instantaneamente quando o usuário altera as opções de dedos ou garras, tornando a experiência mais interativa.
+- **🔄 Persistência entre abas** – cada aba é renderizada apenas uma vez; ao alternar entre elas, o estado (mapa, quiz, conquistas) é preservado, evitando recarregamentos desnecessários.
+- **⏳ Feedback visual de carregamento** – spinners e mensagens de “Carregando…” foram adicionados na Escala Real, Icnofósseis e Simulação K‑Pg, melhorando a percepção de resposta.
+- **🏅 Conquista “climaturista”** – agora é desbloqueada automaticamente ao explorar os três períodos climáticos (Triássico, Jurássico e Cretáceo) na aba Clima.
+- **🛡️ Fallback robusto para bibliotecas externas** – se Chart.js, Leaflet, vis.js ou jsPDF não carregarem (por falha de rede), a aplicação exibe mensagens amigáveis e sugere recarregar a página, em vez de quebrar silenciosamente.
 
 ---
 
@@ -122,25 +132,4 @@ Este projeto é distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LI
 
 ---
 
-**📎 Resumo:** Esta versão **1.3.0** é totalmente front‑end, não requer Python/Streamlit. Basta abrir o `index.html` no navegador ou usar um servidor estático simples para desfrutar de todas as funcionalidades.
-```
-
----
-
-## 📦 Sobre o requirements.txt
-
-**O arquivo `requirements.txt` foi removido**, pois o projeto **não possui dependências Python**. Todas as bibliotecas utilizadas (Chart.js, Leaflet, vis.js, jsPDF) são carregadas via CDN diretamente no `index.html`. Caso você queira manter um arquivo para documentar ferramentas de desenvolvimento (como `live-server` ou `http.server`), sugiro criar um `package.json` ou um `.tool-versions`, mas não é necessário.
-
----
-
-## ▶️ Instruções rápidas para execução
-
-1. **Clone o repositório** (ou baixe os arquivos).
-2. **Abra o arquivo `index.html`**:
-   - Duplo‑clique (se o navegador permitir) ou
-   - Use o **Live Server** no VS Code (recomendado) ou
-   - Inicie um servidor HTTP simples com Python:
-     ```bash
-     python3 -m http.server 8000
-     ```
-3. Acesse `http://localhost:8000` (ou a porta que você definiu) e explore o PaleoLab!
+**📎 Resumo:** Esta versão **1.4.0** consolida importantes melhorias de usabilidade, robustez e experiência do usuário, mantendo a natureza totalmente front‑end e sem dependências Python. Basta abrir o `index.html` no navegador ou usar um servidor estático simples para desfrutar de todas as funcionalidades.
