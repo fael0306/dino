@@ -122,6 +122,17 @@ function renderEscalaReal() {
 }
 
 window.atualizarEscala = async function() {
+    const container = document.getElementById('imagem-comparacao');
+
+    // --- INÍCIO: feedback de carregamento ---
+    container.innerHTML = `
+        <div class="loading-message">
+            <i class="bi bi-arrow-repeat spinner"></i>
+            <span>Carregando imagens e gerando comparação...</span>
+        </div>
+    `;
+    // ---------------------------------------
+
     try {
         const dinoSel = document.getElementById('dino-escala').value;
         const refSel  = document.getElementById('ref-escala').value;
@@ -166,7 +177,7 @@ window.atualizarEscala = async function() {
 
         const dataUrlFinal = await combinarLadoALado(dataUrlRefRedim, dataUrlDinoRedim);
 
-        const container = document.getElementById('imagem-comparacao');
+        // --- FINAL: resultado ---
         container.innerHTML = `
             <img src="${dataUrlFinal}" style="max-width:100%; display:block; margin:0 auto; border-radius:8px;">
             <p style="text-align:center; margin-top:12px; font-weight:500;">
@@ -177,7 +188,7 @@ window.atualizarEscala = async function() {
         `;
     } catch (e) {
         console.error('Erro em atualizarEscala:', e);
-        document.getElementById('imagem-comparacao').innerHTML = `
+        container.innerHTML = `
             <div class="alert alert-danger">Erro ao carregar a comparação.<br><small>${e.message}</small></div>
         `;
     }
@@ -319,11 +330,24 @@ function renderExtincaoKpg() {
 
 let chartExtincao = null;
 window.executarSimulacao = function() {
+    const statusDiv = document.getElementById('status-extincao');
+    const graficoContainer = document.getElementById('grafico-container');
+
+    // --- INÍCIO: feedback de carregamento ---
+    statusDiv.innerHTML = `
+        <div class="loading-message" style="padding: 1rem;">
+            <i class="bi bi-arrow-repeat spinner"></i>
+            <span>Processando simulação...</span>
+        </div>
+    `;
+    // ---------------------------------------
+
     try {
         if (typeof Chart === 'undefined') {
-            alert('Chart.js não carregado. Verifique sua conexão e recarregue a página.');
+            statusDiv.innerHTML = `<div class="alert alert-warning">Chart.js não carregado. Verifique sua conexão.</div>`;
             return;
         }
+
         const bloqueio = parseFloat(document.getElementById('bloqueio').value);
         const chuva = parseFloat(document.getElementById('chuva').value);
         const anos = parseInt(document.getElementById('anos-sim').value);
@@ -350,19 +374,18 @@ window.executarSimulacao = function() {
             }
         });
 
-        const status = document.getElementById('status-extincao');
         const P_final = dados.P[dados.P.length - 1];
         const H_final = dados.H[dados.H.length - 1];
         if (P_final < 1) {
-            status.innerHTML = `<div class="alert alert-danger">🔥 COLAPSO TOTAL: extinção das plantas.</div>`;
+            statusDiv.innerHTML = `<div class="alert alert-danger">🔥 COLAPSO TOTAL: extinção das plantas.</div>`;
         } else if (H_final < 5) {
-            status.innerHTML = `<div class="alert alert-warning">⚠️ ECOSSISTEMA DEVASTADO.</div>`;
+            statusDiv.innerHTML = `<div class="alert alert-warning">⚠️ ECOSSISTEMA DEVASTADO.</div>`;
         } else {
-            status.innerHTML = `<div class="alert alert-success">🌿 ECOSSISTEMA ESTÁVEL.</div>`;
+            statusDiv.innerHTML = `<div class="alert alert-success">🌿 ECOSSISTEMA ESTÁVEL.</div>`;
         }
     } catch (e) {
         console.error('Erro na simulação:', e);
-        document.getElementById('status-extincao').innerHTML = `<div class="alert alert-danger">Erro na simulação.</div>`;
+        statusDiv.innerHTML = `<div class="alert alert-danger">Erro na simulação.</div>`;
     }
 };
 
@@ -448,10 +471,20 @@ window.atualizarPerguntasExtras = function() {
 };
 
 window.novoDesafioIcnofosseis = async function() {
+    const imgDiv = document.getElementById('icno-imagem');
+
+    // --- INÍCIO: feedback de carregamento ---
+    imgDiv.innerHTML = `
+        <div class="loading-message">
+            <i class="bi bi-arrow-repeat spinner"></i>
+            <span>Carregando pegada misteriosa...</span>
+        </div>
+    `;
+    // ---------------------------------------
+
     try {
         const nomes = Object.keys(ICNOFOSSEIS);
         icnoDesafioAtual = nomes[Math.floor(Math.random() * nomes.length)];
-        const imgDiv = document.getElementById('icno-imagem');
 
         const imgSrc = await carregarImagemIcnofossil(icnoDesafioAtual);
         imgDiv.innerHTML = `<img src="${imgSrc}" class="img-fluid" alt="Pegada de ${icnoDesafioAtual}" style="max-height:250px;"><p class="mt-2 text-muted">Fóssil misterioso</p>`;
@@ -475,16 +508,14 @@ window.novoDesafioIcnofosseis = async function() {
             <div id="icno-perguntas-extra"></div>
         `;
 
-        // Adiciona listeners para atualizar as perguntas extras quando os selects mudarem
         document.getElementById('icno-dedos').addEventListener('change', window.atualizarPerguntasExtras);
         document.getElementById('icno-garras').addEventListener('change', window.atualizarPerguntasExtras);
 
-        // Gera as perguntas extras iniciais com base nos valores padrão
         window.atualizarPerguntasExtras();
-
         document.getElementById('icno-resultado').innerHTML = '';
     } catch (e) {
         console.error('Erro no novo desafio:', e);
+        imgDiv.innerHTML = `<div class="alert alert-danger">Erro ao carregar pegada.</div>`;
     }
 };
 
