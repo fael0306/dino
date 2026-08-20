@@ -1,6 +1,6 @@
-# 🦴 PaleoLab Científico – v1.3.0
+# 🦴 PaleoLab Científico – v1.3.0 (Web Estática)
 
-Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros.
+Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem necessidade de servidor backend**.
 
 <img width="1366" alt="PaleoLab Screenshot" src="https://github.com/user-attachments/assets/562b697e-8bf7-4e40-86ed-75411c365425" />
 
@@ -10,7 +10,7 @@ Laboratório virtual interativo para o ensino de paleontologia e ciências natur
 
 1. **📏 Escala Real** – Compare qualquer dinossauro com um humano, elefante ou outro dinossauro, visualizando silhuetas proporcionais.
 2. **🗺️ Deriva Continental** – Globo interativo da Terra antiga (Ancient Earth) e mapa de sítios fósseis de mais de 50 espécies.
-3. **🦠 Extinção K‑Pg** – Simulador do impacto do asteroide baseado no modelo Lotka‑Volterra, agora com integração Runge‑Kutta 4.
+3. **🦠 Extinção K‑Pg** – Simulador do impacto do asteroide baseado no modelo Lotka‑Volterra, com integração Runge‑Kutta 4.
 4. **👣 Icnofósseis** – Jogo “Paleo‑Detetive” onde o aluno identifica icnogéneros a partir de características da pegada.
 5. **🦴 Fósseis Reais** – Museu com 50 dinossauros reais, imagens e curiosidades taxonómicas.
 6. **⚖️ Massa Corporal** – Estimativa de massa pela circunferência do fêmur, segundo Campione & Evans (2012).
@@ -19,7 +19,7 @@ Laboratório virtual interativo para o ensino de paleontologia e ciências natur
 9. **🌍 Clima Mesozóico** – Explore temperatura, CO₂ e vegetação de cada período (Triássico, Jurássico, Cretáceo).
 10. **🏆 Conquistas** – Sistema de progressão que desbloqueia medalhas ao completar desafios.
 11. **📄 Exportar PDF** – Gera um relatório científico com suas simulações e conquistas.
-12. **🌳 Árvore Evolutiva** – Cladograma hierárquico interativo (NetworkX) mostrando relações filogenéticas.
+12. **🌳 Árvore Evolutiva** – Cladograma hierárquico interativo (vis.js) mostrando relações filogenéticas.
 
 ### Dados científicos reais
 - Ficha de 7 dinossauros “clássicos” (T‑Rex, Triceratops, Velociraptor, etc.).
@@ -29,28 +29,33 @@ Laboratório virtual interativo para o ensino de paleontologia e ciências natur
 
 ---
 
-## 🚀 Como executar
+## 🚀 Como executar (front‑end puro)
 
-1. **Clone o repositório**
-   ```bash
-   git clone https://github.com/seu-usuario/paleolab-cientifico.git
-   cd paleolab-cientifico
-   ```
+Como o PaleoLab é uma aplicação **estática**, você pode abri‑lo de várias formas:
 
-2. **Instale as dependências**
-   ```bash
-   pip install -r requirements.txt
-   ```
-   *Requer Python 3.9+ e Streamlit 1.28+.*
+### 1. Diretamente no navegador (mais simples)
+- Baixe ou clone este repositório.
+- Localize o arquivo `index.html`.
+- **Dê um duplo‑clique** nele – ele abrirá no seu navegador padrão.
 
-3. **Execute a aplicação**
-   ```bash
-   streamlit run dino.py
-   ```
+> ℹ️ Alguns navegadores podem bloquear requisições locais (CORS) ao carregar imagens da pasta `assets/`. Se isso ocorrer, use uma das opções abaixo.
 
-4. **Acesse** `http://localhost:8501` no seu navegador.
+### 2. Com Live Server (recomendado)
+Se você usa o **VS Code**, instale a extensão [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer):
+- Abra a pasta do projeto no VS Code.
+- Clique com o botão direito sobre `index.html` e escolha **"Open with Live Server"**.
+- O navegador abrirá automaticamente em `http://127.0.0.1:5500`.
 
-> 💡 **Nota sobre as imagens:** As figuras dos dinossauros devem ser colocadas na pasta `assets/`. Enquanto não existirem, o aplicativo gera automaticamente silhuetas geométricas coloridas.
+### 3. Com um servidor HTTP simples (Python)
+Se você tem Python instalado, pode usar o módulo `http.server`:
+```bash
+# Na raiz do projeto
+python3 -m http.server 8000
+```
+Acesse `http://localhost:8000` no navegador.
+
+### 4. Com qualquer outro servidor estático
+Você pode usar `serve` (Node.js), `nginx`, Apache ou até mesmo o GitHub Pages – basta apontar para a pasta raiz.
 
 ---
 
@@ -58,31 +63,28 @@ Laboratório virtual interativo para o ensino de paleontologia e ciências natur
 
 ```
 paleolab-cientifico/
-├── dino.py                # Ponto de entrada da aplicação Streamlit
-├── components.py          # Componentes visuais e lógica de cada aba
-├── data.py                # Carregamento de dados (dinossauros, quiz, etc.)
-├── utils.py               # Funções utilitárias (imagens, escalas, gráficos)
-├── assets/                # Pasta para as imagens (a preencher pelo utilizador)
-├── tests/
-│   ├── test_data.py
-│   ├── test_components.py
-│   └── test_utils.py
-├── requirements.txt       # Lista de dependências Python
+├── index.html              # Página principal
+├── css/
+│   └── style.css           # Estilos globais
+├── js/
+│   ├── data.js             # Todos os dados (dinossauros, quiz, clima, etc.)
+│   ├── utils.js            # Funções utilitárias (imagens, simulações, identificação)
+│   ├── components.js       # Renderização de cada aba e lógica principal
+│   └── main.js             # Ponto de entrada (carrega components.js)
+├── assets/                 # Pasta para imagens (a preencher pelo utilizador)
+│   ├── trex.png
+│   ├── triceratops.png
+│   └── ...                 # demais arquivos .png (reais e placeholders)
 └── README.md
 ```
 
+> **Nota:** As imagens dos dinossauros devem ser colocadas na pasta `assets/`. Enquanto não existirem, o aplicativo gera automaticamente silhuetas geométricas coloridas.
+
 ---
 
-## 🧪 Testes
+## 🧪 Testes (futuro)
 
-O projeto possui testes unitários com `pytest`. Para executá‑los:
-
-```bash
-pip install pytest
-pytest tests/
-```
-
-Cobertura atual: funções de dados, classificador de icnofósseis, simulação K‑Pg (RK4) e utilitários de imagem.
+Atualmente não há testes automatizados. O roadmap prevê a implementação de testes unitários com Jest na versão 2.0.0.
 
 ---
 
@@ -106,21 +108,6 @@ PaleoLab Científico foi desenhado para ser utilizado em sala de aula ou em casa
 
 ---
 
-## 📦 Requisitos (requirements.txt)
-
-```
-streamlit
-pandas
-numpy
-matplotlib
-Pillow
-plotly
-fpdf
-networkx
-```
-
----
-
 ## 🤝 Contribuindo
 
 Contribuições são bem‑vindas!  
@@ -135,4 +122,25 @@ Este projeto é distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LI
 
 ---
 
-**📎 Resumo:** A versão **1.3.0** adiciona simulação climática, linha do tempo geológica, árvore evolutiva interativa, sistema de conquistas e exportação de relatórios em PDF, tornando o PaleoLab ainda mais completo para o ensino de paleontologia.
+**📎 Resumo:** Esta versão **1.3.0** é totalmente front‑end, não requer Python/Streamlit. Basta abrir o `index.html` no navegador ou usar um servidor estático simples para desfrutar de todas as funcionalidades.
+```
+
+---
+
+## 📦 Sobre o requirements.txt
+
+**O arquivo `requirements.txt` foi removido**, pois o projeto **não possui dependências Python**. Todas as bibliotecas utilizadas (Chart.js, Leaflet, vis.js, jsPDF) são carregadas via CDN diretamente no `index.html`. Caso você queira manter um arquivo para documentar ferramentas de desenvolvimento (como `live-server` ou `http.server`), sugiro criar um `package.json` ou um `.tool-versions`, mas não é necessário.
+
+---
+
+## ▶️ Instruções rápidas para execução
+
+1. **Clone o repositório** (ou baixe os arquivos).
+2. **Abra o arquivo `index.html`**:
+   - Duplo‑clique (se o navegador permitir) ou
+   - Use o **Live Server** no VS Code (recomendado) ou
+   - Inicie um servidor HTTP simples com Python:
+     ```bash
+     python3 -m http.server 8000
+     ```
+3. Acesse `http://localhost:8000` (ou a porta que você definiu) e explore o PaleoLab!
