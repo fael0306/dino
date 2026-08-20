@@ -367,7 +367,7 @@ window.executarSimulacao = function() {
 };
 
 // ============================================================
-// 4. ICNOFÓSSEIS
+// 4. ICNOFÓSSEIS (com atualização dinâmica)
 // ============================================================
 function renderIcnofosseis() {
     console.log('🔧 renderIcnofosseis()');
@@ -398,6 +398,55 @@ function renderIcnofosseis() {
 
 let icnoDesafioAtual = null;
 
+// Função que atualiza as perguntas extras com base nos valores atuais de dedos e garras
+window.atualizarPerguntasExtras = function() {
+    const extraDiv = document.getElementById('icno-perguntas-extra');
+    if (!extraDiv) return;
+
+    const dedos = parseInt(document.getElementById('icno-dedos').value);
+    const garras = document.getElementById('icno-garras').value === 'true';
+
+    let html = '';
+
+    if (dedos === 3) {
+        html += `
+            <div class="mb-2">
+                <label>3. Tamanho:</label>
+                <select id="icno-tamanho" class="form-select">
+                    <option value="pequeno">Pequeno (<25cm)</option>
+                    <option value="grande">Grande (>25cm)</option>
+                </select>
+            </div>
+        `;
+        if (garras) {
+            html += `
+                <div class="mb-2">
+                    <label>4. Formato:</label>
+                    <select id="icno-forma" class="form-select">
+                        <option value="alongada">Alongada e estreita</option>
+                        <option value="larga">Larga e robusta</option>
+                    </select>
+                </div>
+            `;
+        }
+    } else { // dedos === 4
+        if (!garras) {
+            html += `
+                <div class="mb-2">
+                    <label>3. Proporção:</label>
+                    <select id="icno-proporcao" class="form-select">
+                        <option value="larga">Mais larga que comprida</option>
+                        <option value="alongada">Mais comprida que larga</option>
+                    </select>
+                </div>
+            `;
+        }
+        // Se garras for true, nenhuma pergunta extra (apenas as duas primeiras)
+    }
+
+    extraDiv.innerHTML = html;
+};
+
 window.novoDesafioIcnofosseis = async function() {
     try {
         const nomes = Object.keys(ICNOFOSSEIS);
@@ -426,45 +475,13 @@ window.novoDesafioIcnofosseis = async function() {
             <div id="icno-perguntas-extra"></div>
         `;
 
-        const extra = document.getElementById('icno-perguntas-extra');
-        extra.innerHTML = '';
-        const dedos = parseInt(document.getElementById('icno-dedos').value);
-        const garras = document.getElementById('icno-garras').value === 'true';
+        // Adiciona listeners para atualizar as perguntas extras quando os selects mudarem
+        document.getElementById('icno-dedos').addEventListener('change', window.atualizarPerguntasExtras);
+        document.getElementById('icno-garras').addEventListener('change', window.atualizarPerguntasExtras);
 
-        if (dedos === 3) {
-            extra.innerHTML += `
-                <div class="mb-2">
-                    <label>3. Tamanho:</label>
-                    <select id="icno-tamanho" class="form-select">
-                        <option value="pequeno">Pequeno (<25cm)</option>
-                        <option value="grande">Grande (>25cm)</option>
-                    </select>
-                </div>
-            `;
-            if (garras) {
-                extra.innerHTML += `
-                    <div class="mb-2">
-                        <label>4. Formato:</label>
-                        <select id="icno-forma" class="form-select">
-                            <option value="alongada">Alongada e estreita</option>
-                            <option value="larga">Larga e robusta</option>
-                        </select>
-                    </div>
-                `;
-            }
-        } else {
-            if (!garras) {
-                extra.innerHTML += `
-                    <div class="mb-2">
-                        <label>3. Proporção:</label>
-                        <select id="icno-proporcao" class="form-select">
-                            <option value="larga">Mais larga que comprida</option>
-                            <option value="alongada">Mais comprida que larga</option>
-                        </select>
-                    </div>
-                `;
-            }
-        }
+        // Gera as perguntas extras iniciais com base nos valores padrão
+        window.atualizarPerguntasExtras();
+
         document.getElementById('icno-resultado').innerHTML = '';
     } catch (e) {
         console.error('Erro no novo desafio:', e);
