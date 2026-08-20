@@ -839,6 +839,31 @@ window.atualizarClima = function() {
             </div>
             <p>${dados.descricao}</p>
         `;
+
+        // ============================================================
+        // LÓGICA PARA DESBLOQUEAR CONQUISTA "climaturista"
+        // ============================================================
+        // Extrai o nome do período (ex: "Triássico" de "Triássico (252-201 Ma)")
+        const nomePeriodo = periodo.split(' ')[0]; // "Triássico", "Jurássico", "Cretáceo"
+
+        // Recupera a lista de períodos já visitados do localStorage
+        let periodosVisitados = JSON.parse(localStorage.getItem('periodos_visitados')) || [];
+
+        // Se este período ainda não foi registrado, adiciona
+        if (!periodosVisitados.includes(nomePeriodo)) {
+            periodosVisitados.push(nomePeriodo);
+            localStorage.setItem('periodos_visitados', JSON.stringify(periodosVisitados));
+        }
+
+        // Verifica se os três períodos já foram visitados
+        const todosPeriodos = ['Triássico', 'Jurássico', 'Cretáceo'];
+        const visitouTodos = todosPeriodos.every(p => periodosVisitados.includes(p));
+
+        if (visitouTodos) {
+            // Desbloqueia a conquista (a função já verifica se já foi desbloqueada)
+            desbloquearConquista('climaturista');
+        }
+
     } catch (e) {
         console.error('Erro no clima:', e);
         document.getElementById('clima-info').innerHTML = `<div class="alert alert-danger">Erro ao carregar dados climáticos.</div>`;
