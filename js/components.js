@@ -3,6 +3,26 @@
 console.log('🔄 components.js carregado (versão UI renovada)');
 
 // ============================================================
+// ESTADO GLOBAL PARA PERSISTÊNCIA ENTRE ABAS
+// ============================================================
+const state = {
+    initialized: {
+        escala: false,
+        deriva: false,
+        extincao: false,
+        icnofosseis: false,
+        fosseis: false,
+        massa: false,
+        quiz: false,
+        tempo: false,
+        clima: false,
+        conquistas: false,
+        pdf: false,
+        arvore: false
+    }
+};
+
+// ============================================================
 // FUNÇÃO AUXILIAR DE FALLBACK PARA BIBLIOTECAS EXTERNAS
 // ============================================================
 function verificarBiblioteca(nome, objeto, containerId) {
@@ -76,6 +96,7 @@ function renderizarAbas() {
 // 1. ESCALA REAL
 // ============================================================
 function renderEscalaReal() {
+    if (state.initialized.escala) return;
     console.log('🔧 renderEscalaReal()');
     const container = document.getElementById('tab-escala');
     container.innerHTML = `
@@ -119,20 +140,17 @@ function renderEscalaReal() {
     });
 
     console.log('✅ renderEscalaReal() concluído');
+    state.initialized.escala = true;
 }
 
 window.atualizarEscala = async function() {
     const container = document.getElementById('imagem-comparacao');
-
-    // --- INÍCIO: feedback de carregamento ---
     container.innerHTML = `
         <div class="loading-message">
             <i class="bi bi-arrow-repeat spinner"></i>
             <span>Carregando imagens e gerando comparação...</span>
         </div>
     `;
-    // ---------------------------------------
-
     try {
         const dinoSel = document.getElementById('dino-escala').value;
         const refSel  = document.getElementById('ref-escala').value;
@@ -177,7 +195,6 @@ window.atualizarEscala = async function() {
 
         const dataUrlFinal = await combinarLadoALado(dataUrlRefRedim, dataUrlDinoRedim);
 
-        // --- FINAL: resultado ---
         container.innerHTML = `
             <img src="${dataUrlFinal}" style="max-width:100%; display:block; margin:0 auto; border-radius:8px;">
             <p style="text-align:center; margin-top:12px; font-weight:500;">
@@ -198,6 +215,7 @@ window.atualizarEscala = async function() {
 // 2. DERIVA CONTINENTAL
 // ============================================================
 function renderDerivaContinental() {
+    if (state.initialized.deriva) return;
     console.log('🔧 renderDerivaContinental()');
     const container = document.getElementById('tab-deriva');
     container.innerHTML = `
@@ -230,7 +248,6 @@ function renderDerivaContinental() {
         </div>
     `;
 
-    // VERIFICAÇÃO DE FALLBACK: Leaflet
     if (!verificarBiblioteca('Leaflet', L, 'tab-deriva')) {
         return;
     }
@@ -243,6 +260,8 @@ function renderDerivaContinental() {
     setTimeout(() => {
         try { atualizarMapa(); } catch(e) { console.error('Erro no mapa:', e); }
     }, 500);
+
+    state.initialized.deriva = true;
 }
 
 let mapaLeaflet = null;
@@ -254,7 +273,6 @@ window.atualizarMapa = function() {
         const container = document.getElementById('mapa-fosseis');
         if (!container) return;
 
-        // Verificação extra para Leaflet dentro da ação
         if (typeof L === 'undefined') {
             container.innerHTML = '<p class="text-danger">Leaflet não está disponível. Verifique sua conexão.</p>';
             return;
@@ -288,6 +306,7 @@ window.atualizarMapa = function() {
 // 3. EXTINÇÃO K-PG
 // ============================================================
 function renderExtincaoKpg() {
+    if (state.initialized.extincao) return;
     console.log('🔧 renderExtincaoKpg()');
     const container = document.getElementById('tab-extincao');
     container.innerHTML = `
@@ -315,7 +334,6 @@ function renderExtincaoKpg() {
         </div>
     `;
 
-    // VERIFICAÇÃO DE FALLBACK: Chart.js
     if (!verificarBiblioteca('Chart.js', Chart, 'tab-extincao')) {
         return;
     }
@@ -326,28 +344,24 @@ function renderExtincaoKpg() {
     document.getElementById('chuva').addEventListener('input', function() {
         document.getElementById('chuva-val').textContent = this.value;
     });
+
+    state.initialized.extincao = true;
 }
 
 let chartExtincao = null;
 window.executarSimulacao = function() {
     const statusDiv = document.getElementById('status-extincao');
-    const graficoContainer = document.getElementById('grafico-container');
-
-    // --- INÍCIO: feedback de carregamento ---
     statusDiv.innerHTML = `
         <div class="loading-message" style="padding: 1rem;">
             <i class="bi bi-arrow-repeat spinner"></i>
             <span>Processando simulação...</span>
         </div>
     `;
-    // ---------------------------------------
-
     try {
         if (typeof Chart === 'undefined') {
             statusDiv.innerHTML = `<div class="alert alert-warning">Chart.js não carregado. Verifique sua conexão.</div>`;
             return;
         }
-
         const bloqueio = parseFloat(document.getElementById('bloqueio').value);
         const chuva = parseFloat(document.getElementById('chuva').value);
         const anos = parseInt(document.getElementById('anos-sim').value);
@@ -393,6 +407,7 @@ window.executarSimulacao = function() {
 // 4. ICNOFÓSSEIS (com atualização dinâmica)
 // ============================================================
 function renderIcnofosseis() {
+    if (state.initialized.icnofosseis) return;
     console.log('🔧 renderIcnofosseis()');
     const container = document.getElementById('tab-icnofosseis');
     container.innerHTML = `
@@ -417,11 +432,11 @@ function renderIcnofosseis() {
         window.icnoEstado = { desafio: null, respostas: {} };
     }
     setTimeout(novoDesafioIcnofosseis, 100);
+    state.initialized.icnofosseis = true;
 }
 
 let icnoDesafioAtual = null;
 
-// Função que atualiza as perguntas extras com base nos valores atuais de dedos e garras
 window.atualizarPerguntasExtras = function() {
     const extraDiv = document.getElementById('icno-perguntas-extra');
     if (!extraDiv) return;
@@ -452,7 +467,7 @@ window.atualizarPerguntasExtras = function() {
                 </div>
             `;
         }
-    } else { // dedos === 4
+    } else {
         if (!garras) {
             html += `
                 <div class="mb-2">
@@ -464,7 +479,6 @@ window.atualizarPerguntasExtras = function() {
                 </div>
             `;
         }
-        // Se garras for true, nenhuma pergunta extra (apenas as duas primeiras)
     }
 
     extraDiv.innerHTML = html;
@@ -472,16 +486,12 @@ window.atualizarPerguntasExtras = function() {
 
 window.novoDesafioIcnofosseis = async function() {
     const imgDiv = document.getElementById('icno-imagem');
-
-    // --- INÍCIO: feedback de carregamento ---
     imgDiv.innerHTML = `
         <div class="loading-message">
             <i class="bi bi-arrow-repeat spinner"></i>
             <span>Carregando pegada misteriosa...</span>
         </div>
     `;
-    // ---------------------------------------
-
     try {
         const nomes = Object.keys(ICNOFOSSEIS);
         icnoDesafioAtual = nomes[Math.floor(Math.random() * nomes.length)];
@@ -545,6 +555,7 @@ window.identificarIcnofosseis = function() {
 // 5. FÓSSEIS REAIS
 // ============================================================
 function renderFosseisReais() {
+    if (state.initialized.fosseis) return;
     console.log('🔧 renderFosseisReais()');
     const container = document.getElementById('tab-fosseis');
     container.innerHTML = `
@@ -555,6 +566,7 @@ function renderFosseisReais() {
         </div>
     `;
     setTimeout(sortearFossil, 100);
+    state.initialized.fosseis = true;
 }
 
 window.sortearFossil = async function() {
@@ -591,6 +603,7 @@ window.sortearFossil = async function() {
 // 6. MASSA CORPORAL
 // ============================================================
 function renderMassaCorporal() {
+    if (state.initialized.massa) return;
     console.log('🔧 renderMassaCorporal()');
     const container = document.getElementById('tab-massa');
     container.innerHTML = `
@@ -616,6 +629,7 @@ function renderMassaCorporal() {
             </div>
         </div>
     `;
+    state.initialized.massa = true;
 }
 
 window.calcularMassa = function() {
@@ -657,6 +671,7 @@ window.calcularMassa = function() {
 let quizEstado = { nivel: null, indice: 0, pontuacao: 0, perguntas: [], respostas: [], concluido: false };
 
 function renderQuiz() {
+    if (state.initialized.quiz) return;
     console.log('🔧 renderQuiz()');
     const container = document.getElementById('tab-quiz');
     container.innerHTML = `
@@ -679,6 +694,7 @@ function renderQuiz() {
         <div id="quiz-perguntas"></div>
         <div id="quiz-resultado"></div>
     `;
+    state.initialized.quiz = true;
 }
 
 window.iniciarQuiz = function() {
@@ -766,6 +782,7 @@ function mostrarResultadoQuiz() {
 // 8. LINHA DO TEMPO
 // ============================================================
 function renderLinhaTempo() {
+    if (state.initialized.tempo) return;
     console.log('🔧 renderLinhaTempo()');
     const container = document.getElementById('tab-tempo');
     container.innerHTML = `
@@ -785,11 +802,11 @@ function renderLinhaTempo() {
         atualizarLinhaTempo(parseInt(this.value));
     });
     atualizarLinhaTempo(150);
+    state.initialized.tempo = true;
 }
 
 function atualizarLinhaTempo(idade) {
     try {
-        // VERIFICAÇÃO DE FALLBACK: Chart.js
         if (!verificarBiblioteca('Chart.js', Chart, 'tab-tempo')) {
             return;
         }
@@ -832,6 +849,7 @@ function atualizarLinhaTempo(idade) {
 // 9. CLIMA MESOZÓICO
 // ============================================================
 function renderClima() {
+    if (state.initialized.clima) return;
     console.log('🔧 renderClima()');
     const container = document.getElementById('tab-clima');
     container.innerHTML = `
@@ -853,6 +871,7 @@ function renderClima() {
         </div>
     `;
     setTimeout(atualizarClima, 100);
+    state.initialized.clima = true;
 }
 
 window.atualizarClima = function() {
@@ -871,30 +890,18 @@ window.atualizarClima = function() {
             <p>${dados.descricao}</p>
         `;
 
-        // ============================================================
-        // LÓGICA PARA DESBLOQUEAR CONQUISTA "climaturista"
-        // ============================================================
-        // Extrai o nome do período (ex: "Triássico" de "Triássico (252-201 Ma)")
-        const nomePeriodo = periodo.split(' ')[0]; // "Triássico", "Jurássico", "Cretáceo"
-
-        // Recupera a lista de períodos já visitados do localStorage
+        // Lógica para desbloquear conquista "climaturista"
+        const nomePeriodo = periodo.split(' ')[0];
         let periodosVisitados = JSON.parse(localStorage.getItem('periodos_visitados')) || [];
-
-        // Se este período ainda não foi registrado, adiciona
         if (!periodosVisitados.includes(nomePeriodo)) {
             periodosVisitados.push(nomePeriodo);
             localStorage.setItem('periodos_visitados', JSON.stringify(periodosVisitados));
         }
-
-        // Verifica se os três períodos já foram visitados
         const todosPeriodos = ['Triássico', 'Jurássico', 'Cretáceo'];
         const visitouTodos = todosPeriodos.every(p => periodosVisitados.includes(p));
-
         if (visitouTodos) {
-            // Desbloqueia a conquista (a função já verifica se já foi desbloqueada)
             desbloquearConquista('climaturista');
         }
-
     } catch (e) {
         console.error('Erro no clima:', e);
         document.getElementById('clima-info').innerHTML = `<div class="alert alert-danger">Erro ao carregar dados climáticos.</div>`;
@@ -905,6 +912,7 @@ window.atualizarClima = function() {
 // 10. CONQUISTAS
 // ============================================================
 function renderConquistas() {
+    if (state.initialized.conquistas) return;
     console.log('🔧 renderConquistas()');
     const container = document.getElementById('tab-conquistas');
     container.innerHTML = `
@@ -917,6 +925,7 @@ function renderConquistas() {
         </div>
     `;
     atualizarConquistas();
+    state.initialized.conquistas = true;
 }
 
 function desbloquearConquista(id) {
@@ -971,6 +980,7 @@ function atualizarBadgeConquistas() {
 // 11. EXPORTAR PDF
 // ============================================================
 function renderExportPDF() {
+    if (state.initialized.pdf) return;
     console.log('🔧 renderExportPDF()');
     const container = document.getElementById('tab-pdf');
     container.innerHTML = `
@@ -980,10 +990,10 @@ function renderExportPDF() {
             <div id="pdf-status" class="mt-3"></div>
         </div>
     `;
+    state.initialized.pdf = true;
 }
 
 window.gerarPDF = function() {
-    // VERIFICAÇÃO DE FALLBACK: jsPDF
     if (!verificarBiblioteca('jsPDF', window.jspdf, 'tab-pdf')) {
         return;
     }
@@ -1016,6 +1026,7 @@ window.gerarPDF = function() {
 // 12. ÁRVORE EVOLUTIVA – CORRIGIDA E FUNCIONAL
 // ============================================================
 function renderArvoreEvolutiva() {
+    if (state.initialized.arvore) return;
     console.log('🔧 renderArvoreEvolutiva()');
     const container = document.getElementById('tab-arvore');
     container.innerHTML = `
@@ -1026,7 +1037,6 @@ function renderArvoreEvolutiva() {
         </div>
     `;
 
-    // VERIFICAÇÃO DE FALLBACK: vis.js
     if (!verificarBiblioteca('vis.js', vis, 'tab-arvore')) {
         return;
     }
@@ -1083,6 +1093,7 @@ function renderArvoreEvolutiva() {
             <div class="alert alert-danger">Erro ao carregar a árvore: ${e.message}</div>
         `;
     }
+    state.initialized.arvore = true;
 }
 
 // ============================================================
