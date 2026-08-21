@@ -8,7 +8,7 @@ Com base na versão atual (v1.3.0) e nas duas listas de *issues* fornecidas, est
 
 | Versão | Foco | Principais entregas |
 |--------|------|---------------------|
-| **v1.4.0** | Estabilidade e usabilidade | Documentação corrigida, fallbacks offline, lógica do jogo de icnofósseis, feedback de carregamento, conquista `climaturista`, persistência básica de abas. | OK
+| **v1.4.0** | Estabilidade e usabilidade | Documentação corrigida, fallbacks offline, lógica do jogo de icnofósseis, feedback de carregamento, conquista `climaturista`, persistência básica de abas. |
 | **v1.5.0** | Expansão de dados e interação | Inclusão dos 50 dinossauros reais na Escala Real, popups com ficha detalhada no mapa, comparação de três animais, revisão de respostas no Quiz. |
 | **v1.6.0** | Funcionalidades avançadas | Modo "batalha" no Quiz (comparações entre dois dinossauros), gráfico de dispersão na aba Massa Corporal, exportação de PDF completa (incluindo gráficos e imagens). |
 | **v2.0.0** | Qualidade, testes e acessibilidade | Migração para `addEventListener`, testes unitários (Jest), acessibilidade (ARIA, `alt`), otimização de carregamento condicional, import/export de conquistas. |
