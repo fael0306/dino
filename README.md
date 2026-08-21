@@ -2,8 +2,6 @@
 
 Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem necessidade de servidor backend**.
 
-<img width="1366" alt="PaleoLab Screenshot" src="https://github.com/user-attachments/assets/562b697e-8bf7-4e40-86ed-75411c365425" />
-
 ---
 
 ## ✨ Novidades da v1.4.0
