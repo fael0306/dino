@@ -15,7 +15,7 @@ Com base na versão atual (v1.3.0) e nas duas listas de *issues* fornecidas, est
 
 ---
 
-## 🔧 v1.4.0 – Estabilidade e Usabilidade (prioridade máxima)
+## 🔧 v1.4.0 – Estabilidade e Usabilidade (prioridade máxima) - OK
 
 **Objetivo:** Corrigir problemas imediatos que afetam a experiência do usuário e a coerência do projeto.
 
