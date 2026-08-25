@@ -217,7 +217,7 @@ window.atualizarEscala = async function() {
 // ============================================================
 
 // --- FUNÇÃO GLOBAL PARA CRIAR POPUP ---
-window.criarPopupConteudo = async function(nome) {
+window.criarPopupConteudo = function(nome) {
     try {
         let dino = DINOSSAUROS_REAIS.find(d => d.Nome === nome);
         if (!dino) dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === nome);
@@ -225,23 +225,11 @@ window.criarPopupConteudo = async function(nome) {
             return `<b>${nome}</b><br>Dados não disponíveis.`;
         }
 
-        // CORREÇÃO: Usa a mesma função da Escala
-        const imgOriginal = await carregarImagemOriginal(nome);
-        
-        // Redimensiona mantendo proporção (altura fixa de 150px)
-        const ratio = 150 / imgOriginal.height;
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.round(imgOriginal.width * ratio);
-        canvas.height = 150;
-        canvas.getContext('2d').drawImage(imgOriginal, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/png');
-
         return `
-            <div style="min-width:200px; max-width:300px;">
-                <h4 style="margin:0 0 6px 0;">${dino.Nome}</h4>
+            <div style="min-width:180px; max-width:300px; text-align:left; padding:4px 0;">
+                <h4 style="margin:0 0 6px 0; font-size:1.1rem;">${dino.Nome}</h4>
                 <p style="margin:4px 0;"><strong>Período:</strong> ${dino.Periodo}</p>
                 <p style="margin:4px 0;"><strong>Dieta:</strong> ${dino.Dieta}</p>
-                <img src="${dataUrl}" style="display:block; max-width:100%; max-height:150px; width:auto; height:auto; object-fit:contain; border-radius:8px; margin:8px auto 0;">
             </div>
         `;
     } catch (e) {
