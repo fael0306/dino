@@ -907,12 +907,48 @@ function mostrarResultadoQuiz() {
     const area = document.getElementById('quiz-perguntas');
     const total = quizEstado.perguntas.length;
     const pontuacao = quizEstado.pontuacao;
-    area.innerHTML = `
+    const respostas = quizEstado.respostas || [];
+
+    let html = `
         <div class="alert alert-success">
-            <h5>Quiz concluído!</h5>
-            <p>Pontuação: ${pontuacao}/${total}</p>
+            <h5>🏁 Quiz concluído!</h5>
+            <p><strong>Pontuação:</strong> ${pontuacao}/${total}</p>
+            <p><strong>Nível:</strong> ${quizEstado.nivel}</p>
         </div>
+        <hr>
+        <h6>📋 Revisão das perguntas:</h6>
+        <div style="max-height:400px; overflow-y:auto; padding-right:8px;">
     `;
+
+    quizEstado.perguntas.forEach((p, idx) => {
+        const respostaUsuario = respostas[idx] !== undefined ? respostas[idx] : -1;
+        const correta = p.resposta;
+        const acertou = respostaUsuario === correta;
+        const textoResposta = respostaUsuario !== -1 ? p.opcoes[respostaUsuario] : 'Não respondida';
+        const textoCorreto = p.opcoes[correta];
+
+        html += `
+            <div style="border-left: 4px solid ${acertou ? '#28a745' : '#dc3545'}; padding: 10px 15px; margin-bottom: 12px; background: #f8f9fa; border-radius: 8px;">
+                <p style="font-weight:600; margin:0 0 4px 0;">${idx+1}. ${p.pergunta}</p>
+                <p style="margin:2px 0;">
+                    <span style="color: ${acertou ? '#28a745' : '#dc3545'};">
+                        <i class="bi ${acertou ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}"></i>
+                        Sua resposta: ${textoResposta}
+                    </span>
+                </p>
+                <p style="margin:2px 0; color: #28a745;">
+                    <i class="bi bi-check-circle-fill"></i> Resposta correta: ${textoCorreto}
+                </p>
+                ${p.explicacao ? `<p style="margin:4px 0 0 0; font-size:0.9rem; color:#495057;"><i class="bi bi-info-circle"></i> ${p.explicacao}</p>` : ''}
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+
+    area.innerHTML = html;
+
+    // Desbloqueia conquistas se aplicável
     if (quizEstado.nivel === 'Fácil' && pontuacao === total) desbloquearConquista('quiz_facil');
     if (quizEstado.nivel === 'Médio' && pontuacao === total) desbloquearConquista('quiz_medio');
     if (quizEstado.nivel === 'Difícil' && pontuacao === total) desbloquearConquista('quiz_dificil');
