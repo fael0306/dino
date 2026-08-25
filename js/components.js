@@ -93,7 +93,7 @@ function renderizarAbas() {
 }
 
 // ============================================================
-// 1. ESCALA REAL (apenas 7 clássicos, sem Allosaurus)
+// 1. ESCALA REAL – com comparação múltipla (3 animais)
 // ============================================================
 function renderEscalaReal() {
     if (state.initialized.escala) return;
@@ -104,12 +104,14 @@ function renderEscalaReal() {
         <div class="card-paleo">
             <h4><i class="bi bi-rulers"></i> Compare a Escala</h4>
             <div class="row g-3 align-items-end">
+                <!-- Dinossauro principal -->
                 <div class="col-md-4">
                     <label class="form-label">Dinossauro</label>
                     <select id="dino-escala" class="form-select">
                         ${DINOSSAUROS_CLASSICOS.map(d => `<option value="${d.Nome}">${d.Nome}</option>`).join('')}
                     </select>
                 </div>
+                <!-- Primeira referência -->
                 <div class="col-md-4">
                     <label class="form-label">Comparar com</label>
                     <select id="ref-escala" class="form-select">
@@ -122,28 +124,55 @@ function renderEscalaReal() {
                     <label class="form-label">Outro dinossauro</label>
                     <select id="outro-dino-escala" class="form-select"></select>
                 </div>
+                <!-- Segunda referência (nova) -->
+                <div class="col-md-4">
+                    <label class="form-label">Comparar também com</label>
+                    <select id="ref-escala-2" class="form-select">
+                        <option value="Nenhum">Nenhum</option>
+                        <option value="Humano">Humano (1.7m)</option>
+                        <option value="Elefante">Elefante (3.3m)</option>
+                        <option value="Outro">Outro dinossauro...</option>
+                    </select>
+                </div>
+                <div id="outro-dino-container-2" class="col-md-4" style="display:none;">
+                    <label class="form-label">Outro dinossauro</label>
+                    <select id="outro-dino-escala-2" class="form-select"></select>
+                </div>
                 <div class="col-12">
                     <button class="btn-paleo" onclick="atualizarEscala()"><i class="bi bi-arrow-repeat"></i> Atualizar</button>
                 </div>
             </div>
             <div id="imagem-comparacao" class="mt-3 text-center" style="background:#f8f9fa; padding:1.5rem; border-radius:12px;">
-                <p class="text-muted">Selecione um dinossauro e clique em Atualizar.</p>
+                <p class="text-muted">Selecione os animais e clique em Atualizar.</p>
             </div>
         </div>
     `;
 
-    const outroSelect = document.getElementById('outro-dino-escala');
+    // Popula os selects "Outro dinossauro"
     const nomes = DINOSSAUROS_CLASSICOS.map(d => d.Nome);
-    outroSelect.innerHTML = nomes.map(n => `<option value="${n}">${n}</option>`).join('');
 
+    const outroSelect1 = document.getElementById('outro-dino-escala');
+    outroSelect1.innerHTML = nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+
+    const outroSelect2 = document.getElementById('outro-dino-escala-2');
+    outroSelect2.innerHTML = nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+
+    // Eventos para mostrar/ocultar os selects "Outro"
     document.getElementById('ref-escala').addEventListener('change', function() {
         document.getElementById('outro-dino-container').style.display = this.value === 'Outro' ? 'block' : 'none';
+    });
+
+    document.getElementById('ref-escala-2').addEventListener('change', function() {
+        document.getElementById('outro-dino-container-2').style.display = this.value === 'Outro' ? 'block' : 'none';
     });
 
     console.log('✅ renderEscalaReal() concluído');
     state.initialized.escala = true;
 }
 
+// ============================================================
+// ATUALIZAR ESCALA – com suporte para 2 ou 3 imagens
+// ============================================================
 window.atualizarEscala = async function() {
     const container = document.getElementById('imagem-comparacao');
     container.innerHTML = `
@@ -153,57 +182,110 @@ window.atualizarEscala = async function() {
         </div>
     `;
     try {
+        // --- DINOSSAURO PRINCIPAL ---
         const dinoSel = document.getElementById('dino-escala').value;
-        const refSel  = document.getElementById('ref-escala').value;
-        let refNome, refAltura;
+        const dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
+        if (!dino) throw new Error(`Dinossauro "${dinoSel}" não encontrado.`);
 
+        // --- PRIMEIRA REFERÊNCIA ---
+        const refSel = document.getElementById('ref-escala').value;
+        let ref1Nome, ref1Altura;
         if (refSel === 'Outro') {
-            refNome   = document.getElementById('outro-dino-escala').value;
-            refAltura = DINOSSAUROS_CLASSICOS.find(d => d.Nome === refNome).Altura;
+            ref1Nome = document.getElementById('outro-dino-escala').value;
+            const refObj = DINOSSAUROS_CLASSICOS.find(d => d.Nome === ref1Nome);
+            ref1Altura = refObj ? refObj.Altura : 1.7;
         } else if (refSel === 'Humano') {
-            refNome = 'Humano'; refAltura = 1.7;
+            ref1Nome = 'Humano';
+            ref1Altura = 1.7;
+        } else if (refSel === 'Elefante') {
+            ref1Nome = 'Elefante';
+            ref1Altura = 3.3;
         } else {
-            refNome = 'Elefante'; refAltura = 3.3;
+            ref1Nome = 'Humano';
+            ref1Altura = 1.7;
         }
 
-        const dino  = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
-        const razao = (dino.Altura / refAltura).toFixed(1);
+        // --- SEGUNDA REFERÊNCIA (opcional) ---
+        const refSel2 = document.getElementById('ref-escala-2').value;
+        let ref2Nome = null;
+        let ref2Altura = null;
+        let usarTerceiro = false;
 
+        if (refSel2 !== 'Nenhum') {
+            usarTerceiro = true;
+            if (refSel2 === 'Outro') {
+                ref2Nome = document.getElementById('outro-dino-escala-2').value;
+                const refObj = DINOSSAUROS_CLASSICOS.find(d => d.Nome === ref2Nome);
+                ref2Altura = refObj ? refObj.Altura : 1.7;
+            } else if (refSel2 === 'Humano') {
+                ref2Nome = 'Humano';
+                ref2Altura = 1.7;
+            } else if (refSel2 === 'Elefante') {
+                ref2Nome = 'Elefante';
+                ref2Altura = 3.3;
+            }
+        }
+
+        // --- DEFINE ALTURA MÁXIMA PARA REDIMENSIONAMENTO ---
         const alturaMax = 300;
-        let alturaDinoPx, alturaRefPx;
-        if (dino.Altura >= refAltura) {
-            alturaDinoPx = alturaMax;
-            alturaRefPx  = Math.round(alturaMax * (refAltura / dino.Altura));
-        } else {
-            alturaRefPx  = alturaMax;
-            alturaDinoPx = Math.round(alturaMax * (dino.Altura / refAltura));
+        const alturas = [dino.Altura, ref1Altura];
+        if (usarTerceiro && ref2Altura !== null) alturas.push(ref2Altura);
+        const maxAltura = Math.max(...alturas);
+
+        function calcularAlturaPx(alturaReal) {
+            return Math.round(alturaMax * (alturaReal / maxAltura));
         }
 
+        const alturaDinoPx = calcularAlturaPx(dino.Altura);
+        const alturaRef1Px = calcularAlturaPx(ref1Altura);
+
+        // Carrega imagens
         const imgDino = await carregarImagemOriginal(dinoSel);
-        const imgRef  = await carregarImagemOriginal(refNome);
+        const imgRef1 = await carregarImagemOriginal(ref1Nome);
 
         function imgParaDataUrl(img, altura) {
-            const ratio  = altura / img.height;
+            const ratio = altura / img.height;
             const canvas = document.createElement('canvas');
-            canvas.width  = Math.round(img.width * ratio);
+            canvas.width = Math.round(img.width * ratio);
             canvas.height = altura;
             canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
             return canvas.toDataURL('image/png');
         }
 
-        const dataUrlDinoRedim = imgParaDataUrl(imgDino, alturaDinoPx);
-        const dataUrlRefRedim  = imgParaDataUrl(imgRef,  alturaRefPx);
+        const dataUrlDino = imgParaDataUrl(imgDino, alturaDinoPx);
+        const dataUrlRef1 = imgParaDataUrl(imgRef1, alturaRef1Px);
 
-        const dataUrlFinal = await combinarLadoALado(dataUrlRefRedim, dataUrlDinoRedim);
+        let dataUrlFinal;
 
-        container.innerHTML = `
-            <img src="${dataUrlFinal}" style="max-width:100%; display:block; margin:0 auto; border-radius:8px;">
-            <p style="text-align:center; margin-top:12px; font-weight:500;">
-                <strong>${refNome}</strong> (${refAltura}m) &nbsp;×&nbsp;
-                <strong>${dinoSel}</strong> (${dino.Altura}m) —
-                proporção <strong>${razao}x</strong>
-            </p>
-        `;
+        if (usarTerceiro && ref2Nome && ref2Altura !== null) {
+            // --- TRÊS IMAGENS ---
+            const alturaRef2Px = calcularAlturaPx(ref2Altura);
+            const imgRef2 = await carregarImagemOriginal(ref2Nome);
+            const dataUrlRef2 = imgParaDataUrl(imgRef2, alturaRef2Px);
+            dataUrlFinal = await combinarLadoALadoTres(dataUrlRef1, dataUrlDino, dataUrlRef2);
+            // Ordem: referência1, dinossauro, referência2
+            container.innerHTML = `
+                <img src="${dataUrlFinal}" style="max-width:100%; display:block; margin:0 auto; border-radius:8px;">
+                <p style="text-align:center; margin-top:12px; font-weight:500;">
+                    <strong>${ref1Nome}</strong> (${ref1Altura}m) &nbsp;×&nbsp;
+                    <strong>${dinoSel}</strong> (${dino.Altura}m) &nbsp;×&nbsp;
+                    <strong>${ref2Nome}</strong> (${ref2Altura}m) —
+                    proporções <strong>${(dino.Altura/ref1Altura).toFixed(1)}x</strong> e <strong>${(dino.Altura/ref2Altura).toFixed(1)}x</strong>
+                </p>
+            `;
+        } else {
+            // --- DUAS IMAGENS (comportamento original) ---
+            dataUrlFinal = await combinarLadoALado(dataUrlRef1, dataUrlDino);
+            const razao = (dino.Altura / ref1Altura).toFixed(1);
+            container.innerHTML = `
+                <img src="${dataUrlFinal}" style="max-width:100%; display:block; margin:0 auto; border-radius:8px;">
+                <p style="text-align:center; margin-top:12px; font-weight:500;">
+                    <strong>${ref1Nome}</strong> (${ref1Altura}m) &nbsp;×&nbsp;
+                    <strong>${dinoSel}</strong> (${dino.Altura}m) —
+                    proporção <strong>${razao}x</strong>
+                </p>
+            `;
+        }
     } catch (e) {
         console.error('Erro em atualizarEscala:', e);
         container.innerHTML = `
@@ -213,10 +295,8 @@ window.atualizarEscala = async function() {
 };
 
 // ============================================================
-// 2. DERIVA CONTINENTAL (com popup interativo CORRIGIDO)
+// 2. DERIVA CONTINENTAL (com popup sem imagem)
 // ============================================================
-
-// --- FUNÇÃO GLOBAL PARA CRIAR POPUP ---
 window.criarPopupConteudo = function(nome) {
     try {
         let dino = DINOSSAUROS_REAIS.find(d => d.Nome === nome);
@@ -290,7 +370,6 @@ function renderDerivaContinental() {
 
 let mapaLeaflet = null;
 
-// --- VERSÃO CORRIGIDA DO MAPA COM POPUP ---
 window.atualizarMapa = function() {
     try {
         const dino = document.getElementById('dino-mapa')?.value;
@@ -321,7 +400,6 @@ window.atualizarMapa = function() {
             }).addTo(mapaLeaflet);
         }
 
-        // Remove marcadores antigos
         mapaLeaflet.eachLayer(layer => {
             if (layer instanceof L.Marker) {
                 mapaLeaflet.removeLayer(layer);
@@ -338,18 +416,12 @@ window.atualizarMapa = function() {
                 });
                 marker.addTo(mapaLeaflet);
 
-                // Evento de clique assíncrono
                 marker.on('click', async function(e) {
                     L.DomEvent.stopPropagation(e);
                     const nome = this.options.dinoName;
                     try {
-                        // Mostra popup de carregamento
                         this.bindPopup('<div style="text-align:center;">Carregando...</div>').openPopup();
-
-                        // Gera o conteúdo (pode demorar um pouco)
-                        const html = await window.criarPopupConteudo(nome);
-
-                        // Fecha o popup atual e reabre com o novo conteúdo
+                        const html = window.criarPopupConteudo(nome);
                         this.closePopup();
                         this.bindPopup(html).openPopup();
                     } catch (err) {

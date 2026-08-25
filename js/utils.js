@@ -605,3 +605,35 @@ function identificarIcnogenus(dedos, garras, tamanho, forma, proporcao) {
         }
     }
 }
+
+// ============================================================
+// COMBINA TRÊS IMAGENS LADO A LADO (ALINHADAS PELA BASE)
+// ============================================================
+function combinarLadoALadoTres(dataURL1, dataURL2, dataURL3) {
+    return new Promise((resolve) => {
+        const img1 = new Image();
+        const img2 = new Image();
+        const img3 = new Image();
+        let loaded = 0;
+        img1.onload = img2.onload = img3.onload = function() {
+            loaded++;
+            if (loaded === 3) {
+                const canvas = document.createElement('canvas');
+                const altura = Math.max(img1.height, img2.height, img3.height);
+                const largura = img1.width + img2.width + img3.width;
+                canvas.width = largura;
+                canvas.height = altura;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, largura, altura);
+                ctx.drawImage(img1, 0, altura - img1.height);
+                ctx.drawImage(img2, img1.width, altura - img2.height);
+                ctx.drawImage(img3, img1.width + img2.width, altura - img3.height);
+                resolve(canvas.toDataURL('image/png'));
+            }
+        };
+        img1.src = dataURL1;
+        img2.src = dataURL2;
+        img3.src = dataURL3;
+    });
+}
