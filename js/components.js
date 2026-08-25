@@ -765,11 +765,21 @@ function renderMassaCorporal() {
                     <p><strong>Fórmula:</strong> Massa = a × (Circunferência_mm)^b</p>
                     <p><strong>Referência:</strong> Campione & Evans (2012)</p>
                     <div id="comparacao-massa"></div>
+                    <!-- NOVO: gráfico de dispersão -->
+                    <div class="mt-4">
+                        <h6>📊 Comparação com dinossauros clássicos</h6>
+                        <canvas id="grafico-massa" width="400" height="250"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     `;
     state.initialized.massa = true;
+    // No final de renderMassaCorporal, adicione:
+setTimeout(() => {
+    // Inicializa o gráfico com os dados fixos, sem ponto do usuário
+    atualizarGraficoMassa(0, 0);
+}, 100);
 }
 
 window.calcularMassa = function() {
@@ -799,6 +809,10 @@ window.calcularMassa = function() {
                 <li>🦕 ${(massaTon / patago).toFixed(2)} Patagotitan</li>
             </ul>
         `;
+
+        // 🔥 ATUALIZA O GRÁFICO COM O PONTO DO USUÁRIO
+        atualizarGraficoMassa(circCm, massaTon);
+
     } catch (e) {
         console.error('Erro no cálculo de massa:', e);
         document.getElementById('resultado-massa').innerHTML = `<div class="alert alert-danger">Erro no cálculo.</div>`;
@@ -821,19 +835,63 @@ function renderQuiz() {
         </div>
     `;
     const area = document.getElementById('quiz-area');
+
+    // Seletor de modo
     area.innerHTML = `
         <div class="mb-3">
-            <label>Escolha o nível:</label>
-            <select id="nivel-quiz" class="form-select">
-                <option value="Fácil">Fácil</option>
-                <option value="Médio">Médio</option>
-                <option value="Difícil">Difícil</option>
+            <label>Escolha o modo:</label>
+            <select id="modo-quiz" class="form-select">
+                <option value="normal">Quiz Normal</option>
+                <option value="batalha">⚔️ Batalha (Compare dois dinossauros)</option>
             </select>
-            <button class="btn-paleo mt-2" onclick="iniciarQuiz()"><i class="bi bi-play-btn"></i> Iniciar Quiz</button>
         </div>
-        <div id="quiz-perguntas"></div>
-        <div id="quiz-resultado"></div>
+        <div id="quiz-conteudo"></div>
     `;
+
+    // Evento para alternar modos
+    document.getElementById('modo-quiz').addEventListener('change', function() {
+        const modo = this.value;
+        const conteudo = document.getElementById('quiz-conteudo');
+        if (modo === 'normal') {
+            conteudo.innerHTML = `
+                <div class="mb-3">
+                    <label>Nível:</label>
+                    <select id="nivel-quiz" class="form-select">
+                        <option value="Fácil">Fácil</option>
+                        <option value="Médio">Médio</option>
+                        <option value="Difícil">Difícil</option>
+                    </select>
+                    <button class="btn-paleo mt-2" onclick="iniciarQuiz()"><i class="bi bi-play-btn"></i> Iniciar Quiz</button>
+                </div>
+                <div id="quiz-perguntas"></div>
+                <div id="quiz-resultado"></div>
+            `;
+        } else {
+            // Modo Batalha
+            const nomes = DINOSSAUROS_REAIS.map(d => d.Nome);
+            const options = nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+            conteudo.innerHTML = `
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label">Escolha o primeiro dinossauro:</label>
+                        <select id="batalha-dino1" class="form-select">${options}</select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">Escolha o segundo dinossauro:</label>
+                        <select id="batalha-dino2" class="form-select">${options}</select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn-paleo w-100" onclick="iniciarBatalha()"><i class="bi bi-sword"></i> Batalhar!</button>
+                    </div>
+                </div>
+                <div id="batalha-perguntas" class="mt-3"></div>
+            `;
+        }
+    });
+
+    // Inicializa no modo normal (dispara o evento)
+    document.getElementById('modo-quiz').dispatchEvent(new Event('change'));
+
     state.initialized.quiz = true;
 }
 
@@ -1123,7 +1181,7 @@ function atualizarConquistas() {
     try {
         const conquistas = JSON.parse(localStorage.getItem('conquistas')) || {};
         const lista = document.getElementById('lista-conquistas');
-        const nomes = ['quiz_facil', 'quiz_medio', 'quiz_dificil', 'explorador_escala', 'detetive_icno', 'climaturista'];
+        const nomes = ['quiz_facil', 'quiz_medio', 'quiz_dificil', 'explorador_escala', 'detetive_icno', 'climaturista', 'batalha_mestre'];
         lista.innerHTML = nomes.map(n => `
             <div class="conquista-item ${conquistas[n] ? '' : 'conquista-bloqueada'}">
                 <i class="bi ${conquistas[n] ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'}"></i>
@@ -1273,6 +1331,322 @@ function renderArvoreEvolutiva() {
 }
 
 // ============================================================
+// 13. MODO BATALHA – QUIZ COMPARATIVO
+// ============================================================
+
+// Estado da batalha
+const batalhaEstado = {
+    ativo: false,
+    perguntas: [],
+    indice: 0,
+    respostas: [],
+    pontuacao: 0,
+    dino1: null,
+    dino2: null,
+    concluido: false
+};
+
+// Função para gerar perguntas comparativas entre dois dinossauros
+function gerarPerguntasBatalha(dino1, dino2, quantidade = 5) {
+    const perguntas = [];
+    const atributos = [
+        { chave: 'Peso', label: 'peso (toneladas)', comparar: (a, b) => a > b ? 1 : (a < b ? -1 : 0) },
+        { chave: 'Comprimento', label: 'comprimento (metros)', comparar: (a, b) => a > b ? 1 : (a < b ? -1 : 0) },
+        { chave: 'Altura', label: 'altura (metros)', comparar: (a, b) => a > b ? 1 : (a < b ? -1 : 0) }
+    ];
+
+    // Mapeamento de período para ordem numérica (Triássico < Jurássico < Cretáceo)
+    const ordemPeriodo = { 'Triássico': 1, 'Jurássico': 2, 'Cretáceo': 3 };
+    function extrairPeriodo(nomePeriodo) {
+        for (let p in ordemPeriodo) {
+            if (nomePeriodo.includes(p)) return p;
+        }
+        return null;
+    }
+
+    // Conjunto de atributos já usados para evitar repetição (se possível)
+    const usados = new Set();
+
+    for (let i = 0; i < quantidade; i++) {
+        // Escolhe um atributo aleatório não repetido (se houver)
+        let atributoEscolhido = null;
+        const disponiveis = atributos.filter(a => !usados.has(a.chave));
+        if (disponiveis.length === 0) {
+            // Se já usou todos, reinicia o conjunto
+            usados.clear();
+            atributoEscolhido = atributos[Math.floor(Math.random() * atributos.length)];
+        } else {
+            atributoEscolhido = disponiveis[Math.floor(Math.random() * disponiveis.length)];
+        }
+        usados.add(atributoEscolhido.chave);
+
+        // Pode ser também pergunta sobre período (compara idade)
+        const tipoPergunta = Math.random() < 0.2 ? 'periodo' : 'atributo'; // 20% de chance para período
+
+        let perguntaObj = null;
+
+        if (tipoPergunta === 'periodo') {
+            // Pergunta sobre qual viveu primeiro (mais antigo)
+            const p1 = extrairPeriodo(dino1.Periodo);
+            const p2 = extrairPeriodo(dino2.Periodo);
+            if (p1 && p2 && p1 !== p2) {
+                const maisAntigo = ordemPeriodo[p1] < ordemPeriodo[p2] ? dino1 : dino2;
+                const maisNovo = maisAntigo === dino1 ? dino2 : dino1;
+                // Adiciona dois distratores aleatórios
+                const distratores = obterDistratores(dino1.Nome, dino2.Nome, 2);
+                const opcoes = embaralhar([maisAntigo.Nome, maisNovo.Nome, ...distratores]);
+                const resposta = opcoes.indexOf(maisAntigo.Nome);
+                perguntaObj = {
+                    pergunta: `Qual dos dinossauros viveu no período mais antigo?`,
+                    opcoes: opcoes,
+                    resposta: resposta,
+                    explicacao: `${maisAntigo.Nome} viveu no ${maisAntigo.Periodo}, enquanto ${maisNovo.Nome} viveu no ${maisNovo.Periodo}.`
+                };
+            } else {
+                // Se não for possível comparar período, cai no atributo
+                tipoPergunta = 'atributo';
+            }
+        }
+
+        if (!perguntaObj) {
+            // Pergunta sobre atributo numérico
+            const chave = atributoEscolhido.chave;
+            const val1 = dino1[chave];
+            const val2 = dino2[chave];
+            if (val1 === undefined || val2 === undefined || val1 === val2) {
+                // Se algum valor não existe ou são iguais, tenta outro atributo
+                i--; // tenta novamente
+                continue;
+            }
+            const maior = val1 > val2 ? dino1 : dino2;
+            const menor = maior === dino1 ? dino2 : dino1;
+            const label = atributoEscolhido.label;
+
+            // Distratores
+            const distratores = obterDistratores(dino1.Nome, dino2.Nome, 2);
+            const opcoes = embaralhar([maior.Nome, menor.Nome, ...distratores]);
+            const resposta = opcoes.indexOf(maior.Nome);
+
+            perguntaObj = {
+                pergunta: `Qual dos dinossauros tem maior ${label}?`,
+                opcoes: opcoes,
+                resposta: resposta,
+                explicacao: `${maior.Nome} tem ${chave} = ${maior[chave]} ${chave === 'Peso' ? 'ton' : 'm'}, enquanto ${menor.Nome} tem ${chave} = ${menor[chave]} ${chave === 'Peso' ? 'ton' : 'm'}.`
+            };
+        }
+
+        if (perguntaObj) {
+            perguntas.push(perguntaObj);
+        } else {
+            i--; // tenta novamente se falhou
+        }
+    }
+
+    // Garante que temos exatamente 'quantidade' perguntas (pode ter menos se houver muitos empates)
+    while (perguntas.length < quantidade) {
+        // Adiciona uma pergunta genérica sobre comprimento (fallback)
+        const val1 = dino1.Comprimento || 0;
+        const val2 = dino2.Comprimento || 0;
+        if (val1 !== val2) {
+            const maior = val1 > val2 ? dino1 : dino2;
+            const menor = maior === dino1 ? dino2 : dino1;
+            const distratores = obterDistratores(dino1.Nome, dino2.Nome, 2);
+            const opcoes = embaralhar([maior.Nome, menor.Nome, ...distratores]);
+            const resposta = opcoes.indexOf(maior.Nome);
+            perguntas.push({
+                pergunta: `Qual dos dinossauros é mais comprido?`,
+                opcoes: opcoes,
+                resposta: resposta,
+                explicacao: `${maior.Nome} tem ${maior.Comprimento} m, ${menor.Nome} tem ${menor.Comprimento} m.`
+            });
+        } else {
+            // Se ainda houver empate, usa peso
+            const val1p = dino1.Peso || 0;
+            const val2p = dino2.Peso || 0;
+            if (val1p !== val2p) {
+                const maior = val1p > val2p ? dino1 : dino2;
+                const menor = maior === dino1 ? dino2 : dino1;
+                const distratores = obterDistratores(dino1.Nome, dino2.Nome, 2);
+                const opcoes = embaralhar([maior.Nome, menor.Nome, ...distratores]);
+                const resposta = opcoes.indexOf(maior.Nome);
+                perguntas.push({
+                    pergunta: `Qual dos dinossauros é mais pesado?`,
+                    opcoes: opcoes,
+                    resposta: resposta,
+                    explicacao: `${maior.Nome} pesa ${maior.Peso} ton, ${menor.Nome} pesa ${menor.Peso} ton.`
+                });
+            } else {
+                // Último recurso: compara período
+                const p1 = extrairPeriodo(dino1.Periodo);
+                const p2 = extrairPeriodo(dino2.Periodo);
+                if (p1 && p2 && p1 !== p2) {
+                    const maisAntigo = ordemPeriodo[p1] < ordemPeriodo[p2] ? dino1 : dino2;
+                    const maisNovo = maisAntigo === dino1 ? dino2 : dino1;
+                    const distratores = obterDistratores(dino1.Nome, dino2.Nome, 2);
+                    const opcoes = embaralhar([maisAntigo.Nome, maisNovo.Nome, ...distratores]);
+                    const resposta = opcoes.indexOf(maisAntigo.Nome);
+                    perguntas.push({
+                        pergunta: `Qual dos dinossauros viveu no período mais antigo?`,
+                        opcoes: opcoes,
+                        resposta: resposta,
+                        explicacao: `${maisAntigo.Nome} viveu no ${maisAntigo.Periodo}, ${maisNovo.Nome} no ${maisNovo.Periodo}.`
+                    });
+                } else {
+                    // Se tudo falhar, adiciona uma pergunta fixa (não deve acontecer)
+                    perguntas.push({
+                        pergunta: `Qual dinossauro você acha que é mais impressionante? (Escolha um)`,
+                        opcoes: [dino1.Nome, dino2.Nome],
+                        resposta: 0, // não importa
+                        explicacao: 'Esta é uma pergunta subjetiva.'
+                    });
+                }
+            }
+        }
+    }
+
+    return perguntas.slice(0, quantidade);
+}
+
+// Função auxiliar: obter distratores aleatórios
+function obterDistratores(nome1, nome2, quantidade) {
+    const todos = DINOSSAUROS_REAIS.map(d => d.Nome);
+    const filtrados = todos.filter(n => n !== nome1 && n !== nome2);
+    const embaralhados = filtrados.sort(() => Math.random() - 0.5);
+    return embaralhados.slice(0, quantidade);
+}
+
+// Função auxiliar: embaralhar array
+function embaralhar(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Função para iniciar a batalha
+window.iniciarBatalha = function() {
+    const dino1Nome = document.getElementById('batalha-dino1').value;
+    const dino2Nome = document.getElementById('batalha-dino2').value;
+    if (dino1Nome === dino2Nome) {
+        alert('Escolha dois dinossauros diferentes!');
+        return;
+    }
+    const dino1 = DINOSSAUROS_REAIS.find(d => d.Nome === dino1Nome);
+    const dino2 = DINOSSAUROS_REAIS.find(d => d.Nome === dino2Nome);
+    if (!dino1 || !dino2) {
+        alert('Dinossauro não encontrado.');
+        return;
+    }
+
+    batalhaEstado.ativo = true;
+    batalhaEstado.dino1 = dino1;
+    batalhaEstado.dino2 = dino2;
+    batalhaEstado.perguntas = gerarPerguntasBatalha(dino1, dino2, 5);
+    batalhaEstado.indice = 0;
+    batalhaEstado.respostas = [];
+    batalhaEstado.pontuacao = 0;
+    batalhaEstado.concluido = false;
+
+    mostrarPerguntaBatalha();
+};
+
+function mostrarPerguntaBatalha() {
+    const area = document.getElementById('batalha-perguntas');
+    if (!area) return;
+    const idx = batalhaEstado.indice;
+    const total = batalhaEstado.perguntas.length;
+
+    if (idx >= total) {
+        batalhaEstado.concluido = true;
+        mostrarResultadoBatalha();
+        return;
+    }
+
+    const p = batalhaEstado.perguntas[idx];
+    area.innerHTML = `
+        <div class="card-paleo" style="border-left:4px solid var(--secondary);">
+            <h6>Pergunta ${idx+1} de ${total}</h6>
+            <p><strong>${p.pergunta}</strong></p>
+            ${p.opcoes.map((op, i) => `
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="batalha-opcao" value="${i}" id="bopcao${i}">
+                    <label class="form-check-label" for="bopcao${i}">${op}</label>
+                </div>
+            `).join('')}
+            <button class="btn-paleo mt-2" onclick="responderBatalha()"><i class="bi bi-check-circle"></i> Responder</button>
+        </div>
+    `;
+}
+
+window.responderBatalha = function() {
+    const selected = document.querySelector('input[name="batalha-opcao"]:checked');
+    if (!selected) {
+        alert('Selecione uma alternativa.');
+        return;
+    }
+    const resposta = parseInt(selected.value);
+    const idx = batalhaEstado.indice;
+    const p = batalhaEstado.perguntas[idx];
+    if (resposta === p.resposta) {
+        batalhaEstado.pontuacao++;
+    }
+    batalhaEstado.respostas[idx] = resposta;
+    batalhaEstado.indice++;
+    mostrarPerguntaBatalha();
+};
+
+function mostrarResultadoBatalha() {
+    const area = document.getElementById('batalha-perguntas');
+    const total = batalhaEstado.perguntas.length;
+    const pontuacao = batalhaEstado.pontuacao;
+    const respostas = batalhaEstado.respostas || [];
+
+    let html = `
+        <div class="alert alert-success">
+            <h5>🏁 Batalha concluída!</h5>
+            <p><strong>Pontuação:</strong> ${pontuacao}/${total}</p>
+            <p><strong>Duelo:</strong> ${batalhaEstado.dino1.Nome} vs ${batalhaEstado.dino2.Nome}</p>
+        </div>
+        <hr>
+        <h6>📋 Revisão das perguntas:</h6>
+        <div style="max-height:400px; overflow-y:auto; padding-right:8px;">
+    `;
+
+    batalhaEstado.perguntas.forEach((p, idx) => {
+        const respostaUsuario = respostas[idx] !== undefined ? respostas[idx] : -1;
+        const correta = p.resposta;
+        const acertou = respostaUsuario === correta;
+        const textoResposta = respostaUsuario !== -1 ? p.opcoes[respostaUsuario] : 'Não respondida';
+        const textoCorreto = p.opcoes[correta];
+
+        html += `
+            <div style="border-left: 4px solid ${acertou ? '#28a745' : '#dc3545'}; padding: 10px 15px; margin-bottom: 12px; background: #f8f9fa; border-radius: 8px;">
+                <p style="font-weight:600; margin:0 0 4px 0;">${idx+1}. ${p.pergunta}</p>
+                <p style="margin:2px 0;">
+                    <span style="color: ${acertou ? '#28a745' : '#dc3545'};">
+                        <i class="bi ${acertou ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}"></i>
+                        Sua resposta: ${textoResposta}
+                    </span>
+                </p>
+                <p style="margin:2px 0; color: #28a745;">
+                    <i class="bi bi-check-circle-fill"></i> Resposta correta: ${textoCorreto}
+                </p>
+                ${p.explicacao ? `<p style="margin:4px 0 0 0; font-size:0.9rem; color:#495057;"><i class="bi bi-info-circle"></i> ${p.explicacao}</p>` : ''}
+            </div>
+        `;
+    });
+
+    html += `</div>`;
+    area.innerHTML = html;
+
+    // Conquista especial para quem acertar todas
+    if (pontuacao === total) {
+        desbloquearConquista('batalha_mestre');
+    }
+}
+
+// ============================================================
 // INICIALIZAÇÃO
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {
@@ -1283,3 +1657,141 @@ document.addEventListener('DOMContentLoaded', function() {
         try { atualizarEscala(); } catch(e) { console.error('Erro na escala inicial:', e); }
     }, 800);
 });
+
+// ============================================================
+// FUNÇÕES PARA O GRÁFICO DE MASSA
+// ============================================================
+
+// Calcula a circunferência femoral (mm) a partir da massa (kg) e postura
+function calcularCircunferenciaPorMassa(massaKg, postura) {
+    const a = postura === 'bipede' ? 0.00016 : 0.00049;
+    const b = postura === 'bipede' ? 2.73 : 2.75;
+    if (massaKg <= 0) return 0;
+    return Math.pow(massaKg / a, 1 / b);
+}
+
+// Retorna os dados dos 7 dinossauros clássicos com circunferência estimada
+function obterDadosGraficoMassa() {
+    return DINOSSAUROS_CLASSICOS.map(dino => {
+        const postura = dino.Postura.toLowerCase() === 'bípede' ? 'bipede' : 'quadrupede';
+        const massaKg = dino.Peso * 1000; // ton -> kg
+        const circMm = calcularCircunferenciaPorMassa(massaKg, postura);
+        return {
+            nome: dino.Nome,
+            massaTon: dino.Peso,
+            circMm: circMm,
+            postura: postura
+        };
+    });
+}
+
+// Variável global para o gráfico
+let chartMassa = null;
+
+// Função para atualizar o gráfico com os dados fixos e o ponto do usuário
+function atualizarGraficoMassa(circUsuarioCm, massaUsuarioTon) {
+    const canvas = document.getElementById('grafico-massa');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Verifica se Chart.js está disponível
+    if (typeof Chart === 'undefined') {
+        canvas.parentElement.innerHTML += '<p class="text-danger mt-2">Chart.js não disponível.</p>';
+        return;
+    }
+
+    // Dados dos 7 dinossauros
+    const dadosFixos = obterDadosGraficoMassa();
+
+    // Prepara os datasets
+    const pontosFixos = dadosFixos.map(d => ({
+        x: d.circMm,
+        y: d.massaTon
+    }));
+
+    const labelsFixos = dadosFixos.map(d => d.nome);
+
+    // Destrói gráfico anterior se existir
+    if (chartMassa) {
+        chartMassa.destroy();
+        chartMassa = null;
+    }
+
+    // Conjunto de dados para o gráfico
+    const datasets = [
+        {
+            label: 'Dinossauros clássicos',
+            data: pontosFixos,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            pointLabel: labelsFixos // para usar no tooltip customizado
+        }
+    ];
+
+    // Se o usuário já calculou, adiciona o ponto destacado
+    if (circUsuarioCm > 0 && massaUsuarioTon > 0) {
+        const circUsuarioMm = circUsuarioCm * 10;
+        datasets.push({
+            label: 'Seu dinossauro',
+            data: [{ x: circUsuarioMm, y: massaUsuarioTon }],
+            backgroundColor: 'rgba(255, 99, 132, 0.8)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 2,
+            pointRadius: 10,
+            pointHoverRadius: 12,
+            pointStyle: 'rectRot'
+        });
+    }
+
+    chartMassa = new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const raw = context.raw;
+                            if (context.datasetIndex === 0) {
+                                // Para os pontos fixos, mostra o nome do dinossauro
+                                const index = context.dataIndex;
+                                const nome = labelsFixos[index] || '';
+                                return `${nome}: ${raw.y.toFixed(1)} ton, ${raw.x.toFixed(0)} mm`;
+                            } else {
+                                return `${label}: ${raw.y.toFixed(2)} ton, ${raw.x.toFixed(0)} mm`;
+                            }
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Circunferência do Fêmur (mm)'
+                    },
+                    beginAtZero: true
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Massa (toneladas)'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
