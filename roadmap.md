@@ -34,7 +34,7 @@ Com base na versão atual (v1.3.0) e nas duas listas de *issues* fornecidas, est
 
 ---
 
-## 🚀 v1.5.0 – Expansão de Dados e Interação
+## 🚀 v1.5.0 – Expansão de Dados e Interação - OK
 
 **Objetivo:** Aumentar o repertório de dados e enriquecer as interações existentes.
 
