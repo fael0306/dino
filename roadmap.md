@@ -42,7 +42,7 @@ Com base na versão atual (v1.3.0) e nas duas listas de *issues* fornecidas, est
 
 | # | Issue (fonte) | Descrição |
 |---|---------------|-----------|
-| 3 | Lista 2 – Escala Real | Expandir o `<select>` da aba Escala para incluir todos os 50 dinossauros de `DINOSSAUROS_REAIS`. Manter a opção "Outro dinossauro" que já existe, mas agora com todos. |
+| 3 | Lista 2 – Escala Real | Expandir o `<select>` da aba Escala para incluir todos os 50 dinossauros de `DINOSSAUROS_REAIS`. Manter a opção "Outro dinossauro" que já existe, mas agora com todos. - abandonado |
 | 4 | Lista 2 – Mapa interativo | Ao clicar em um marcador no mapa Leaflet, abrir um popup com informações do dinossauro (nome, período, dieta e uma imagem pequena – usar `carregarImagemOriginal`). |
 | 5 | Lista 2 – Comparação múltipla | Permitir adicionar um terceiro animal à comparação de escala (além do dinossauro e da referência). Renderizar os três lado a lado com proporções corretas (adaptar `combinarLadoALado` para três imagens). |
 | 2 | Lista 2 – Revisão do Quiz | Ao final do quiz, exibir não apenas a pontuação, mas uma lista das perguntas respondidas, indicando a resposta correta e uma breve explicação (campo extra no objeto de perguntas). |
