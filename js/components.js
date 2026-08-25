@@ -93,12 +93,13 @@ function renderizarAbas() {
 }
 
 // ============================================================
-// 1. ESCALA REAL
+// 1. ESCALA REAL (apenas 7 clássicos, sem Allosaurus)
 // ============================================================
 function renderEscalaReal() {
     if (state.initialized.escala) return;
     console.log('🔧 renderEscalaReal()');
     const container = document.getElementById('tab-escala');
+
     container.innerHTML = `
         <div class="card-paleo">
             <h4><i class="bi bi-rulers"></i> Compare a Escala</h4>
@@ -212,8 +213,48 @@ window.atualizarEscala = async function() {
 };
 
 // ============================================================
-// 2. DERIVA CONTINENTAL
+// 2. DERIVA CONTINENTAL (com popup interativo)
 // ============================================================
+
+// --- FUNÇÃO AUXILIAR PARA CRIAR POPUP DO MAPA ---
+function criarPopupConteudo(nome) {
+    return new Promise((resolve) => {
+        // Busca o dinossauro em ambas as listas
+        let dino = DINOSSAUROS_REAIS.find(d => d.Nome === nome);
+        if (!dino) dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === nome);
+        if (!dino) {
+            resolve(`<b>${nome}</b><br>Dados não disponíveis.`);
+            return;
+        }
+
+        // Carrega a imagem (placeholder se não existir)
+        carregarImagemOuPlaceholder(nome, 150, 150)
+            .then(dataUrl => {
+                const html = `
+                    <div style="min-width:200px; max-width:300px;">
+                        <h4 style="margin:0 0 6px 0;">${dino.Nome}</h4>
+                        <p style="margin:4px 0;"><strong>Período:</strong> ${dino.Periodo}</p>
+                        <p style="margin:4px 0;"><strong>Dieta:</strong> ${dino.Dieta}</p>
+                        <img src="${dataUrl}" style="max-width:100%; height:auto; border-radius:8px; margin-top:8px;">
+                    </div>
+                `;
+                resolve(html);
+            })
+            .catch(() => {
+                // Fallback sem imagem
+                const html = `
+                    <div style="min-width:200px; max-width:300px;">
+                        <h4 style="margin:0 0 6px 0;">${dino.Nome}</h4>
+                        <p style="margin:4px 0;"><strong>Período:</strong> ${dino.Periodo}</p>
+                        <p style="margin:4px 0;"><strong>Dieta:</strong> ${dino.Dieta}</p>
+                        <p style="color:#999; margin-top:8px;">Imagem não disponível</p>
+                    </div>
+                `;
+                resolve(html);
+            });
+    });
+}
+
 function renderDerivaContinental() {
     if (state.initialized.deriva) return;
     console.log('🔧 renderDerivaContinental()');
@@ -265,6 +306,8 @@ function renderDerivaContinental() {
 }
 
 let mapaLeaflet = null;
+
+// --- VERSÃO ATUALIZADA DO MAPA COM POPUP ---
 window.atualizarMapa = function() {
     try {
         const dino = document.getElementById('dino-mapa')?.value;
@@ -284,13 +327,27 @@ window.atualizarMapa = function() {
                 attribution: '© OpenStreetMap'
             }).addTo(mapaLeaflet);
         }
+
+        // Remove marcadores antigos
         mapaLeaflet.eachLayer(layer => {
             if (layer instanceof L.Marker) mapaLeaflet.removeLayer(layer);
         });
+
         if (coords.length > 0) {
             const bounds = [];
             coords.forEach(c => {
-                L.marker([c.lat, c.lon]).addTo(mapaLeaflet);
+                // Cria o marcador com o nome do dinossauro armazenado
+                const marker = L.marker([c.lat, c.lon], { dinoName: dino });
+                marker.addTo(mapaLeaflet);
+
+                // Evento de clique: abre popup com informações
+                marker.on('click', function(e) {
+                    const nome = this.options.dinoName;
+                    criarPopupConteudo(nome).then(html => {
+                        this.bindPopup(html).openPopup();
+                    });
+                });
+
                 bounds.push([c.lat, c.lon]);
             });
             mapaLeaflet.fitBounds(bounds);
