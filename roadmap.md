@@ -51,7 +51,7 @@ Com base na versão atual (v1.3.0) e nas duas listas de *issues* fornecidas, est
 
 ---
 
-## ⚡ v1.6.0 – Funcionalidades Avançadas
+## ⚡ v1.6.0 – Funcionalidades Avançadas - OK
 
 **Objetivo:** Introduzir novos modos de jogo e ferramentas analíticas mais profundas.
 
