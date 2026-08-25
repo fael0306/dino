@@ -350,16 +350,17 @@ window.atualizarMapa = function() {
                     try {
                         // Mostra popup de carregamento
                         this.bindPopup('<div style="text-align:center;">Carregando...</div>').openPopup();
+
                         // Gera o conteúdo (pode demorar um pouco)
                         const html = await window.criarPopupConteudo(nome);
-                        // Atualiza o popup com o conteúdo final
-                        this.setPopupContent(html);
-                        // Reabre para garantir que seja exibido
-                        this.openPopup();
+
+                        // Fecha o popup atual e reabre com o novo conteúdo
+                        this.closePopup();
+                        this.bindPopup(html).openPopup();
                     } catch (err) {
                         console.error('Erro ao abrir popup:', err);
-                        this.setPopupContent(`<b>${nome}</b><br>Erro ao carregar informações.`);
-                        this.openPopup();
+                        this.closePopup();
+                        this.bindPopup(`<b>${nome}</b><br>Erro ao carregar informações.`).openPopup();
                     }
                 });
 
