@@ -234,9 +234,7 @@ window.criarPopupConteudo = async function(nome) {
                 <h4 style="margin:0 0 6px 0;">${dino.Nome}</h4>
                 <p style="margin:4px 0;"><strong>Período:</strong> ${dino.Periodo}</p>
                 <p style="margin:4px 0;"><strong>Dieta:</strong> ${dino.Dieta}</p>
-                <img src="${dataUrl}" 
-     style="display:block; max-width:100%; max-height:150px; width:100%; height:100%; object-fit:contain; border-radius:8px; margin:8px auto 0;">
-            </div>
+                <img src="${dataUrl}" style="display:block; max-width:100%; max-height:150px; width:auto; height:auto; object-fit:contain; border-radius:8px; margin:8px auto 0;">
         `;
     } catch (e) {
         console.error('Erro ao gerar popup:', e);
