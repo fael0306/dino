@@ -93,12 +93,21 @@ function renderizarAbas() {
 }
 
 // ============================================================
-// 1. ESCALA REAL
+// 1. ESCALA REAL (modificada para incluir 1 dinossauro extra)
 // ============================================================
 function renderEscalaReal() {
     if (state.initialized.escala) return;
     console.log('🔧 renderEscalaReal()');
     const container = document.getElementById('tab-escala');
+
+    // --- NOVIDADE: lista de dinossauros para o select ---
+    // Mantém os 7 clássicos + adiciona o Allosaurus fragilis (que NÃO tem silhueta)
+    const dinosParaEscala = [
+        ...DINOSSAUROS_CLASSICOS,
+        { Nome: "Allosaurus fragilis", Periodo: "Jurássico", Dieta: "Carnívoro", Comprimento: 8.5, Altura: 3.0, Peso: 2.3, Postura: "Bípede" }
+    ];
+    // -------------------------------------------------------
+
     container.innerHTML = `
         <div class="card-paleo">
             <h4><i class="bi bi-rulers"></i> Compare a Escala</h4>
@@ -106,7 +115,7 @@ function renderEscalaReal() {
                 <div class="col-md-4">
                     <label class="form-label">Dinossauro</label>
                     <select id="dino-escala" class="form-select">
-                        ${DINOSSAUROS_CLASSICOS.map(d => `<option value="${d.Nome}">${d.Nome}</option>`).join('')}
+                        ${dinosParaEscala.map(d => `<option value="${d.Nome}">${d.Nome}</option>`).join('')}
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -131,8 +140,9 @@ function renderEscalaReal() {
         </div>
     `;
 
+    // Popula o select "outro dinossauro" com a mesma lista
     const outroSelect = document.getElementById('outro-dino-escala');
-    const nomes = DINOSSAUROS_CLASSICOS.map(d => d.Nome);
+    const nomes = dinosParaEscala.map(d => d.Nome);
     outroSelect.innerHTML = nomes.map(n => `<option value="${n}">${n}</option>`).join('');
 
     document.getElementById('ref-escala').addEventListener('change', function() {
@@ -143,6 +153,7 @@ function renderEscalaReal() {
     state.initialized.escala = true;
 }
 
+// --- Função atualizarEscala modificada para buscar dados corretamente ---
 window.atualizarEscala = async function() {
     const container = document.getElementById('imagem-comparacao');
     container.innerHTML = `
@@ -158,14 +169,24 @@ window.atualizarEscala = async function() {
 
         if (refSel === 'Outro') {
             refNome   = document.getElementById('outro-dino-escala').value;
-            refAltura = DINOSSAUROS_CLASSICOS.find(d => d.Nome === refNome).Altura;
+            // Busca em DINOSSAUROS_CLASSICOS ou DINOSSAUROS_REAIS
+            let refObj = DINOSSAUROS_CLASSICOS.find(d => d.Nome === refNome);
+            if (!refObj) refObj = DINOSSAUROS_REAIS.find(d => d.Nome === refNome);
+            refAltura = refObj ? refObj.Altura : 1.7;
         } else if (refSel === 'Humano') {
             refNome = 'Humano'; refAltura = 1.7;
         } else {
             refNome = 'Elefante'; refAltura = 3.3;
         }
 
-        const dino  = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
+        // Busca o dinossauro principal (pode estar em CLASSICOS ou REAIS)
+        let dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === dinoSel);
+        if (!dino) dino = DINOSSAUROS_REAIS.find(d => d.Nome === dinoSel);
+        if (!dino) {
+            container.innerHTML = `<div class="alert alert-danger">Dinossauro "${dinoSel}" não encontrado nos dados.</div>`;
+            return;
+        }
+
         const razao = (dino.Altura / refAltura).toFixed(1);
 
         const alturaMax = 300;
@@ -212,7 +233,7 @@ window.atualizarEscala = async function() {
 };
 
 // ============================================================
-// 2. DERIVA CONTINENTAL
+// 2. DERIVA CONTINENTAL (mantida inalterada)
 // ============================================================
 function renderDerivaContinental() {
     if (state.initialized.deriva) return;
@@ -303,7 +324,7 @@ window.atualizarMapa = function() {
 };
 
 // ============================================================
-// 3. EXTINÇÃO K-PG
+// 3. EXTINÇÃO K-PG (mantida inalterada)
 // ============================================================
 function renderExtincaoKpg() {
     if (state.initialized.extincao) return;
@@ -404,7 +425,7 @@ window.executarSimulacao = function() {
 };
 
 // ============================================================
-// 4. ICNOFÓSSEIS (com atualização dinâmica)
+// 4. ICNOFÓSSEIS (mantida inalterada)
 // ============================================================
 function renderIcnofosseis() {
     if (state.initialized.icnofosseis) return;
@@ -552,7 +573,7 @@ window.identificarIcnofosseis = function() {
 };
 
 // ============================================================
-// 5. FÓSSEIS REAIS
+// 5. FÓSSEIS REAIS (mantida inalterada)
 // ============================================================
 function renderFosseisReais() {
     if (state.initialized.fosseis) return;
@@ -600,7 +621,7 @@ window.sortearFossil = async function() {
 };
 
 // ============================================================
-// 6. MASSA CORPORAL
+// 6. MASSA CORPORAL (mantida inalterada)
 // ============================================================
 function renderMassaCorporal() {
     if (state.initialized.massa) return;
@@ -666,7 +687,7 @@ window.calcularMassa = function() {
 };
 
 // ============================================================
-// 7. QUIZ
+// 7. QUIZ (mantida inalterada)
 // ============================================================
 let quizEstado = { nivel: null, indice: 0, pontuacao: 0, perguntas: [], respostas: [], concluido: false };
 
@@ -779,7 +800,7 @@ function mostrarResultadoQuiz() {
 }
 
 // ============================================================
-// 8. LINHA DO TEMPO
+// 8. LINHA DO TEMPO (mantida inalterada)
 // ============================================================
 function renderLinhaTempo() {
     if (state.initialized.tempo) return;
@@ -846,7 +867,7 @@ function atualizarLinhaTempo(idade) {
 }
 
 // ============================================================
-// 9. CLIMA MESOZÓICO
+// 9. CLIMA MESOZÓICO (mantida inalterada)
 // ============================================================
 function renderClima() {
     if (state.initialized.clima) return;
@@ -909,7 +930,7 @@ window.atualizarClima = function() {
 };
 
 // ============================================================
-// 10. CONQUISTAS
+// 10. CONQUISTAS (mantida inalterada)
 // ============================================================
 function renderConquistas() {
     if (state.initialized.conquistas) return;
@@ -977,7 +998,7 @@ function atualizarBadgeConquistas() {
 }
 
 // ============================================================
-// 11. EXPORTAR PDF
+// 11. EXPORTAR PDF (mantida inalterada)
 // ============================================================
 function renderExportPDF() {
     if (state.initialized.pdf) return;
@@ -1023,7 +1044,7 @@ window.gerarPDF = function() {
 };
 
 // ============================================================
-// 12. ÁRVORE EVOLUTIVA – CORRIGIDA E FUNCIONAL
+// 12. ÁRVORE EVOLUTIVA (mantida inalterada)
 // ============================================================
 function renderArvoreEvolutiva() {
     if (state.initialized.arvore) return;
