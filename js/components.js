@@ -213,25 +213,21 @@ window.atualizarEscala = async function() {
 };
 
 // ============================================================
-// 2. DERIVA CONTINENTAL (com popup interativo)
+// 2. DERIVA CONTINENTAL (com popup interativo CORRIGIDO)
 // ============================================================
 
-// ============================================================
-// FUNÇÃO GLOBAL PARA CRIAR POPUP DO MAPA
-// ============================================================
+// --- FUNÇÃO GLOBAL PARA CRIAR POPUP ---
 window.criarPopupConteudo = function(nome) {
-    // Busca o dinossauro em ambas as listas
+    console.log('🔍 criarPopupConteudo chamado para:', nome);
     let dino = DINOSSAUROS_REAIS.find(d => d.Nome === nome);
     if (!dino) dino = DINOSSAUROS_CLASSICOS.find(d => d.Nome === nome);
     if (!dino) {
         return `<b>${nome}</b><br>Dados não disponíveis.`;
     }
 
-    // Tenta construir a URL da imagem (se existir)
     const nomeArquivo = nome.toLowerCase().replace(/ /g, '_') + '.png';
     const caminhoImagem = `assets/${nomeArquivo}`;
 
-    // HTML do popup com a imagem (se carregar, aparece; senão, placeholder)
     return `
         <div style="min-width:200px; max-width:300px;">
             <h4 style="margin:0 0 6px 0;">${dino.Nome}</h4>
@@ -296,49 +292,77 @@ function renderDerivaContinental() {
 
 let mapaLeaflet = null;
 
-// --- VERSÃO ATUALIZADA DO MAPA COM POPUP ---
+// --- VERSÃO CORRIGIDA DO MAPA COM POPUP ---
 window.atualizarMapa = function() {
     try {
+        console.log('🔍 atualizarMapa chamado');
         const dino = document.getElementById('dino-mapa')?.value;
-        if (!dino) return;
+        if (!dino) {
+            console.warn('Nenhum dinossauro selecionado');
+            return;
+        }
         const coords = COORDENADAS_DINOSSAUROS[dino] || [];
         const container = document.getElementById('mapa-fosseis');
-        if (!container) return;
+        if (!container) {
+            console.warn('Container do mapa não encontrado');
+            return;
+        }
 
         if (typeof L === 'undefined') {
-            container.innerHTML = '<p class="text-danger">Leaflet não está disponível.</p>';
+            container.innerHTML = '<p class="text-danger">Leaflet não está disponível. Verifique sua conexão.</p>';
             return;
         }
 
         if (!mapaLeaflet) {
-            mapaLeaflet = L.map(container).setView([0, 0], 2);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
+            console.log('Criando mapa Leaflet');
+            mapaLeaflet = L.map(container, {
+                center: [0, 0],
+                zoom: 2
+            });
+            // TileLayer mais rápido (CartoDB)
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap, © CartoDB',
+                maxZoom: 19,
+                interactive: true
             }).addTo(mapaLeaflet);
         }
 
+        // Remove marcadores antigos
         mapaLeaflet.eachLayer(layer => {
-            if (layer instanceof L.Marker) mapaLeaflet.removeLayer(layer);
+            if (layer instanceof L.Marker) {
+                mapaLeaflet.removeLayer(layer);
+                console.log('Marcador removido');
+            }
         });
 
         if (coords.length > 0) {
             const bounds = [];
             coords.forEach(c => {
-                const marker = L.marker([c.lat, c.lon], { dinoName: dino });
+                // Cria o marcador com bubblingMouseEvents: false para evitar propagação
+                const marker = L.marker([c.lat, c.lon], {
+                    dinoName: dino,
+                    bubblingMouseEvents: false,  // Impede que o clique vá para o mapa
+                    interactive: true
+                });
                 marker.addTo(mapaLeaflet);
 
-                // Evento de clique usando a função global
+                // Evento de clique com stopPropagation
                 marker.on('click', function(e) {
+                    L.DomEvent.stopPropagation(e);  // Interrompe a propagação
+                    console.log('✅ Clique no marcador!', this.options.dinoName);
                     const nome = this.options.dinoName;
                     const html = window.criarPopupConteudo(nome);
+                    console.log('HTML do popup:', html);
                     this.bindPopup(html).openPopup();
                 });
 
                 bounds.push([c.lat, c.lon]);
             });
             mapaLeaflet.fitBounds(bounds);
+            console.log('Marcadores adicionados:', coords.length);
         } else {
             mapaLeaflet.setView([0, 0], 2);
+            console.warn('Nenhuma coordenada para', dino);
         }
     } catch (e) {
         console.error('Erro em atualizarMapa:', e);
