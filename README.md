@@ -1,28 +1,27 @@
-# 🦴 PaleoLab Científico – v1.4.0 (Web Estática)
+# 🦴 PaleoLab Científico – v1.5.0 (Web Estática)
 
 Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem necessidade de servidor backend**.
 
 ---
 
-## ✨ Novidades da v1.4.0
+## 🆕 Novidades da v1.5.0
 
-- **🎯 Jogo de Icnofósseis dinâmico** – as perguntas extras (tamanho, forma, proporção) agora se atualizam instantaneamente quando o usuário altera as opções de dedos ou garras, tornando a experiência mais interativa.
-- **🔄 Persistência entre abas** – cada aba é renderizada apenas uma vez; ao alternar entre elas, o estado (mapa, quiz, conquistas) é preservado, evitando recarregamentos desnecessários.
-- **⏳ Feedback visual de carregamento** – spinners e mensagens de “Carregando…” foram adicionados na Escala Real, Icnofósseis e Simulação K‑Pg, melhorando a percepção de resposta.
-- **🏅 Conquista “climaturista”** – agora é desbloqueada automaticamente ao explorar os três períodos climáticos (Triássico, Jurássico e Cretáceo) na aba Clima.
-- **🛡️ Fallback robusto para bibliotecas externas** – se Chart.js, Leaflet, vis.js ou jsPDF não carregarem (por falha de rede), a aplicação exibe mensagens amigáveis e sugere recarregar a página, em vez de quebrar silenciosamente.
+- **🗺️ Mapa interativo na Deriva Continental** – Ao clicar nos marcadores do mapa Leaflet, um popup é exibido com o nome, período e dieta do dinossauro, proporcionando uma exploração mais rica dos sítios fossilíferos (com carregamento rápido, sem imagens pesadas).
+- **📏 Comparação de até 3 animais na Escala** – Agora você pode adicionar uma segunda referência (Humano, Elefante ou outro dinossauro) e visualizar três silhuetas lado a lado, com proporções perfeitamente ajustadas.
+- **📝 Revisão detalhada do Quiz** – Ao final de cada nível, além da pontuação, você confere todas as perguntas, sua resposta, a resposta correta e uma breve explicação para cada questão, transformando o quiz em uma ferramenta de aprendizado ainda mais poderosa.
+- **⚡ Otimizações internas** – Melhorias no carregamento dos popups do mapa e na lógica de redimensionamento das imagens na escala, garantindo uma experiência mais fluida.
 
 ---
 
 ## ✨ Funcionalidades (12 abas)
 
-1. **📏 Escala Real** – Compare qualquer dinossauro com um humano, elefante ou outro dinossauro, visualizando silhuetas proporcionais.
-2. **🗺️ Deriva Continental** – Globo interativo da Terra antiga (Ancient Earth) e mapa de sítios fósseis de mais de 50 espécies.
+1. **📏 Escala Real** – Compare até 3 animais (dinossauros, humano ou elefante) lado a lado, visualizando silhuetas proporcionais.
+2. **🗺️ Deriva Continental** – Globo interativo da Terra antiga (Ancient Earth) e mapa de sítios fósseis com popups interativos contendo informações das espécies.
 3. **🦠 Extinção K‑Pg** – Simulador do impacto do asteroide baseado no modelo Lotka‑Volterra, com integração Runge‑Kutta 4.
 4. **👣 Icnofósseis** – Jogo “Paleo‑Detetive” onde o aluno identifica icnogéneros a partir de características da pegada.
 5. **🦴 Fósseis Reais** – Museu com 50 dinossauros reais, imagens e curiosidades taxonómicas.
 6. **⚖️ Massa Corporal** – Estimativa de massa pela circunferência do fêmur, segundo Campione & Evans (2012).
-7. **📝 Quiz** – Questionário de 20 perguntas em três níveis de dificuldade.
+7. **📝 Quiz** – Questionário de 20 perguntas em três níveis de dificuldade, com revisão completa ao final.
 8. **⏳ Linha do Tempo** – Navegue pelos períodos do Mesozoico com slider interativo.
 9. **🌍 Clima Mesozóico** – Explore temperatura, CO₂ e vegetação de cada período (Triássico, Jurássico, Cretáceo).
 10. **🏆 Conquistas** – Sistema de progressão que desbloqueia medalhas ao completar desafios.
@@ -30,8 +29,8 @@ Laboratório virtual interativo para o ensino de paleontologia e ciências natur
 12. **🌳 Árvore Evolutiva** – Cladograma hierárquico interativo (vis.js) mostrando relações filogenéticas.
 
 ### Dados científicos reais
-- Ficha de 7 dinossauros “clássicos” (T‑Rex, Triceratops, Velociraptor, etc.).
-- Banco expandido com 50 espécies reais e coordenadas paleogeográficas.
+- Ficha de 7 dinossauros “clássicos” (T‑Rex, Triceratops, Velociraptor, etc.) usados na Escala Real e estimativa de massa.
+- Banco de dados com 50 espécies reais e coordenadas paleogeográficas para o mapa interativo.
 - Fórmulas da literatura (massa × circunferência femoral, modelo Lotka‑Volterra).
 - Referências ao Paleobiology Database, Paleomap Project e IPCC.
 
@@ -86,7 +85,7 @@ paleolab-cientifico/
 └── README.md
 ```
 
-> **Nota:** As imagens dos dinossauros devem ser colocadas na pasta `assets/`. Enquanto não existirem, o aplicativo gera automaticamente silhuetas geométricas coloridas.
+> **Nota:** As imagens dos dinossauros devem ser colocadas na pasta `assets/`. Enquanto não existirem, o aplicativo gera automaticamente silhuetas geométricas coloridas (placeholders).
 
 ---
 
@@ -130,4 +129,4 @@ Este projeto é distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LI
 
 ---
 
-**📎 Resumo:** Esta versão **1.4.0** consolida importantes melhorias de usabilidade, robustez e experiência do usuário, mantendo a natureza totalmente front‑end e sem dependências Python. Basta abrir o `index.html` no navegador ou usar um servidor estático simples para desfrutar de todas as funcionalidades.
+**📎 Resumo:** Esta versão **1.5.0** consolida as melhorias de usabilidade e interação da versão anterior, com destaque para o mapa interativo com popups informativos, a comparação de três animais na escala real e a revisão completa do quiz com explicações educativas. Tudo mantendo a natureza totalmente front‑end e sem dependências Python. Basta abrir o `index.html` no navegador ou usar um servidor estático simples para desfrutar de todas as funcionalidades.
