@@ -1233,26 +1233,145 @@ window.gerarPDF = function() {
     }
     try {
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.setFontSize(16);
-        doc.text('PaleoLab Científico - Relatório', 20, 20);
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = 210;
+        const margin = 20;
+        let y = 20;
+
+        // ========================
+        // 1. CABEÇALHO
+        // ========================
+        doc.setFontSize(18);
+        doc.text('PaleoLab Científico - Relatório', margin, y);
+        y += 8;
         doc.setFontSize(12);
-        doc.text(`Data: ${new Date().toLocaleString()}`, 20, 30);
+        doc.text(`Data: ${new Date().toLocaleString()}`, margin, y);
+        y += 10;
+
+        // ========================
+        // 2. CONQUISTAS
+        // ========================
         const conquistas = JSON.parse(localStorage.getItem('conquistas')) || {};
-        const lista = Object.entries(conquistas).filter(([k,v]) => v).map(([k]) => k.replace('_', ' ').toUpperCase());
+        const lista = Object.entries(conquistas).filter(([k, v]) => v).map(([k]) => k.replace('_', ' ').toUpperCase());
+        doc.setFontSize(14);
+        doc.text('🏆 Conquistas desbloqueadas', margin, y);
+        y += 6;
+        doc.setFontSize(11);
         if (lista.length > 0) {
-            doc.text('Conquistas desbloqueadas:', 20, 45);
             lista.forEach((item, i) => {
-                doc.text(`- ${item}`, 25, 55 + i*6);
+                doc.text(`- ${item}`, margin + 5, y + i * 5);
             });
+            y += lista.length * 5 + 4;
         } else {
-            doc.text('Nenhuma conquista ainda.', 20, 45);
+            doc.text('Nenhuma conquista ainda.', margin + 5, y);
+            y += 8;
         }
-        doc.save('relatorio_paleolab.pdf');
-        document.getElementById('pdf-status').innerHTML = `<div class="alert alert-success">PDF gerado com sucesso!</div>`;
+
+        // ========================
+        // 3. QUIZ (se disponível)
+        // ========================
+        if (quizEstado && quizEstado.concluido && quizEstado.perguntas.length > 0) {
+            doc.addPage();
+            y = 20;
+            doc.setFontSize(16);
+            doc.text('📝 Quiz - Resultados', margin, y);
+            y += 8;
+            doc.setFontSize(12);
+            doc.text(`Nível: ${quizEstado.nivel}  |  Pontuação: ${quizEstado.pontuacao}/${quizEstado.perguntas.length}`, margin, y);
+            y += 6;
+
+            doc.setFontSize(11);
+            quizEstado.perguntas.forEach((p, idx) => {
+                const respostaUsuario = quizEstado.respostas[idx] !== undefined ? quizEstado.respostas[idx] : -1;
+                const correta = p.resposta;
+                const acertou = respostaUsuario === correta;
+                const textoResposta = respostaUsuario !== -1 ? p.opcoes[respostaUsuario] : 'Não respondida';
+                const textoCorreto = p.opcoes[correta];
+
+                // Quebra de página se necessário
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+
+                doc.setFontSize(10);
+                doc.setTextColor(acertou ? 40 : 200, acertou ? 167 : 69, acertou ? 69 : 64);
+                doc.text(`${idx+1}. ${p.pergunta}`, margin, y);
+                y += 4;
+                doc.setTextColor(50, 50, 50);
+                doc.text(`   Sua resposta: ${textoResposta}`, margin + 2, y);
+                y += 4;
+                doc.setTextColor(40, 167, 69);
+                doc.text(`   Correta: ${textoCorreto}`, margin + 2, y);
+                y += 4;
+                if (p.explicacao) {
+                    doc.setTextColor(80, 80, 80);
+                    doc.text(`   ℹ️ ${p.explicacao}`, margin + 2, y);
+                    y += 4;
+                }
+                y += 3;
+            });
+        }
+
+        // ========================
+        // 4. GRÁFICO K-Pg (se disponível)
+        // ========================
+        const canvasExtincao = document.getElementById('grafico-extincao');
+        if (canvasExtincao && typeof canvasExtincao.toDataURL === 'function') {
+            try {
+                const imgData = canvasExtincao.toDataURL('image/png');
+                doc.addPage();
+                y = 20;
+                doc.setFontSize(16);
+                doc.text('🌍 Simulação K‑Pg - Gráfico', margin, y);
+                y += 8;
+                doc.setFontSize(11);
+                doc.text('Evolução das populações após o impacto do asteroide.', margin, y);
+                y += 6;
+
+                // Adiciona a imagem (largura ~170mm, altura proporcional)
+                const imgWidth = 170;
+                const imgHeight = (canvasExtincao.height / canvasExtincao.width) * imgWidth;
+                doc.addImage(imgData, 'PNG', margin, y, imgWidth, imgHeight);
+                // y += imgHeight + 6;
+            } catch (e) {
+                console.warn('Erro ao capturar gráfico K-Pg:', e);
+            }
+        }
+
+        // ========================
+        // 5. COMPARAÇÃO DE ESCALA (se disponível)
+        // ========================
+        const imgEscala = document.querySelector('#imagem-comparacao img');
+        if (imgEscala && imgEscala.src && imgEscala.src.startsWith('data:image')) {
+            try {
+                doc.addPage();
+                y = 20;
+                doc.setFontSize(16);
+                doc.text('📏 Comparação de Escala', margin, y);
+                y += 8;
+
+                // Captura a imagem da escala
+                const imgData = imgEscala.src;
+                // Calcula dimensões para caber na página (largura ~170mm)
+                const imgWidth = 170;
+                const imgHeight = (imgEscala.naturalHeight || 300) / (imgEscala.naturalWidth || 400) * imgWidth;
+                doc.addImage(imgData, 'PNG', margin, y, imgWidth, imgHeight);
+                // y += imgHeight + 6;
+            } catch (e) {
+                console.warn('Erro ao capturar imagem da escala:', e);
+            }
+        }
+
+        // ========================
+        // SALVAR PDF
+        // ========================
+        doc.save('relatorio_paleolab_completo.pdf');
+        document.getElementById('pdf-status').innerHTML = `<div class="alert alert-success">✅ PDF completo gerado com sucesso!</div>`;
+
     } catch (e) {
         console.error('Erro ao gerar PDF:', e);
-        document.getElementById('pdf-status').innerHTML = `<div class="alert alert-danger">Erro ao gerar PDF.</div>`;
+        document.getElementById('pdf-status').innerHTML = `<div class="alert alert-danger">Erro ao gerar PDF: ${e.message}</div>`;
     }
 };
 
