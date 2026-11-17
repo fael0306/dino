@@ -637,3 +637,80 @@ function combinarLadoALadoTres(dataURL1, dataURL2, dataURL3) {
         img3.src = dataURL3;
     });
 }
+
+
+// ============================================================
+// VERIFICAÇÃO E CARREGAMENTO DE BIBLIOTECAS (V2.0.0)
+// ============================================================
+
+/**
+ * Verifica se uma biblioteca externa está disponível no escopo global.
+ * @param {string} nome - Nome da biblioteca ('Chart.js', 'Leaflet', 'vis.js', 'jsPDF')
+ * @param {Object} objeto - Objeto global correspondente (Chart, L, vis, jspdf)
+ * @param {string} containerId - ID do container para renderizar o aviso caso ausente
+ * @returns {boolean} True se a biblioteca estiver disponível
+ */
+function verificarBiblioteca(nome, objeto, containerId) {
+    if (typeof objeto !== 'undefined') return true;
+
+    const mensagem = `
+        <div class="card-paleo" style="border-left: 4px solid #e74c3c; background: #fdf0ed;">
+            <h5><i class="bi bi-exclamation-triangle" style="color: #e74c3c;"></i> Biblioteca não carregada</h5>
+            <p>A biblioteca <strong>${nome}</strong> não pôde ser carregada. Verifique sua conexão com a internet.</p>
+        </div>
+    `;
+
+    if (containerId) {
+        const el = document.getElementById(containerId);
+        if (el) el.innerHTML = mensagem;
+    }
+    return false;
+}
+
+/**
+ * Carrega dinamicamente uma biblioteca JavaScript externa via Tag <script> caso não esteja presente.
+ * @param {string} nomeLib - Nome para registro ('Chart', 'Leaflet', 'vis', 'jsPDF')
+ * @param {string} url - URL do CDN da biblioteca
+ * @returns {Promise<boolean>} Resolve true quando a biblioteca estiver pronta
+ */
+function carregarBibliotecaCondicional(nomeLib, url) {
+    return new Promise((resolve) => {
+        if (typeof window[nomeLib] !== 'undefined' || (nomeLib === 'L' && typeof L !== 'undefined') || (nomeLib === 'jsPDF' && typeof window.jspdf !== 'undefined')) {
+            resolve(true);
+            return;
+        }
+
+        const scriptExistente = document.querySelector(`script[src="${url}"]`);
+        if (scriptExistente) {
+            scriptExistente.addEventListener('load', () => resolve(true));
+            scriptExistente.addEventListener('error', () => resolve(false));
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = true;
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+    });
+}
+
+// Export para ambiente Node/Jest
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        carregarImagemOriginal,
+        carregarImagemOuPlaceholder,
+        carregarImagemIcnofossil,
+        carregarImagemFossilReal,
+        gerarSilhuetaPlaceholder,
+        redimensionarParaAltura,
+        combinarLadoALado,
+        combinarLadoALadoTres,
+        simularExtincao,
+        lotkaVolterra,
+        identificarIcnogenus,
+        verificarBiblioteca,
+        carregarBibliotecaCondicional
+    };
+}

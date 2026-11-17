@@ -1914,3 +1914,121 @@ function atualizarGraficoMassa(circUsuarioCm, massaUsuarioTon) {
         }
     });
 }
+
+
+// ============================================================
+// V2.0.0 IMPORTAÇÃO E EXPORTAÇÃO DE CONQUISTAS (JSON)
+// ============================================================
+
+/**
+ * Baixa as conquistas salvas no localStorage como um arquivo JSON.
+ */
+function exportarConquistasJSON() {
+    try {
+        const conquistas = JSON.parse(localStorage.getItem('conquistas')) || {};
+        const periodos = JSON.parse(localStorage.getItem('periodos_visitados')) || [];
+        const payload = {
+            versao: '2.0.0',
+            dataExportacao: new Date().toISOString(),
+            conquistas: conquistas,
+            periodosVisitados: periodos
+        };
+        const jsonStr = JSON.stringify(payload, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `paleolab_conquistas_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        console.error('Erro ao exportar conquistas:', e);
+        alert('Erro ao exportar conquistas.');
+    }
+}
+
+/**
+ * Importa conquistas a partir de um arquivo JSON carregado pelo usuário.
+ * @param {Event} event - Evento de alteração do input file
+ */
+function importarConquistasJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data && data.conquistas) {
+                localStorage.setItem('conquistas', JSON.stringify(data.conquistas));
+                if (data.periodosVisitados) {
+                    localStorage.setItem('periodos_visitados', JSON.stringify(data.periodosVisitados));
+                }
+                alert('🏅 Conquistas importadas com sucesso!');
+                if (typeof atualizarConquistas === 'function') atualizarConquistas();
+                if (typeof atualizarBadgeConquistas === 'function') atualizarBadgeConquistas();
+            } else {
+                alert('Formato de arquivo JSON inválido.');
+            }
+        } catch (err) {
+            console.error('Erro ao ler arquivo JSON:', err);
+            alert('Erro ao importar arquivo de conquistas.');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// ============================================================
+// V2.0.0 CENTRALIZAÇÃO DE EVENTOS (INIT EVENTS)
+// ============================================================
+
+/**
+ * Registra todos os escutadores de eventos centralizados sem usar inline onclick.
+ */
+function initEvents() {
+    console.log('⚡ Eventos centralizados inicializados (v2.0.0)');
+    
+    // Escutadores de cliques nas abas de navegação
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tabId = e.currentTarget.getAttribute('data-tab');
+            if (tabId && typeof navegarParaAba === 'function') {
+                navegarParaAba(tabId);
+            }
+        });
+    });
+
+    // Delegador global de eventos de clique para botões com data-action
+    document.addEventListener('click', (e) => {
+        const actionBtn = e.target.closest('[data-action]');
+        if (!actionBtn) return;
+        const action = actionBtn.getAttribute('data-action');
+        
+        if (action === 'exportar-conquistas') {
+            exportarConquistasJSON();
+        } else if (action === 'gerar-pdf') {
+            if (typeof window.gerarPDF === 'function') window.gerarPDF();
+        } else if (action === 'atualizar-escala') {
+            if (typeof window.atualizarEscala === 'function') window.atualizarEscala();
+        } else if (action === 'novo-desafio-icno') {
+            if (typeof window.novoDesafioIcnofosseis === 'function') window.novoDesafioIcnofosseis();
+        } else if (action === 'identificar-icno') {
+            if (typeof window.identificarIcnofosseis === 'function') window.identificarIcnofosseis();
+        } else if (action === 'executar-simulacao-kpg') {
+            if (typeof window.executarSimulacao === 'function') window.executarSimulacao();
+        }
+    });
+
+    // Escutador de upload de arquivo para conquistas
+    const inputImport = document.getElementById('input-importar-conquistas');
+    if (inputImport) {
+        inputImport.addEventListener('change', importarConquistasJSON);
+    }
+}
+
+// Garantir exposição no escopo window para main.js
+window.initEvents = initEvents;
+window.exportarConquistasJSON = exportarConquistasJSON;
+window.importarConquistasJSON = importarConquistasJSON;

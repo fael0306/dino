@@ -275,3 +275,19 @@ const ARVORE_ARESTAS = [
     ["Sauropterygia", "Plesiosauria"],
     ["Reptilia", "Ichthyosauria"]
 ];
+
+// Export para ambiente Node/Jest
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        DINOSSAUROS_CLASSICOS,
+        DINOSSAUROS_REAIS,
+        ICNOFOSSEIS,
+        PERGUNTAS_QUIZ,
+        DADOS_CLIMA,
+        ERA_GLOBO,
+        PERIODOS,
+        CLADOGRAMA_NODES,
+        CLADOGRAMA_EDGES,
+        CONQUISTAS_LISTA
+    };
+}
