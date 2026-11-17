@@ -133,3 +133,12 @@ Este projeto é distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LI
 ---
 
 **📎 Resumo:** Esta versão **1.6.0** expande significativamente as possibilidades de aprendizado e documentação. O **modo Batalha** transforma o quiz em um jogo comparativo, o **gráfico de dispersão** na Massa Corporal conecta teoria e prática, e o **PDF completo** consolida todo o trabalho do usuário em um relatório científico. Tudo mantendo a natureza totalmente front‑end e sem dependências Python. Basta abrir o `index.html` no navegador ou usar um servidor estático simples para explorar todas as funcionalidades.
+---
+
+## 🧪 Versão v2.0.0 – Qualidade, Testes e Acessibilidade
+
+- **Acessibilidade ARIA**: Suporte para leitores de tela com `role="tablist"`, `role="tabpanel"`, e `aria-label`.
+- **Eventos Centralizados**: Eventos registrados via `addEventListener` e `initEvents()`.
+- **Testes Unitários**: Testes com Jest cobrindo funções puras em `tests/utils.test.js`.
+- **Importação/Exportação de Conquistas**: Download e upload de progresso em formato JSON.
+- **Responsividade Mobilidade**: Layout otimizado para dispositivos compactos (< 400px).
