@@ -141,9 +141,6 @@ const ICNOFOSSEIS = {
 
 // ============================================================
 // 5. Quiz – 20 perguntas por nível (Fácil, Médio, Difícil)
-// ============================================================
-// ============================================================
-// 5. Quiz – 20 perguntas por nível (Fácil, Médio, Difícil)
 // com campo 'explicacao'
 // ============================================================
 const QUIZ = {
@@ -162,7 +159,7 @@ const QUIZ = {
         { pergunta: "Qual desses viveu no período Jurássico?", opcoes: ["Triceratops", "Braquiossauro", "Tiranossauro rex", "Velociraptor"], resposta: 1, explicacao: "O Braquiossauro viveu no Jurássico Superior, enquanto os demais são do Cretáceo." },
         { pergunta: "O fêmur é um osso da...", opcoes: ["Cabeça", "Perna", "Cauda", "Costas"], resposta: 1, explicacao: "O fêmur é o osso da coxa, o mais longo e resistente do corpo, importante para estimar a massa de dinossauros." },
         { pergunta: "Qual dinossauro tinha uma 'vela' nas costas?", opcoes: ["Espinossauro", "T-Rex", "Diplodoco", "Paquicefalossauro"], resposta: 0, explicacao: "O Espinossauro possuía longas espinhas neurais que formavam uma vela, provavelmente usada para termorregulação ou exibição." },
-        { pergunta: "Como chamamos os dinossauros com 'pés de lagarto'?", opcoes: ["Ornitísquios", "Saurísquios", "Terópodes", "Saurópodes"], resposta: 1, explicacao: "Saurísquios ('quadril de lagarto') é um dos dois grandes grupos de dinossauros, incluindo terópodes e saurópodes." },
+        { pergunta: "Como chamamos os dinossauros com 'quadril de lagarto'?", opcoes: ["Ornitísquios", "Saurísquios", "Terópodes", "Saurópodes"], resposta: 1, explicacao: "Saurísquios ('quadril de lagarto') é um dos dois grandes grupos de dinossauros, incluindo terópodes e saurópodes." },
         { pergunta: "Qual dinossauro usava uma clava (bola) na ponta da cauda?", opcoes: ["Anquilossauro", "Estegossauro", "Triceratops", "Parassaurolofo"], resposta: 0, explicacao: "O Anquilossauro tinha uma cauda com uma clava óssea, usada como arma defensiva contra predadores." },
         { pergunta: "Os dinossauros e os seres humanos viveram na mesma época?", opcoes: ["Sim", "Não, os dinossauros sumiram antes", "Sim, na Era do Gelo", "Apenas na África"], resposta: 1, explicacao: "Os dinossauros não-avianos foram extintos há 66 milhões de anos, muito antes do surgimento dos humanos." },
         { pergunta: "Qual dinossauro tinha garras gigantes, mas era herbívoro?", opcoes: ["Therizinosaurus", "Deinonychus", "Velociraptor", "Utahraptor"], resposta: 0, explicacao: "O Therizinosaurus possuía garras de até 1 metro, mas era herbívoro, usando-as para alcançar folhas." },
@@ -276,18 +273,75 @@ const ARVORE_ARESTAS = [
     ["Reptilia", "Ichthyosauria"]
 ];
 
+// ============================================================
+// 9. Informações dos clados (painel da Árvore Evolutiva)
+// ============================================================
+const CLADOS_INFO = {
+    "Reptilia": "Grupo que reúne lagartos, serpentes, tartarugas, crocodilos, aves e seus parentes extintos.",
+    "Archosauria": "Os 'répteis dominantes': inclui crocodilianos, pterossauros, dinossauros e aves.",
+    "Dinosauria": "Surgiram há cerca de 230 Ma. As aves são os únicos dinossauros vivos hoje.",
+    "Pterosauria": "Répteis voadores com asas de membrana. Não são dinossauros, mas parentes próximos.",
+    "Saurischia": "'Quadril de lagarto': reúne terópodes (incluindo as aves) e sauropodomorfos.",
+    "Ornithischia": "'Quadril de ave': herbívoros com um osso pré-dentário na mandíbula.",
+    "Theropoda": "Bípedes, majoritariamente carnívoros, de ossos ocos. Deram origem às aves.",
+    "Sauropodomorpha": "Herbívoros de pescoço longo, incluindo os maiores animais terrestres da história.",
+    "Tyrannosauridae": "Grandes predadores do Cretáceo Superior, como o Tyrannosaurus rex.",
+    "Dromaeosauridae": "Pequenos e médios caçadores emplumados com garra em foice, como o Velociraptor.",
+    "Spinosauridae": "Terópodes de focinho alongado, adaptados à pesca, como o Spinosaurus.",
+    "Brachiosauridae": "Saurópodes com membros anteriores mais longos que os posteriores.",
+    "Diplodocidae": "Saurópodes muito compridos, com cauda em forma de chicote.",
+    "Ceratopsia": "Herbívoros com bico, folho ósseo e, em muitos casos, chifres (Triceratops).",
+    "Ornithopoda": "Herbívoros bípedes ou quadrúpedes, incluindo os 'bicos de pato' (hadrossauros).",
+    "Stegosauria": "Quadrúpedes com placas ósseas no dorso e espinhos na cauda (thagomizer).",
+    "Ankylosauria": "Herbívoros encouraçados; muitos tinham uma clava óssea na cauda.",
+    "Sauropterygia": "Répteis marinhos do Mesozoico. Não são dinossauros.",
+    "Plesiosauria": "Répteis marinhos de nadadeiras, muitos com pescoço muito longo.",
+    "Ichthyosauria": "Répteis marinhos com corpo semelhante ao dos golfinhos. Não são dinossauros."
+};
+
+// ============================================================
+// 10. Conquistas (metadados exibidos na aba Conquistas)
+// ============================================================
+const CONQUISTAS_LISTA = [
+    { id: "quiz_facil",        titulo: "Aprendiz Paleontólogo", icone: "bi-mortarboard",      descricao: "Gabarite uma rodada completa (20 perguntas) do Quiz no nível Fácil." },
+    { id: "quiz_medio",        titulo: "Pesquisador de Campo",  icone: "bi-search",           descricao: "Gabarite uma rodada completa (20 perguntas) do Quiz no nível Médio." },
+    { id: "quiz_dificil",      titulo: "Doutor em Dinossauros", icone: "bi-award",            descricao: "Gabarite uma rodada completa (20 perguntas) do Quiz no nível Difícil." },
+    { id: "explorador_escala", titulo: "Explorador de Escalas", icone: "bi-rulers",           descricao: "Compare três animais ao mesmo tempo na aba Escala Real." },
+    { id: "detetive_icno",     titulo: "Paleo-Detetive",        icone: "bi-fingerprint",      descricao: "Identifique corretamente uma pegada fóssil." },
+    { id: "climaturista",      titulo: "Climaturista",          icone: "bi-cloud-sun",        descricao: "Explore o clima dos três períodos do Mesozoico." },
+    { id: "batalha_mestre",    titulo: "Batalha Mestre",        icone: "bi-lightning-charge", descricao: "Acerte as 5 perguntas de um duelo no modo Batalha." }
+];
+
+// ============================================================
+// 11. Referências de escala e cenários do simulador K-Pg
+// ============================================================
+const REFERENCIAS_ESCALA = {
+    "Humano":   { Nome: "Humano",   Altura: 1.7, Comprimento: 0.5 },
+    "Elefante": { Nome: "Elefante", Altura: 3.3, Comprimento: 6.0 }
+};
+
+const CENARIOS_KPG = [
+    { id: "leve",        nome: "Impacto leve",      bloqueio: 15, chuva: 20, descricao: "Pouca poeira na atmosfera; o ecossistema tende a se recuperar." },
+    { id: "realista",    nome: "Chicxulub",         bloqueio: 90, chuva: 70, descricao: "Próximo do evento real de 66 Ma: herbívoros e predadores despencam." },
+    { id: "catastrofico",nome: "Inverno de impacto",bloqueio: 100, chuva: 90, descricao: "A luz solar desaparece por anos; quase nada sobrevive." }
+];
+
+// ============================================================
 // Export para ambiente Node/Jest
+// ============================================================
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
         DINOSSAUROS_CLASSICOS,
         DINOSSAUROS_REAIS,
+        COORDENADAS_DINOSSAUROS,
         ICNOFOSSEIS,
-        PERGUNTAS_QUIZ,
-        DADOS_CLIMA,
-        ERA_GLOBO,
+        QUIZ,
         PERIODOS,
-        CLADOGRAMA_NODES,
-        CLADOGRAMA_EDGES,
-        CONQUISTAS_LISTA
+        DADOS_CLIMA,
+        ARVORE_ARESTAS,
+        CLADOS_INFO,
+        CONQUISTAS_LISTA,
+        REFERENCIAS_ESCALA,
+        CENARIOS_KPG
     };
 }

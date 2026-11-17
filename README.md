@@ -1,110 +1,136 @@
-# 🦴 PaleoLab Científico – v1.6.0 (Web Estática)
+# 🦴 PaleoLab Científico – v2.0.0 (Web Estática)
 
-Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem necessidade de servidor backend**.
-
----
-
-## 🆕 Novidades da v1.6.0
-
-- **⚔️ Modo Batalha no Quiz** – Agora você pode escolher dois dinossauros da lista de 50 e responder a **5 perguntas geradas dinamicamente** sobre atributos como peso, comprimento, altura e período geológico. Com **distratores aleatórios** e revisão detalhada ao final, é uma forma divertida de comparar espécies e testar conhecimentos.
-- **📊 Gráfico de dispersão na Massa Corporal** – Ao estimar a massa de um dinossauro a partir da circunferência do fêmur, o resultado é automaticamente plotado em um gráfico que também exibe os **7 dinossauros clássicos** com suas massas conhecidas. Isso contextualiza o valor calculado e revela a relação entre massa e circunferência femoral.
-- **📄 Exportação PDF completa** – O relatório agora inclui: **conquistas desbloqueadas**, **resultado completo do último quiz** (perguntas, respostas, correções e explicações), **gráfico da simulação K‑Pg** (capturado do canvas) e **imagem da comparação de escala**. Um documento científico completo para portfólio ou avaliação.
-- **🎯 Conquista exclusiva** – "Batalha Mestre" é desbloqueada ao acertar todas as 5 perguntas do modo Batalha.
+Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem servidor backend**.
 
 ---
 
-## ✨ Funcionalidades (12 abas + modos)
+## 🆕 Novidades da v2.0.0
 
-1. **📏 Escala Real** – Compare até 3 animais (dinossauros, humano ou elefante) lado a lado, com silhuetas proporcionais.
-2. **🗺️ Deriva Continental** – Globo interativo da Terra antiga (Ancient Earth) e mapa de sítios fósseis com popups informativos.
-3. **🦠 Extinção K‑Pg** – Simulador do impacto do asteroide baseado no modelo Lotka‑Volterra (Runge‑Kutta 4).
-4. **👣 Icnofósseis** – Jogo "Paleo‑Detetive" onde você identifica icnogéneros a partir de características da pegada.
-5. **🦴 Fósseis Reais** – Museu com 50 dinossauros reais, imagens e curiosidades taxonómicas.
-6. **⚖️ Massa Corporal** – Estimativa de massa pela circunferência do fêmur (Campione & Evans, 2012) com **gráfico de dispersão interativo** para comparação com 7 espécies clássicas.
-7. **📝 Quiz** – Agora com **dois modos**:
-   - **Normal**: 20 perguntas em 3 níveis (Fácil, Médio, Difícil) com revisão completa.
-   - **⚔️ Batalha**: Compare dois dinossauros em 5 perguntas dinâmicas – teste seus conhecimentos em duelos paleontológicos!
-8. **⏳ Linha do Tempo** – Navegue pelos períodos do Mesozoico com slider interativo.
-9. **🌍 Clima Mesozóico** – Explore temperatura, CO₂ e vegetação de cada período (Triássico, Jurássico, Cretáceo).
-10. **🏆 Conquistas** – Sistema de progressão com 7 medalhas, incluindo as novas "Batalha Mestre" e "Climaturista".
-11. **📄 Exportar PDF** – Gera um **relatório científico completo** com suas conquistas, resultados do quiz, gráfico K‑Pg e comparação de escala.
-12. **🌳 Árvore Evolutiva** – Cladograma hierárquico interativo (vis.js) mostrando relações filogenéticas.
+- **Nova interface:** design próprio com barra lateral, **tema claro/escuro**, painel inicial, notificações e layout pensado para celulares (inclusive telas com menos de 400 px).
+- **Acessibilidade:** navegação completa por teclado, leitores de tela (ARIA), textos alternativos em todas as imagens e foco gerenciado.
+- **Mais rápido:** bibliotecas externas carregadas só quando necessárias e imagens 4× menores.
+- **Testes automatizados:** 96 testes unitários com Jest.
+- **Backup do progresso:** exporte e importe suas conquistas em JSON.
+- **Muitas melhorias de uso** em todas as abas: museu com busca e filtros, quiz com feedback imediato, simulador em tempo real, relatório PDF personalizável e mais.
 
-### Dados científicos reais
-- Ficha de 7 dinossauros "clássicos" (T‑Rex, Triceratops, Velociraptor, etc.) usados na Escala Real e no gráfico de massa.
-- Banco de dados com **50 espécies reais** e coordenadas paleogeográficas para o mapa interativo.
-- Fórmulas da literatura (massa × circunferência femoral, modelo Lotka‑Volterra).
-- Referências ao Paleobiology Database, Paleomap Project e IPCC.
+Veja todos os detalhes no [CHANGELOG](CHANGELOG.md).
 
 ---
 
-## 🚀 Como executar (front‑end puro)
+## ✨ Funcionalidades
 
-Como o PaleoLab é uma aplicação **estática**, você pode abri‑lo de várias formas:
+**Explorar**
+1. **📏 Escala Real** – Compare até 3 animais (dinossauros, humano ou elefante) lado a lado, com régua em metros.
+2. **🦴 Fósseis Reais** – Museu com 50 espécies reais: busca, filtros por período e dieta, ordenação e ficha detalhada.
+3. **🗺️ Deriva Continental** – Globo da Terra antiga (Ancient Earth) e mapa dos sítios fósseis.
+4. **⏳ Linha do Tempo** – Triássico, Jurássico e Cretáceo em escala, com os dinossauros de cada período.
+5. **🌍 Clima Mesozoico** – Temperatura, CO₂, nível do mar e vegetação, comparados com o clima atual.
+6. **🌳 Árvore Evolutiva** – Cladograma interativo (vis.js) com descrição de cada grupo e versão em lista.
 
-### 1. Diretamente no navegador (mais simples)
-- Baixe ou clone este repositório.
-- Localize o arquivo `index.html`.
-- **Dê um duplo‑clique** nele – ele abrirá no seu navegador padrão.
+**Laboratório**
+7. **☄️ Extinção K‑Pg** – Simulador do impacto do asteroide (Lotka‑Volterra + Runge‑Kutta 4) com cenários prontos.
+8. **⚖️ Massa Corporal** – Estimativa de massa pela circunferência do fêmur (Campione & Evans, 2012) com gráfico de dispersão.
+9. **👣 Icnofósseis** – Jogo "Paleo‑Detetive": identifique o icnogênero de uma pegada com uma chave dicotômica.
 
-> ℹ️ Alguns navegadores podem bloquear requisições locais (CORS) ao carregar imagens da pasta `assets/`. Se isso ocorrer, use uma das opções abaixo.
+**Desafios**
+10. **📝 Quiz & Batalha** – 60 perguntas em 3 níveis e duelos entre dois dinossauros com perguntas geradas na hora.
+11. **🏆 Conquistas** – 7 medalhas, progresso e backup em JSON.
+12. **📄 Relatório PDF** – Relatório com conquistas, quiz, batalha, simulação K‑Pg, escala e massa corporal.
 
-### 2. Com Live Server (recomendado)
-Se você usa o **VS Code**, instale a extensão [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer):
-- Abra a pasta do projeto no VS Code.
-- Clique com o botão direito sobre `index.html` e escolha **"Open with Live Server"**.
-- O navegador abrirá automaticamente em `http://127.0.0.1:5500`.
+---
 
-### 3. Com um servidor HTTP simples (Python)
-Se você tem Python instalado, pode usar o módulo `http.server`:
+## 🚀 Como executar
+
+O PaleoLab é uma aplicação **estática**:
+
+1. **Direto no navegador:** baixe o repositório e dê um duplo‑clique em `index.html`.
+2. **Com um servidor local (recomendado):**
+   ```bash
+   python3 -m http.server 8000      # depois acesse http://localhost:8000
+   # ou
+   npx serve .
+   ```
+   Também funciona com a extensão Live Server do VS Code, GitHub Pages, nginx, Apache etc.
+
+> ℹ️ **Internet:** os ícones, o globo, o mapa, os gráficos, a árvore e o gerador de PDF vêm de CDNs. Sem conexão, o restante do laboratório continua funcionando e cada recurso indisponível mostra um aviso com o botão "Tentar novamente".
+>
+> ℹ️ **Abrindo pelo arquivo (file://):** alguns navegadores bloqueiam a leitura de imagens locais em canvas. Por isso, só a imagem da comparação de escala dentro do PDF pode ficar de fora; use um servidor local para incluí‑la.
+
+Cada aba tem um endereço próprio (por exemplo, `index.html#/quiz`), que pode ser compartilhado ou salvo nos favoritos.
+
+---
+
+## 🧪 Testes
+
 ```bash
-# Na raiz do projeto
-python3 -m http.server 8000
+npm install
+npm test
 ```
-Acesse `http://localhost:8000` no navegador.
 
-### 4. Com qualquer outro servidor estático
-Você pode usar `serve` (Node.js), `nginx`, Apache ou até mesmo o GitHub Pages – basta apontar para a pasta raiz.
+Os testes ficam em `tests/` e rodam no ambiente `node` do Jest, sem dependências extras. As APIs do navegador (canvas, `Image`, `localStorage`, `<script>`) são simuladas em `tests/helpers.js`.
+
+| Arquivo | O que testa |
+|---------|-------------|
+| `utils.test.js` | Icnofósseis, simulação K‑Pg (valores de referência), massa corporal, escala, quiz, modo Batalha (todos os 2.450 pares), períodos, formatação |
+| `imagens.test.js` | `gerarSilhuetaPlaceholder` (desenho determinístico) e as funções de carregamento de imagem |
+| `store.test.js` | Conquistas, recordes, exportação e importação de progresso |
+| `loader.test.js` | Carregamento condicional de bibliotecas (sucesso, erro, tempo esgotado) |
+| `data.test.js` | Integridade dos dados (perguntas, espécies, coordenadas, clados) |
 
 ---
 
 ## 📁 Estrutura do projeto
 
 ```
-paleolab-cientifico/
-├── index.html              # Página principal
-├── css/
-│   └── style.css           # Estilos globais
+dino/
+├── index.html              # Página principal (estrutura e diálogos)
+├── css/style.css           # Design system (temas claro/escuro, responsivo)
 ├── js/
-│   ├── data.js             # Todos os dados (dinossauros, quiz, clima, etc.)
-│   ├── utils.js            # Funções utilitárias (imagens, simulações, identificação)
-│   ├── components.js       # Renderização de cada aba e lógica principal
-│   └── main.js             # Ponto de entrada (carrega components.js)
-├── assets/                 # Pasta para imagens (a preencher pelo utilizador)
-│   ├── trex.png
-│   ├── triceratops.png
-│   └── ...                 # demais arquivos .png (reais e placeholders)
-└── README.md
+│   ├── data.js             # Dados: dinossauros, quiz, clima, clados, conquistas
+│   ├── utils.js            # Funções puras (simulação, icnofósseis, batalha...) e imagens
+│   ├── store.js            # Progresso no localStorage + import/export JSON
+│   ├── loader.js           # Carregamento sob demanda das bibliotecas externas
+│   ├── ui.js               # Toasts, diálogo de confirmação, tema, estados
+│   ├── app.js              # Núcleo: registro de abas e ações, conquistas
+│   ├── abas/               # Um arquivo por aba (inicio.js, escala.js, quiz.js...)
+│   └── main.js             # Navegação, menu e eventos centralizados (initEvents)
+├── assets/                 # Silhuetas, fotos de fósseis e pegadas
+├── tests/                  # Testes Jest
+├── package.json
+├── CHANGELOG.md
+└── roadmap.md
 ```
 
-> **Nota:** As imagens dos dinossauros devem ser colocadas na pasta `assets/`. Enquanto não existirem, o aplicativo gera automaticamente silhuetas geométricas coloridas (placeholders).
+### Como adicionar uma aba
 
----
+Crie `js/abas/minha-aba.js`, inclua o `<script>` no `index.html` (antes de `main.js`) e registre:
 
-## 🧪 Testes (futuro)
+```js
+registrarAba({
+    id: 'minha-aba',
+    titulo: 'Minha Aba',
+    subtitulo: 'Descrição curta',
+    icone: 'bi-star',          // ícone do Bootstrap Icons
+    grupo: 'explorar',         // explorar | laboratorio | desafios
+    render(container) {
+        container.innerHTML = `<button class="btn btn-primario" data-action="minha-acao">Clique</button>`;
+    }
+});
+registrarAcao('minha-acao', () => toast('Funcionou!', 'sucesso'));
+```
 
-Atualmente não há testes automatizados. O roadmap prevê a implementação de testes unitários com Jest na versão 2.0.0.
+A navegação, o menu e o painel inicial são montados automaticamente a partir do registro.
 
 ---
 
 ## 🎓 Contexto pedagógico
 
-PaleoLab Científico foi desenhado para ser utilizado em sala de aula ou em casa, com:
+PaleoLab Científico foi desenhado para sala de aula ou estudo em casa, com:
 - Linguagem acessível (português do Brasil).
-- Conceitos da paleontologia e ecologia explicados passo a passo.
+- Conceitos de paleontologia e ecologia explicados passo a passo.
 - Modelos matemáticos simples que mostram como a ciência real funciona.
 - Jogos que estimulam a observação e o raciocínio lógico.
-- Comparações interativas que reforçam a compreensão de escalas e proporções.
+- Relatório em PDF para portfólio ou avaliação.
 
 ---
 
@@ -115,30 +141,16 @@ PaleoLab Científico foi desenhado para ser utilizado em sala de aula ou em casa
 - **Campione & Evans (2012)** – *A universal scaling relationship between body mass and proximal limb bone dimensions in quadrupedal terrestrial tetrapods.*
 - **Paleomap Project** – [earthbyte.org](https://www.earthbyte.org/)
 - **Modelo climático** – baseado em Scotese (2021) e IPCC (2021).
+- Bibliotecas: Chart.js, Leaflet, vis-network, jsPDF, Bootstrap Icons.
 
 ---
 
 ## 🤝 Contribuindo
 
-Contribuições são bem‑vindas!  
-Sugestões, reporte de bugs e novos recursos podem ser enviados via *issues* e *pull requests*.  
-Por favor, mantenha o estilo de código e adicione testes para novas funcionalidades.
+Contribuições são bem‑vindas! Envie sugestões, bugs e novos recursos por *issues* e *pull requests*. Mantenha o estilo de código e adicione testes para novas funções em `js/utils.js`, `js/store.js` ou `js/loader.js`.
 
 ---
 
 ## 📄 Licença
 
-Este projeto é distribuído sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para mais informações.
-
----
-
-**📎 Resumo:** Esta versão **1.6.0** expande significativamente as possibilidades de aprendizado e documentação. O **modo Batalha** transforma o quiz em um jogo comparativo, o **gráfico de dispersão** na Massa Corporal conecta teoria e prática, e o **PDF completo** consolida todo o trabalho do usuário em um relatório científico. Tudo mantendo a natureza totalmente front‑end e sem dependências Python. Basta abrir o `index.html` no navegador ou usar um servidor estático simples para explorar todas as funcionalidades.
----
-
-## 🧪 Versão v2.0.0 – Qualidade, Testes e Acessibilidade
-
-- **Acessibilidade ARIA**: Suporte para leitores de tela com `role="tablist"`, `role="tabpanel"`, e `aria-label`.
-- **Eventos Centralizados**: Eventos registrados via `addEventListener` e `initEvents()`.
-- **Testes Unitários**: Testes com Jest cobrindo funções puras em `tests/utils.test.js`.
-- **Importação/Exportação de Conquistas**: Download e upload de progresso em formato JSON.
-- **Responsividade Mobilidade**: Layout otimizado para dispositivos compactos (< 400px).
+Este projeto é distribuído sob a licença MIT.

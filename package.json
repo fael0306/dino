@@ -1,0 +1,20 @@
+{
+  "name": "paleolab-cientifico",
+  "version": "2.0.0",
+  "description": "Laboratório virtual interativo de paleontologia – aplicação web estática.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "start": "npx --yes serve ."
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["<rootDir>/tests/**/*.test.js"],
+    "collectCoverageFrom": ["js/utils.js", "js/store.js", "js/loader.js", "js/data.js"]
+  }
+}

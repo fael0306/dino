@@ -67,7 +67,7 @@ Com base na versão atual (v1.3.0) e nas duas listas de *issues* fornecidas, est
 
 ---
 
-## 🧪 v2.0.0 – Qualidade, Testes e Acessibilidade
+## 🧪 v2.0.0 – Qualidade, Testes e Acessibilidade - OK
 
 **Objetivo:** Profissionalizar o código, garantir manutenibilidade e inclusão.
 
@@ -83,6 +83,17 @@ Com base na versão atual (v1.3.0) e nas duas listas de *issues* fornecidas, est
 | 8 | Lista 1 – Responsividade extra | Ajustar ainda mais o layout para dispositivos com largura < 400px: reduzir `font-size`, padding e ajustar o menu para um dropdown (se necessário). |
 
 > **Prazo estimado:** 3 sprints (6 semanas)
+
+### ✅ Como cada item foi resolvido
+
+| Issue | Entrega |
+|-------|---------|
+| Migrar `onclick` | Nenhum `onclick` inline. Um único ouvinte delegado em `initEvents()` (`js/main.js`) despacha os botões `data-action` registrados com `registrarAcao()` (`js/app.js`); os demais controles usam `addEventListener`. |
+| Testes unitários | 96 testes Jest em `tests/`: `identificarIcnogenus`, `simularExtincao` (valores de referência), `gerarSilhuetaPlaceholder` (canvas simulado, desenho determinístico), carregamento de imagens, massa corporal, modo Batalha, conquistas (import/export) e carregador de bibliotecas. |
+| Acessibilidade | `alt` em todas as imagens, `aria-label`/`aria-valuetext` em sliders e selects, `role="tablist"`/`tabpanel` com navegação por setas, anúncios `aria-live`, foco gerenciado, diálogos nativos, link "pular para o conteúdo" e respeito a `prefers-reduced-motion`. |
+| Carregamento otimizado | `js/loader.js` baixa Chart.js, Leaflet, vis-network e jsPDF apenas quando a aba que precisa deles é aberta; abas são renderizadas só na primeira visita; Bootstrap removido; imagens recomprimidas (24 MB → 6 MB). |
+| Import/export de conquistas | Aba Conquistas: exportar `.json`, importar (com validação e mescla) e apagar progresso. |
+| Responsividade extra | Menu vira gaveta em telas ≤ 960 px; ajustes específicos para < 400 px (fontes, espaçamentos, grades de uma coluna, toasts em largura total). |
 
 ---
 

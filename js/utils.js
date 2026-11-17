@@ -1,222 +1,506 @@
 // js/utils.js
+// Funções utilitárias do PaleoLab.
+// A maioria é PURA (não depende do DOM) para poder ser testada com Jest.
+// As que usam DOM (imagens / canvas) recebem os objetos globais de forma
+// tardia, o que permite simulá-los nos testes.
 
 // ============================================================
-// MAPEAMENTO PARA ICNOFÓSSEIS
+// CAMINHOS DE IMAGENS
 // ============================================================
 const MAPA_ICNOFOSSEIS = {
-    "Grallator": "grallator.png",
-    "Eubrontes": "eubrontes.png",
-    "Megalosauripus": "megalosauripus.png",
-    "Wintonopus": "wintonopus.png",
-    "Amblydactylus": "amblydactylus.png",
-    "Anomoepus": "anomoepus.png",
-    "Brontopodus": "brontopodus.png",
-    "Parabrontopodus": "parabrontopodus.png"
+    "Grallator": "grallator.jpg",
+    "Eubrontes": "eubrontes.jpg",
+    "Megalosauripus": "megalosauripus.jpg",
+    "Wintonopus": "wintonopus.jpg",
+    "Amblydactylus": "amblydactylus.jpg",
+    "Anomoepus": "anomoepus.jpg",
+    "Brontopodus": "brontopodus.jpg",
+    "Parabrontopodus": "parabrontopodus.jpg"
 };
 
-// ============================================================
-// CARREGA A IMAGEM ORIGINAL DA PASTA assets/ (SEM REDIMENSIONAR)
-// ============================================================
-function carregarImagemOriginal(nome) {
-    return new Promise((resolve, reject) => {
-        const mapa = {
-            "Tyrannosaurus rex": "trex.png",
-            "Triceratops": "triceratops.png",
-            "Velociraptor": "velociraptor.png",
-            "Brachiosaurus": "brachiosaurus.png",
-            "Stegosaurus": "stegosaurus.png",
-            "Spinosaurus": "spinosaurus.png",
-            "Patagotitan": "patagotitan.png",
-            "Humano": "human.png",
-            "Elefante": "elephant.png"
-        };
+/** Silhuetas usadas na Escala Real (dinossauros clássicos + referências). */
+const MAPA_SILHUETAS = {
+    "Tyrannosaurus rex": "trex.png",
+    "Triceratops": "triceratops.png",
+    "Velociraptor": "velociraptor.png",
+    "Brachiosaurus": "brachiosaurus.png",
+    "Stegosaurus": "stegosaurus.png",
+    "Spinosaurus": "spinosaurus.png",
+    "Patagotitan": "patagotitan.png",
+    "Humano": "human.png",
+    "Elefante": "elephant.png"
+};
 
-        // Proporções naturais de cada ser (largura x altura)
-        const proporcoes = {
-            "Tyrannosaurus rex": [2, 1],
-            "Triceratops":       [2, 1],
-            "Velociraptor":      [2, 1],
-            "Brachiosaurus":     [2, 1],
-            "Stegosaurus":       [2, 1],
-            "Spinosaurus":       [2, 1],
-            "Patagotitan":       [3, 1],
-            "Humano":            [1, 2],
-            "Elefante":          [2, 1]
-        };
+/** Proporções naturais (largura x altura) usadas quando falta a imagem. */
+const PROPORCOES_SILHUETA = {
+    "Tyrannosaurus rex": [2, 1],
+    "Triceratops": [2, 1],
+    "Velociraptor": [2, 1],
+    "Brachiosaurus": [2, 1],
+    "Stegosaurus": [2, 1],
+    "Spinosaurus": [2, 1],
+    "Patagotitan": [3, 1],
+    "Humano": [1, 2],
+    "Elefante": [2, 1]
+};
 
-        const nomeArquivo = mapa[nome] || nome.toLowerCase().replace(/ /g, '_') + '.png';
-        const caminho = `assets/${nomeArquivo}`;
-        const img = new Image();
-        img.onload = function() {
-            resolve(img);
-        };
-        img.onerror = function() {
-            const [pw, ph] = proporcoes[nome] || [1, 1];
-            const base = 200;
-            const largura = base * pw;
-            const altura  = base * ph;
-            const placeholder = gerarSilhuetaPlaceholder(nome, largura, altura);
-            const imgFallback = new Image();
-            imgFallback.onload = function() { resolve(imgFallback); };
-            imgFallback.src = placeholder;
-        };
-        img.src = caminho;
-    });
+/** "Tyrannosaurus rex" → "tyrannosaurus_rex" */
+function slugNome(nome) {
+    return String(nome || '').trim().toLowerCase().replace(/\s+/g, '_');
+}
+
+function caminhoSilhueta(nome) {
+    return `assets/${MAPA_SILHUETAS[nome] || slugNome(nome) + '.png'}`;
+}
+
+function caminhoImagemFossil(nome) {
+    return `assets/real_${slugNome(nome)}.png`;
+}
+
+function caminhoImagemIcnofossil(nome) {
+    const arquivo = MAPA_ICNOFOSSEIS[nome];
+    return arquivo ? `assets/${arquivo}` : null;
 }
 
 // ============================================================
-// FUNÇÃO PRINCIPAL: tenta carregar imagem real, fallback para placeholder
+// TEXTO E NÚMEROS
 // ============================================================
-function carregarImagemOuPlaceholder(nome, largura = 200, altura = 200) {
-    return new Promise((resolve) => {
-        const mapa = {
-            "Tyrannosaurus rex": "trex.png",
-            "Triceratops": "triceratops.png",
-            "Velociraptor": "velociraptor.png",
-            "Brachiosaurus": "brachiosaurus.png",
-            "Stegosaurus": "stegosaurus.png",
-            "Spinosaurus": "spinosaurus.png",
-            "Patagotitan": "patagotitan.png",
-            "Humano": "human.png",
-            "Elefante": "elephant.png"
-        };
-        const nomeArquivo = mapa[nome] || nome.toLowerCase().replace(/ /g, '_') + '.png';
-        const caminho = `assets/${nomeArquivo}`;
+function escapeHtml(valor) {
+    return String(valor ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            canvas.width = largura;
-            canvas.height = altura;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, largura, altura);
-            resolve(canvas.toDataURL('image/png'));
-        };
-        img.onerror = function() {
-            resolve(gerarSilhuetaPlaceholder(nome, largura, altura));
-        };
-        img.src = caminho;
-    });
+/** Hash simples e determinístico (djb2) – usado para cores estáveis. */
+function hashString(str) {
+    let h = 5381;
+    const s = String(str || '');
+    for (let i = 0; i < s.length; i++) {
+        h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+    }
+    return h;
+}
+
+/** Formata número no padrão brasileiro (vírgula decimal). */
+function formatarNumero(valor, casas = 1) {
+    const n = Number(valor);
+    if (!Number.isFinite(n)) return '–';
+    return n.toLocaleString('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+}
+
+/** Formata massa em toneladas escolhendo a unidade mais legível. */
+function formatarMassa(toneladas) {
+    const t = Number(toneladas);
+    if (!Number.isFinite(t)) return '–';
+    if (t < 1) return `${formatarNumero(t * 1000, 0)} kg`;
+    return `${formatarNumero(t, t < 10 ? 1 : 0)} t`;
+}
+
+function debounce(fn, espera = 200) {
+    let timer = null;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), espera);
+    };
 }
 
 // ============================================================
-// CARREGA IMAGEM DE ICNOFÓSSIL (real ou placeholder)
+// ALEATORIEDADE (com gerador injetável para testes)
 // ============================================================
-function carregarImagemIcnofossil(nome) {
-    return new Promise((resolve) => {
-        const nomeArquivo = MAPA_ICNOFOSSEIS[nome];
-        if (!nomeArquivo) {
-            resolve(gerarSilhuetaPlaceholder('pegada', 200, 200));
-            return;
+/** Embaralha uma CÓPIA do array (Fisher–Yates). Não altera o original. */
+function embaralhar(array, rng = Math.random) {
+    const copia = Array.from(array || []);
+    for (let i = copia.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
+}
+
+/** Gerador pseudoaleatório com semente (mulberry32) – útil em testes. */
+function criarRng(semente = 1) {
+    let a = semente >>> 0;
+    return function () {
+        a = (a + 0x6D2B79F5) >>> 0;
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
+// ============================================================
+// ESCALA REAL
+// ============================================================
+/**
+ * Converte alturas reais (m) em alturas em pixels, mantendo a proporção.
+ * O mais alto recebe `alturaMaxPx`.
+ */
+function calcularAlturasEscala(alturasReais, alturaMaxPx = 300) {
+    const validas = (alturasReais || []).map(Number).filter(v => Number.isFinite(v) && v > 0);
+    if (validas.length === 0) return [];
+    const max = Math.max(...validas);
+    return alturasReais.map(a => {
+        const v = Number(a);
+        return Number.isFinite(v) && v > 0 ? Math.max(1, Math.round(alturaMaxPx * (v / max))) : 0;
+    });
+}
+
+/** Escolhe um intervalo "redondo" para as linhas de grade da escala. */
+function passoGradeMetros(alturaMaxM) {
+    const passos = [0.25, 0.5, 1, 2, 5, 10, 20];
+    return passos.find(p => alturaMaxM / p <= 8) || 50;
+}
+
+// ============================================================
+// MASSA CORPORAL (Campione & Evans, 2012)
+// ============================================================
+const COEFICIENTES_MASSA = {
+    bipede: { a: 0.00016, b: 2.73 },
+    quadrupede: { a: 0.00049, b: 2.75 }
+};
+
+function normalizarPostura(postura) {
+    const p = String(postura || '').toLowerCase();
+    return p.startsWith('b') ? 'bipede' : 'quadrupede';
+}
+
+/** Massa estimada a partir da circunferência do fêmur (em cm). */
+function calcularMassaFemur(circunferenciaCm, postura) {
+    const c = Number(circunferenciaCm);
+    if (!Number.isFinite(c) || c <= 0) return { kg: 0, toneladas: 0 };
+    const { a, b } = COEFICIENTES_MASSA[normalizarPostura(postura)];
+    const kg = a * Math.pow(c * 10, b);
+    return { kg, toneladas: kg / 1000 };
+}
+
+/** Equação inversa: circunferência do fêmur (mm) a partir da massa (kg). */
+function calcularCircunferenciaPorMassa(massaKg, postura) {
+    const m = Number(massaKg);
+    if (!Number.isFinite(m) || m <= 0) return 0;
+    const { a, b } = COEFICIENTES_MASSA[normalizarPostura(postura)];
+    return Math.pow(m / a, 1 / b);
+}
+
+// ============================================================
+// SIMULAÇÃO K-Pg (Lotka–Volterra com Runge–Kutta 4)
+// ============================================================
+function lotkaVolterra(estado, r, a, b, d, e, f, g) {
+    const [P, H, C] = estado;
+    return [
+        r * P - a * P * H,
+        b * a * P * H - d * H - e * H * C,
+        f * e * H * C - g * C
+    ];
+}
+
+/**
+ * @param {number} bloqueioSolar 0–100 (%)
+ * @param {number} chuvaAcida 0–100 (%)
+ * @param {number} anos duração simulada
+ * @returns {{P:number[],H:number[],C:number[],t:number[]}}
+ */
+function simularExtincao(bloqueioSolar, chuvaAcida, anos) {
+    const limitar = (v, min, max) => Math.min(max, Math.max(min, Number(v) || 0));
+    bloqueioSolar = limitar(bloqueioSolar, 0, 100);
+    chuvaAcida = limitar(chuvaAcida, 0, 100);
+    anos = limitar(anos, 0, 500);
+
+    const P0 = 100, H0 = 50, C0 = 20;
+    const r = 0.4 * (1 - bloqueioSolar / 100);
+    const a = 0.01;
+    const b = 0.6;
+    const d = 0.1 + (chuvaAcida / 100) * 0.05;
+    const e = 0.02;
+    const f = 0.3;
+    const g = 0.15 + (chuvaAcida / 100) * 0.02;
+
+    const dt = 0.5;
+    const n = Math.floor(anos / dt);
+    const resultados = { P: [P0], H: [H0], C: [C0], t: [0] };
+    const s = [P0, H0, C0];
+    const passo = (k, fator) => [s[0] + fator * k[0], s[1] + fator * k[1], s[2] + fator * k[2]];
+
+    for (let i = 0; i < n; i++) {
+        const k1 = lotkaVolterra(s, r, a, b, d, e, f, g);
+        const k2 = lotkaVolterra(passo(k1, dt / 2), r, a, b, d, e, f, g);
+        const k3 = lotkaVolterra(passo(k2, dt / 2), r, a, b, d, e, f, g);
+        const k4 = lotkaVolterra(passo(k3, dt), r, a, b, d, e, f, g);
+        for (let j = 0; j < 3; j++) {
+            s[j] = Math.max(0, s[j] + dt / 6 * (k1[j] + 2 * k2[j] + 2 * k3[j] + k4[j]));
         }
-        const caminho = `assets/${nomeArquivo}`;
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 200;
-            canvas.height = 200;
-            const ctx = canvas.getContext('2d');
-            const ratio = Math.min(200 / img.width, 200 / img.height);
-            const w = img.width * ratio;
-            const h = img.height * ratio;
-            const x = (200 - w) / 2;
-            const y = (200 - h) / 2;
-            ctx.drawImage(img, x, y, w, h);
-            resolve(canvas.toDataURL('image/png'));
-        };
-        img.onerror = function() {
-            resolve(gerarSilhuetaPlaceholder('pegada', 200, 200));
-        };
-        img.src = caminho;
-    });
+        resultados.P.push(s[0]);
+        resultados.H.push(s[1]);
+        resultados.C.push(s[2]);
+        resultados.t.push((i + 1) * dt);
+    }
+    return resultados;
+}
+
+/** Classifica o estado final do ecossistema simulado. */
+function classificarEcossistema(dados) {
+    const ultimo = arr => arr[arr.length - 1];
+    const P = ultimo(dados.P), H = ultimo(dados.H), C = ultimo(dados.C);
+    if (P < 1) return { nivel: 'colapso', titulo: 'Colapso total', texto: 'As plantas desapareceram e toda a cadeia alimentar entrou em colapso.' };
+    if (H < 5) return { nivel: 'devastado', titulo: 'Ecossistema devastado', texto: 'As plantas resistem, mas os herbívoros quase desapareceram.' };
+    if (C < 1) return { nivel: 'instavel', titulo: 'Ecossistema instável', texto: 'Os predadores de topo foram extintos; os herbívoros ficam sem controle.' };
+    return { nivel: 'estavel', titulo: 'Ecossistema estável', texto: 'As três populações sobreviveram ao impacto.' };
 }
 
 // ============================================================
-// CARREGA IMAGEM DE FÓSSIL REAL (esqueleto)
+// ICNOFÓSSEIS
 // ============================================================
-function carregarImagemFossilReal(nome) {
-    return new Promise((resolve) => {
-        const mapa = {
-            "Tyrannosaurus rex":                 "real_tyrannosaurus_rex.png",
-            "Triceratops horridus":              "real_triceratops_horridus.png",
-            "Velociraptor mongoliensis":         "real_velociraptor_mongoliensis.png",
-            "Brachiosaurus altithorax":          "real_brachiosaurus_altithorax.png",
-            "Stegosaurus stenops":               "real_stegosaurus_stenops.png",
-            "Spinosaurus aegyptiacus":           "real_spinosaurus_aegyptiacus.png",
-            "Patagotitan mayorum":               "real_patagotitan_mayorum.png",
-            "Allosaurus fragilis":               "real_allosaurus_fragilis.png",
-            "Diplodocus longus":                 "real_diplodocus_longus.png",
-            "Ankylosaurus magniventris":         "real_ankylosaurus_magniventris.png",
-            "Parasaurolophus walkeri":           "real_parasaurolophus_walkeri.png",
-            "Pachycephalosaurus wyomingensis":   "real_pachycephalosaurus_wyomingensis.png",
-            "Carnotaurus sastrei":               "real_carnotaurus_sastrei.png",
-            "Therizinosaurus cheloniformis":     "real_therizinosaurus_cheloniformis.png",
-            "Deinonychus antirrhopus":           "real_deinonychus_antirrhopus.png",
-            "Iguanodon bernissartensis":         "real_iguanodon_bernissartensis.png",
-            "Baryonyx walkeri":                  "real_baryonyx_walkeri.png",
-            "Microraptor gui":                   "real_microraptor_gui.png",
-            "Archaeopteryx lithographica":       "real_archaeopteryx_lithographica.png",
-            "Coelophysis bauri":                 "real_coelophysis_bauri.png",
-            "Plateosaurus engelhardti":          "real_plateosaurus_engelhardti.png",
-            "Apatosaurus louisae":               "real_apatosaurus_louisae.png",
-            "Camarasaurus grandis":              "real_camarasaurus_grandis.png",
-            "Giganotosaurus carolinii":          "real_giganotosaurus_carolinii.png",
-            "Carcharodontosaurus saharicus":     "real_carcharodontosaurus_saharicus.png",
-            "Utahraptor ostrommaysorum":         "real_utahraptor_ostrommaysorum.png",
-            "Dilophosaurus wetherilli":          "real_dilophosaurus_wetherilli.png",
-            "Ceratosaurus nasicornis":           "real_ceratosaurus_nasicornis.png",
-            "Edmontosaurus annectens":           "real_edmontosaurus_annectens.png",
-            "Lambeosaurus lambei":               "real_lambeosaurus_lambei.png",
-            "Corythosaurus casuarius":           "real_corythosaurus_casuarius.png",
-            "Styracosaurus albertensis":         "real_styracosaurus_albertensis.png",
-            "Chasmosaurus belli":                "real_chasmosaurus_belli.png",
-            "Protoceratops andrewsi":            "real_protoceratops_andrewsi.png",
-            "Psittacosaurus mongoliensis":       "real_psittacosaurus_mongoliensis.png",
-            "Euoplocephalus tutus":              "real_euoplocephalus_tutus.png",
-            "Gallimimus bullatus":               "real_gallimimus_bullatus.png",
-            "Ornithomimus velox":                "real_ornithomimus_velox.png",
-            "Struthiomimus altus":               "real_struthiomimus_altus.png",
-            "Oviraptor philoceratops":           "real_oviraptor_philoceratops.png",
-            "Citipati osmolskae":                "real_citipati_osmolskae.png",
-            "Maiasaura peeblesorum":             "real_maiasaura_peeblesorum.png",
-            "Shantungosaurus giganteus":         "real_shantungosaurus_giganteus.png",
-            "Mamenchisaurus hochuanensis":       "real_mamenchisaurus_hochuanensis.png",
-            "Sauroposeidon proteles":            "real_sauroposeidon_proteles.png",
-            "Amargasaurus cazaui":               "real_amargasaurus_cazaui.png",
-            "Kentrosaurus aethiopicus":          "real_kentrosaurus_aethiopicus.png",
-            "Tuojiangosaurus multispinus":       "real_tuojiangosaurus_multispinus.png",
-            "Euhelopus zdanskyi":                "real_euhelopus_zdanskyi.png",
-            "Herrerasaurus ischigualastensis":   null  // não existe na pasta
-        };
-
-        const nomeArquivo = mapa[nome];
-        if (!nomeArquivo) {
-            resolve(gerarSilhuetaPlaceholder(nome, 300, 200));
-            return;
+function identificarIcnogenus(dedos, garras, tamanho, forma, proporcao) {
+    if (Number(dedos) === 3) {
+        if (garras) {
+            if (tamanho === "pequeno") return "Grallator";
+            return forma === "alongada" ? "Eubrontes" : "Megalosauripus";
         }
+        return tamanho === "pequeno" ? "Wintonopus" : "Amblydactylus";
+    }
+    if (garras) return "Anomoepus";
+    return proporcao === "larga" ? "Brontopodus" : "Parabrontopodus";
+}
 
-        const caminho = `assets/${nomeArquivo}`;
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const maxWidth = 300;
-            const ratio = Math.min(maxWidth / img.width, 1);
-            canvas.width = img.width * ratio;
-            canvas.height = img.height * ratio;
-            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/png'));
+/** Quais perguntas extras fazem sentido para a combinação dedos/garras. */
+function perguntasExtrasIcno(dedos, garras) {
+    const extras = [];
+    if (Number(dedos) === 3) {
+        extras.push('tamanho');
+        if (garras) extras.push('forma');
+    } else if (!garras) {
+        extras.push('proporcao');
+    }
+    return extras;
+}
+
+// ============================================================
+// LINHA DO TEMPO
+// ============================================================
+function periodoPorIdade(idadeMa, periodos) {
+    const idade = Number(idadeMa);
+    return (periodos || []).find(p => idade <= p.inicio && idade >= p.fim) || null;
+}
+
+const ORDEM_PERIODOS = { 'Triássico': 0, 'Jurássico': 1, 'Cretáceo': 2 };
+const ORDEM_SUBPERIODOS = { 'Inferior': 0, 'Médio': 1, 'Superior': 2 };
+
+function extrairPeriodo(texto) {
+    return Object.keys(ORDEM_PERIODOS).find(p => String(texto || '').includes(p)) || null;
+}
+
+/** Posição cronológica (menor = mais antigo). */
+function rankPeriodo(texto) {
+    const p = extrairPeriodo(texto);
+    if (p === null) return null;
+    const sub = Object.keys(ORDEM_SUBPERIODOS).find(s => String(texto).includes(s));
+    return ORDEM_PERIODOS[p] * 3 + (sub ? ORDEM_SUBPERIODOS[sub] : 1);
+}
+
+function dinossaurosDoPeriodo(nomePeriodo, lista) {
+    return (lista || []).filter(d => extrairPeriodo(d.Periodo) === nomePeriodo);
+}
+
+// ============================================================
+// QUIZ
+// ============================================================
+/**
+ * Prepara uma rodada: embaralha as perguntas e as alternativas,
+ * remapeando o índice da resposta correta.
+ */
+function prepararQuiz(perguntas, { quantidade = null, rng = Math.random, embaralharOpcoes = true } = {}) {
+    let lista = embaralhar(perguntas, rng);
+    if (quantidade && quantidade < lista.length) lista = lista.slice(0, quantidade);
+    return lista.map(p => {
+        // Alternativas do tipo "Nenhuma das anteriores" dependem da ordem.
+        const dependeDaOrdem = p.opcoes.some(o => /anteriores|todas/i.test(o));
+        if (!embaralharOpcoes || dependeDaOrdem) return { ...p, opcoes: [...p.opcoes] };
+        const indices = embaralhar(p.opcoes.map((_, i) => i), rng);
+        return {
+            ...p,
+            opcoes: indices.map(i => p.opcoes[i]),
+            resposta: indices.indexOf(p.resposta)
         };
-        img.onerror = function() {
-            resolve(gerarSilhuetaPlaceholder(nome, 300, 200));
-        };
-        img.src = caminho;
     });
 }
 
 // ============================================================
-// SILHUETA PLACEHOLDER (desenho estilizado)
+// MODO BATALHA – perguntas comparativas geradas dinamicamente
+// ============================================================
+const EMPATE = 'Empate (valores iguais)';
+const MESMA_EPOCA = 'Viveram na mesma época';
+const _ehEmpate = p => [EMPATE, MESMA_EPOCA].includes(p.opcoes[p.resposta]);
+
+function _perguntaAtributo(d1, d2, chave, rotulo, unidade, sentido, rng) {
+    const v1 = Number(d1[chave]), v2 = Number(d2[chave]);
+    if (!Number.isFinite(v1) || !Number.isFinite(v2)) return null;
+    let correta;
+    if (v1 === v2) correta = EMPATE;
+    else if (sentido === 'maior') correta = v1 > v2 ? d1.Nome : d2.Nome;
+    else correta = v1 < v2 ? d1.Nome : d2.Nome;
+    const opcoes = [...embaralhar([d1.Nome, d2.Nome], rng), EMPATE];
+    const fmt = v => (chave === 'Peso' ? formatarMassa(v) : `${formatarNumero(v, 1)} ${unidade}`);
+    return {
+        tipo: `${chave}-${sentido}`,
+        pergunta: `Qual dos dois ${rotulo}?`,
+        opcoes,
+        resposta: opcoes.indexOf(correta),
+        explicacao: `${d1.Nome}: ${fmt(v1)} · ${d2.Nome}: ${fmt(v2)}.`
+    };
+}
+
+/**
+ * Gera `quantidade` perguntas comparando dois dinossauros.
+ * Sempre há perguntas suficientes, pois comparações com empate
+ * também são válidas ("Empate").
+ */
+function gerarPerguntasBatalha(dino1, dino2, quantidade = 5, rng = Math.random) {
+    if (!dino1 || !dino2) return [];
+    const candidatas = [
+        _perguntaAtributo(dino1, dino2, 'Peso', 'era mais pesado', 't', 'maior', rng),
+        _perguntaAtributo(dino1, dino2, 'Peso', 'era mais leve', 't', 'menor', rng),
+        _perguntaAtributo(dino1, dino2, 'Comprimento', 'era mais comprido', 'm', 'maior', rng),
+        _perguntaAtributo(dino1, dino2, 'Altura', 'era mais alto', 'm', 'maior', rng)
+    ];
+
+    // Período (mais antigo)
+    const r1 = rankPeriodo(dino1.Periodo), r2 = rankPeriodo(dino2.Periodo);
+    if (r1 !== null && r2 !== null) {
+        const mesma = MESMA_EPOCA;
+        const correta = r1 === r2 ? mesma : (r1 < r2 ? dino1.Nome : dino2.Nome);
+        const opcoes = [...embaralhar([dino1.Nome, dino2.Nome], rng), mesma];
+        candidatas.push({
+            tipo: 'periodo',
+            pergunta: 'Qual dos dois viveu primeiro (é mais antigo)?',
+            opcoes,
+            resposta: opcoes.indexOf(correta),
+            explicacao: `${dino1.Nome}: ${dino1.Periodo} · ${dino2.Nome}: ${dino2.Periodo}.`
+        });
+    }
+
+    // Dieta (só quando são diferentes)
+    if (dino1.Dieta && dino2.Dieta && dino1.Dieta !== dino2.Dieta) {
+        const alvo = rng() < 0.5 ? dino1 : dino2;
+        const opcoes = embaralhar([dino1.Nome, dino2.Nome], rng);
+        candidatas.push({
+            tipo: 'dieta',
+            pergunta: `Qual dos dois era ${alvo.Dieta.toLowerCase()}?`,
+            opcoes,
+            resposta: opcoes.indexOf(alvo.Nome),
+            explicacao: `${dino1.Nome} era ${dino1.Dieta.toLowerCase()}; ${dino2.Nome} era ${dino2.Dieta.toLowerCase()}.`
+        });
+    }
+
+    // Postura (bípede x quadrúpede)
+    if (dino1.Postura !== dino2.Postura && [dino1.Postura, dino2.Postura].includes('Bípede')) {
+        const bipede = dino1.Postura === 'Bípede' ? dino1 : dino2;
+        const opcoes = embaralhar([dino1.Nome, dino2.Nome], rng);
+        candidatas.push({
+            tipo: 'postura',
+            pergunta: 'Qual dos dois andava apenas sobre duas patas?',
+            opcoes,
+            resposta: opcoes.indexOf(bipede.Nome),
+            explicacao: `${dino1.Nome}: ${dino1.Postura} · ${dino2.Nome}: ${dino2.Postura}.`
+        });
+    }
+
+    // Razão de massas (com distratores numéricos)
+    const maiorP = Math.max(dino1.Peso, dino2.Peso), menorP = Math.min(dino1.Peso, dino2.Peso);
+    if (menorP > 0 && maiorP / menorP >= 2) {
+        const razao = maiorP / menorP;
+        const arred = v => (v >= 10 ? Math.round(v) : Math.round(v * 10) / 10);
+        const correta = arred(razao);
+        const valores = new Set([correta]);
+        [0.25, 0.5, 2, 4, 3].forEach(m => { if (valores.size < 4) valores.add(arred(Math.max(1.1, razao * m))); });
+        const pesado = dino1.Peso >= dino2.Peso ? dino1 : dino2;
+        const leve = pesado === dino1 ? dino2 : dino1;
+        const opcoes = embaralhar([...valores].map(v => `≈ ${formatarNumero(v, v >= 10 ? 0 : 1)} vezes`), rng);
+        candidatas.push({
+            tipo: 'razao',
+            pergunta: `Aproximadamente quantas vezes ${pesado.Nome} era mais pesado que ${leve.Nome}?`,
+            opcoes,
+            resposta: opcoes.indexOf(`≈ ${formatarNumero(correta, correta >= 10 ? 0 : 1)} vezes`),
+            explicacao: `${formatarMassa(pesado.Peso)} ÷ ${formatarMassa(leve.Peso)} ≈ ${formatarNumero(razao, 1)}.`
+        });
+    }
+
+    const validas = candidatas.filter(p => p && p.resposta >= 0);
+    // Prioriza perguntas sem empate (mais interessantes) e completa com as demais.
+    const semEmpate = embaralhar(validas.filter(p => !_ehEmpate(p)), rng);
+    const comEmpate = embaralhar(validas.filter(_ehEmpate), rng);
+    return [...semEmpate, ...comEmpate].slice(0, quantidade);
+}
+
+// ============================================================
+// IMAGENS (dependem do DOM)
+// ============================================================
+/** Carrega uma imagem; resolve com o elemento ou `null` em caso de erro. */
+function carregarImagem(src) {
+    return new Promise(resolve => {
+        if (!src) { resolve(null); return; }
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+    });
+}
+
+/**
+ * Carrega a silhueta de um animal da Escala Real.
+ * Se o arquivo não existir, gera um placeholder com a proporção correta.
+ * @returns {Promise<HTMLImageElement>}
+ */
+async function carregarImagemOriginal(nome) {
+    const img = await carregarImagem(caminhoSilhueta(nome));
+    if (img) return img;
+    const [pw, ph] = PROPORCOES_SILHUETA[nome] || [1, 1];
+    const fallback = await carregarImagem(gerarSilhuetaPlaceholder(nome, 200 * pw, 200 * ph));
+    return fallback;
+}
+
+/** Resolve com o caminho da foto do fóssil ou com um placeholder (data URL). */
+async function carregarImagemFossilReal(nome) {
+    const caminho = caminhoImagemFossil(nome);
+    const img = await carregarImagem(caminho);
+    return img ? caminho : gerarSilhuetaPlaceholder(nome, 300, 200);
+}
+
+/** Resolve com o caminho da pegada ou com um placeholder (data URL). */
+async function carregarImagemIcnofossil(nome) {
+    const caminho = caminhoImagemIcnofossil(nome);
+    const img = caminho ? await carregarImagem(caminho) : null;
+    return img ? caminho : gerarSilhuetaPlaceholder('pegada', 200, 200);
+}
+
+/**
+ * Desenha várias imagens lado a lado, alinhadas pela base, num canvas.
+ * Usado na exportação do PDF. Pode lançar SecurityError em file:// (canvas "contaminado").
+ */
+function comporImagensLadoALado(imagens, alturasPx, { espaco = 24, fundo = '#ffffff' } = {}) {
+    const larguras = imagens.map((img, i) => Math.round(img.width * (alturasPx[i] / img.height)));
+    const altura = Math.max(...alturasPx);
+    const canvas = document.createElement('canvas');
+    canvas.width = larguras.reduce((s, w) => s + w, 0) + espaco * (imagens.length + 1);
+    canvas.height = altura + espaco * 2;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = fundo;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    let x = espaco;
+    imagens.forEach((img, i) => {
+        ctx.drawImage(img, x, espaco + altura - alturasPx[i], larguras[i], alturasPx[i]);
+        x += larguras[i] + espaco;
+    });
+    return canvas.toDataURL('image/png');
+}
+
+// ============================================================
+// SILHUETA PLACEHOLDER (desenho estilizado em canvas)
 // ============================================================
 function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
+    nome = String(nome || '');
     const canvas = document.createElement('canvas');
     canvas.width = largura;
     canvas.height = altura;
@@ -312,7 +596,8 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     // CORES E ESTILOS PARA OUTROS
     // ============================================================
     const cores = ['#6c757d', '#495057', '#343a40', '#5a6268', '#4e555b'];
-    let cor = cores[Math.floor(Math.random() * cores.length)];
+    // Cor determinística (mesmo nome → mesma cor), o que permite testes reprodutíveis
+    let cor = cores[hashString(nome) % cores.length];
     if (nome.toLowerCase().includes('humano')) cor = '#f8c291';
     if (nome.toLowerCase().includes('elefante')) cor = '#6b5b4f';
 
@@ -478,239 +763,46 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
 }
 
 // ============================================================
-// REDIMENSIONA IMAGEM PARA UMA ALTURA ESPECÍFICA (PROPORCIONAL)
-// ============================================================
-function redimensionarParaAltura(dataURL, alturaAlvo) {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = function() {
-            const canvas = document.createElement('canvas');
-            const ratio = alturaAlvo / img.height;
-            canvas.width = Math.round(img.width * ratio);
-            canvas.height = alturaAlvo;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/png'));
-        };
-        img.onerror = function() {
-            resolve(gerarSilhuetaPlaceholder('erro', 200, 200));
-        };
-        img.src = dataURL;
-    });
-}
-
-// ============================================================
-// COMBINA DUAS IMAGENS LADO A LADO (ALINHADAS PELA BASE)
-// ============================================================
-function combinarLadoALado(dataURL1, dataURL2) {
-    return new Promise((resolve) => {
-        const img1 = new Image();
-        const img2 = new Image();
-        let loaded = 0;
-        img1.onload = img2.onload = function() {
-            loaded++;
-            if (loaded === 2) {
-                const canvas = document.createElement('canvas');
-                const altura = Math.max(img1.height, img2.height);
-                const largura = img1.width + img2.width;
-                canvas.width = largura;
-                canvas.height = altura;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, largura, altura);
-                ctx.drawImage(img1, 0, altura - img1.height);
-                ctx.drawImage(img2, img1.width, altura - img2.height);
-                resolve(canvas.toDataURL('image/png'));
-            }
-        };
-        img1.src = dataURL1;
-        img2.src = dataURL2;
-    });
-}
-
-// ============================================================
-// SIMULAÇÃO K-Pg (RK4)
-// ============================================================
-function simularExtincao(bloqueioSolar, chuvaAcida, anos) {
-    const P0 = 100, H0 = 50, C0 = 20;
-    const r = 0.4 * (1 - bloqueioSolar / 100);
-    const a = 0.01;
-    const b = 0.6;
-    const d = 0.1 + (chuvaAcida / 100) * 0.05;
-    const e = 0.02;
-    const f = 0.3;
-    const g = 0.15 + (chuvaAcida / 100) * 0.02;
-
-    const dt = 0.5;
-    const n = Math.floor(anos / dt);
-    const resultados = { P: [P0], H: [H0], C: [C0] };
-    let state = [P0, H0, C0];
-
-    for (let i = 0; i < n; i++) {
-        const k1 = lotkaVolterra(state, r, a, b, d, e, f, g);
-        const k2 = lotkaVolterra(
-            [state[0] + dt/2 * k1[0], state[1] + dt/2 * k1[1], state[2] + dt/2 * k1[2]],
-            r, a, b, d, e, f, g
-        );
-        const k3 = lotkaVolterra(
-            [state[0] + dt/2 * k2[0], state[1] + dt/2 * k2[1], state[2] + dt/2 * k2[2]],
-            r, a, b, d, e, f, g
-        );
-        const k4 = lotkaVolterra(
-            [state[0] + dt * k3[0], state[1] + dt * k3[1], state[2] + dt * k3[2]],
-            r, a, b, d, e, f, g
-        );
-        state[0] += dt/6 * (k1[0] + 2*k2[0] + 2*k3[0] + k4[0]);
-        state[1] += dt/6 * (k1[1] + 2*k2[1] + 2*k3[1] + k4[1]);
-        state[2] += dt/6 * (k1[2] + 2*k2[2] + 2*k3[2] + k4[2]);
-        state[0] = Math.max(0, state[0]);
-        state[1] = Math.max(0, state[1]);
-        state[2] = Math.max(0, state[2]);
-        resultados.P.push(state[0]);
-        resultados.H.push(state[1]);
-        resultados.C.push(state[2]);
-    }
-    return resultados;
-}
-
-function lotkaVolterra(state, r, a, b, d, e, f, g) {
-    const [P, H, C] = state;
-    return [
-        r * P - a * P * H,
-        b * a * P * H - d * H - e * H * C,
-        f * e * H * C - g * C
-    ];
-}
-
-// ============================================================
-// IDENTIFICAÇÃO DE ICNOFÓSSEIS
-// ============================================================
-function identificarIcnogenus(dedos, garras, tamanho, forma, proporcao) {
-    if (dedos === 3) {
-        if (garras) {
-            if (tamanho === "pequeno") return "Grallator";
-            else {
-                if (forma === "alongada") return "Eubrontes";
-                else return "Megalosauripus";
-            }
-        } else {
-            if (tamanho === "pequeno") return "Wintonopus";
-            else return "Amblydactylus";
-        }
-    } else {
-        if (garras) return "Anomoepus";
-        else {
-            if (proporcao === "larga") return "Brontopodus";
-            else return "Parabrontopodus";
-        }
-    }
-}
-
-// ============================================================
-// COMBINA TRÊS IMAGENS LADO A LADO (ALINHADAS PELA BASE)
-// ============================================================
-function combinarLadoALadoTres(dataURL1, dataURL2, dataURL3) {
-    return new Promise((resolve) => {
-        const img1 = new Image();
-        const img2 = new Image();
-        const img3 = new Image();
-        let loaded = 0;
-        img1.onload = img2.onload = img3.onload = function() {
-            loaded++;
-            if (loaded === 3) {
-                const canvas = document.createElement('canvas');
-                const altura = Math.max(img1.height, img2.height, img3.height);
-                const largura = img1.width + img2.width + img3.width;
-                canvas.width = largura;
-                canvas.height = altura;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, largura, altura);
-                ctx.drawImage(img1, 0, altura - img1.height);
-                ctx.drawImage(img2, img1.width, altura - img2.height);
-                ctx.drawImage(img3, img1.width + img2.width, altura - img3.height);
-                resolve(canvas.toDataURL('image/png'));
-            }
-        };
-        img1.src = dataURL1;
-        img2.src = dataURL2;
-        img3.src = dataURL3;
-    });
-}
-
-
-// ============================================================
-// VERIFICAÇÃO E CARREGAMENTO DE BIBLIOTECAS (V2.0.0)
-// ============================================================
-
-/**
- * Verifica se uma biblioteca externa está disponível no escopo global.
- * @param {string} nome - Nome da biblioteca ('Chart.js', 'Leaflet', 'vis.js', 'jsPDF')
- * @param {Object} objeto - Objeto global correspondente (Chart, L, vis, jspdf)
- * @param {string} containerId - ID do container para renderizar o aviso caso ausente
- * @returns {boolean} True se a biblioteca estiver disponível
- */
-function verificarBiblioteca(nome, objeto, containerId) {
-    if (typeof objeto !== 'undefined') return true;
-
-    const mensagem = `
-        <div class="card-paleo" style="border-left: 4px solid #e74c3c; background: #fdf0ed;">
-            <h5><i class="bi bi-exclamation-triangle" style="color: #e74c3c;"></i> Biblioteca não carregada</h5>
-            <p>A biblioteca <strong>${nome}</strong> não pôde ser carregada. Verifique sua conexão com a internet.</p>
-        </div>
-    `;
-
-    if (containerId) {
-        const el = document.getElementById(containerId);
-        if (el) el.innerHTML = mensagem;
-    }
-    return false;
-}
-
-/**
- * Carrega dinamicamente uma biblioteca JavaScript externa via Tag <script> caso não esteja presente.
- * @param {string} nomeLib - Nome para registro ('Chart', 'Leaflet', 'vis', 'jsPDF')
- * @param {string} url - URL do CDN da biblioteca
- * @returns {Promise<boolean>} Resolve true quando a biblioteca estiver pronta
- */
-function carregarBibliotecaCondicional(nomeLib, url) {
-    return new Promise((resolve) => {
-        if (typeof window[nomeLib] !== 'undefined' || (nomeLib === 'L' && typeof L !== 'undefined') || (nomeLib === 'jsPDF' && typeof window.jspdf !== 'undefined')) {
-            resolve(true);
-            return;
-        }
-
-        const scriptExistente = document.querySelector(`script[src="${url}"]`);
-        if (scriptExistente) {
-            scriptExistente.addEventListener('load', () => resolve(true));
-            scriptExistente.addEventListener('error', () => resolve(false));
-            return;
-        }
-
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = true;
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.head.appendChild(script);
-    });
-}
-
 // Export para ambiente Node/Jest
+// ============================================================
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
-        carregarImagemOriginal,
-        carregarImagemOuPlaceholder,
-        carregarImagemIcnofossil,
-        carregarImagemFossilReal,
-        gerarSilhuetaPlaceholder,
-        redimensionarParaAltura,
-        combinarLadoALado,
-        combinarLadoALadoTres,
-        simularExtincao,
+        MAPA_ICNOFOSSEIS,
+        MAPA_SILHUETAS,
+        slugNome,
+        caminhoSilhueta,
+        caminhoImagemFossil,
+        caminhoImagemIcnofossil,
+        escapeHtml,
+        hashString,
+        formatarNumero,
+        formatarMassa,
+        debounce,
+        embaralhar,
+        criarRng,
+        calcularAlturasEscala,
+        passoGradeMetros,
+        COEFICIENTES_MASSA,
+        normalizarPostura,
+        calcularMassaFemur,
+        calcularCircunferenciaPorMassa,
         lotkaVolterra,
+        simularExtincao,
+        classificarEcossistema,
         identificarIcnogenus,
-        verificarBiblioteca,
-        carregarBibliotecaCondicional
+        perguntasExtrasIcno,
+        periodoPorIdade,
+        extrairPeriodo,
+        rankPeriodo,
+        dinossaurosDoPeriodo,
+        prepararQuiz,
+        EMPATE,
+        gerarPerguntasBatalha,
+        carregarImagem,
+        carregarImagemOriginal,
+        carregarImagemFossilReal,
+        carregarImagemIcnofossil,
+        comporImagensLadoALado,
+        gerarSilhuetaPlaceholder
     };
 }

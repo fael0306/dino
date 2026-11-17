@@ -1,119 +1,126 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-tema="claro">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PaleoLab Científico – Laboratório Virtual de Paleontologia</title>
-    <!-- Bootstrap 5 CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <!-- Vis.js Network CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/vis-network@9.1.2/styles/vis-network.min.css">
-    <!-- Estilos Globais Customizados -->
+    <meta name="description" content="Laboratório virtual interativo de paleontologia: compare escalas, simule a extinção K-Pg, identifique pegadas fósseis e teste seus conhecimentos.">
+    <meta name="theme-color" content="#1a2a3a">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦴</text></svg>">
+
+    <!-- Aplica o tema salvo antes da primeira pintura (evita "piscar") -->
+    <script>
+        try {
+            var t = localStorage.getItem('paleolab_tema');
+            if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'escuro' : 'claro';
+            document.documentElement.setAttribute('data-tema', t);
+        } catch (e) {}
+    </script>
+
+    <!-- Ícones (as demais bibliotecas são carregadas sob demanda em js/loader.js) -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Accessibility Skip Link -->
-    <a href="#main-content" class="visually-hidden-focusable p-2 bg-dark text-white">Pular para o conteúdo principal</a>
+    <a href="#paineis" class="pular-link">Pular para o conteúdo principal</a>
+    <div id="aria-announcer" class="visualmente-oculto" aria-live="polite" aria-atomic="true"></div>
 
-    <!-- Accessibility Announcer -->
-    <div id="aria-announcer" class="visually-hidden" aria-live="polite"></div>
-
-    <!-- Header Principal -->
-    <header class="header-paleo text-center py-3 shadow-sm">
-        <div class="container-fluid">
-            <h1 class="h3 mb-1 fw-bold">
-                🦴 PaleoLab Científico 
-                <span class="badge bg-warning text-dark fs-6 align-middle">v2.0.0</span>
-            </h1>
-            <p class="mb-0 text-light opacity-75 small">Laboratório Virtual de Paleontologia e Ciências Naturais</p>
-        </div>
-    </header>
-
-    <!-- Navegação por Abas -->
-    <nav class="nav-tabs-wrapper bg-dark py-2 shadow-sm" aria-label="Navegação por abas do laboratório">
-        <div class="container-fluid">
-            <div class="nav nav-tabs justify-content-center border-0 flex-wrap gap-1" id="nav-tab" role="tablist">
-                <button class="tab-btn nav-link active" id="btn-tab-escala" data-tab="escala" role="tab" aria-controls="tab-escala" aria-selected="true">
-                    <i class="bi bi-rulers me-1"></i> Escala Real
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-deriva" data-tab="deriva" role="tab" aria-controls="tab-deriva" aria-selected="false">
-                    <i class="bi bi-globe2 me-1"></i> Deriva Continental
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-extincao" data-tab="extincao" role="tab" aria-controls="tab-extincao" aria-selected="false">
-                    <i class="bi bi-biohazard me-1"></i> Extinção K‑Pg
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-icnofosseis" data-tab="icnofosseis" role="tab" aria-controls="tab-icnofosseis" aria-selected="false">
-                    <i class="bi bi-footprints me-1"></i> Icnofósseis
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-fosseis" data-tab="fosseis" role="tab" aria-controls="tab-fosseis" aria-selected="false">
-                    <i class="bi bi-journal-text me-1"></i> Fósseis Reais
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-massa" data-tab="massa" role="tab" aria-controls="tab-massa" aria-selected="false">
-                    <i class="bi bi-weight-scale me-1"></i> Massa Corporal
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-quiz" data-tab="quiz" role="tab" aria-controls="tab-quiz" aria-selected="false">
-                    <i class="bi bi-patch-question me-1"></i> Quiz & Batalha
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-tempo" data-tab="tempo" role="tab" aria-controls="tab-tempo" aria-selected="false">
-                    <i class="bi bi-clock-history me-1"></i> Linha do Tempo
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-clima" data-tab="clima" role="tab" aria-controls="tab-clima" aria-selected="false">
-                    <i class="bi bi-cloud-sun me-1"></i> Clima Mesozóico
-                </button>
-                <button class="tab-btn nav-link position-relative" id="btn-tab-conquistas" data-tab="conquistas" role="tab" aria-controls="tab-conquistas" aria-selected="false">
-                    <i class="bi bi-trophy me-1"></i> Conquistas
-                    <span id="badge-conquistas" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-pdf" data-tab="pdf" role="tab" aria-controls="tab-pdf" aria-selected="false">
-                    <i class="bi bi-file-pdf me-1"></i> Exportar PDF
-                </button>
-                <button class="tab-btn nav-link" id="btn-tab-arvore" data-tab="arvore" role="tab" aria-controls="tab-arvore" aria-selected="false">
-                    <i class="bi bi-diagram-3 me-1"></i> Árvore Evolutiva
-                </button>
+    <div class="app">
+        <!-- Barra lateral -->
+        <aside class="sidebar" id="sidebar" aria-label="Menu principal">
+            <div class="sidebar-topo">
+                <a href="#/inicio" class="logo" aria-label="PaleoLab Científico – início">
+                    <span class="logo-icone" aria-hidden="true">🦴</span>
+                    <span class="logo-texto"><strong>PaleoLab</strong><small>Científico</small></span>
+                </a>
+                <span class="versao">v2.0.0</span>
             </div>
+            <nav class="nav-abas" id="nav-abas" role="tablist" aria-orientation="vertical" aria-label="Seções do laboratório"></nav>
+            <div class="sidebar-rodape">
+                <div class="progresso-lateral">
+                    <div class="progresso-lateral-topo">
+                        <span><i class="bi bi-trophy" aria-hidden="true"></i> Conquistas</span>
+                        <strong data-progresso="texto">0/7</strong>
+                    </div>
+                    <div class="progresso" role="progressbar" aria-label="Conquistas desbloqueadas" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0">
+                        <div class="progresso-barra" data-progresso="barra"></div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <div class="sobreposicao" id="sobreposicao" aria-hidden="true"></div>
+
+        <!-- Área principal -->
+        <div class="conteudo">
+            <header class="topbar">
+                <button type="button" class="btn-icone btn-menu" id="btn-menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="sidebar">
+                    <i class="bi bi-list" aria-hidden="true"></i>
+                </button>
+                <a href="#/inicio" class="logo logo-topbar" aria-label="PaleoLab Científico – início">
+                    <span class="logo-icone" aria-hidden="true">🦴</span><strong>PaleoLab</strong>
+                </a>
+                <div class="topbar-acoes">
+                    <button type="button" class="btn-icone" id="btn-tema" aria-label="Ativar tema escuro" aria-pressed="false">
+                        <i class="bi bi-moon-stars" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main id="paineis" class="paineis" tabindex="-1">
+                <noscript>
+                    <div class="alerta alerta-aviso">O PaleoLab precisa de JavaScript ativado para funcionar.</div>
+                </noscript>
+            </main>
+
+            <footer class="rodape">
+                <p>PaleoLab Científico v2.0.0 · Licença MIT · Feito para ensino e divulgação científica.</p>
+                <p>Dados: Paleobiology Database, Campione &amp; Evans (2012), Scotese (2021), Ancient Earth.</p>
+            </footer>
         </div>
-    </nav>
+    </div>
 
-    <!-- Conteúdo Principal das Abas -->
-    <main id="main-content" class="container-fluid py-4">
-        <div class="tab-content-container">
-            <div class="tab-content active" id="tab-escala" role="tabpanel" aria-labelledby="btn-tab-escala"></div>
-            <div class="tab-content" id="tab-deriva" role="tabpanel" aria-labelledby="btn-tab-deriva"></div>
-            <div class="tab-content" id="tab-extincao" role="tabpanel" aria-labelledby="btn-tab-extincao"></div>
-            <div class="tab-content" id="tab-icnofosseis" role="tabpanel" aria-labelledby="btn-tab-icnofosseis"></div>
-            <div class="tab-content" id="tab-fosseis" role="tabpanel" aria-labelledby="btn-tab-fosseis"></div>
-            <div class="tab-content" id="tab-massa" role="tabpanel" aria-labelledby="btn-tab-massa"></div>
-            <div class="tab-content" id="tab-quiz" role="tabpanel" aria-labelledby="btn-tab-quiz"></div>
-            <div class="tab-content" id="tab-tempo" role="tabpanel" aria-labelledby="btn-tab-tempo"></div>
-            <div class="tab-content" id="tab-clima" role="tabpanel" aria-labelledby="btn-tab-clima"></div>
-            <div class="tab-content" id="tab-conquistas" role="tabpanel" aria-labelledby="btn-tab-conquistas"></div>
-            <div class="tab-content" id="tab-pdf" role="tabpanel" aria-labelledby="btn-tab-pdf"></div>
-            <div class="tab-content" id="tab-arvore" role="tabpanel" aria-labelledby="btn-tab-arvore"></div>
-        </div>
-    </main>
+    <!-- Notificações -->
+    <div id="toast-area" class="toast-area"></div>
 
-    <!-- Footer -->
-    <footer class="text-center py-3 bg-light text-muted border-top fs-7">
-        <div class="container">
-            <p class="mb-0">PaleoLab Científico v2.0.0 &copy; 2026 – Licença MIT. Desenvolvido para ensino e divulgação científica.</p>
-        </div>
-    </footer>
+    <!-- Ficha de dinossauro -->
+    <dialog id="dialogo-ficha" class="dialogo dialogo-ficha" aria-labelledby="ficha-titulo">
+        <button type="button" class="btn-icone dialogo-fechar" data-action="fechar-ficha" aria-label="Fechar ficha"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        <div class="dialogo-conteudo"></div>
+    </dialog>
 
-    <!-- Bibliotecas Externas (CDNs) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/vis-network@9.1.2/standalone/umd/vis-network.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Confirmação -->
+    <dialog id="dialogo-confirmacao" class="dialogo dialogo-confirmacao" aria-labelledby="dialogo-conf-titulo" aria-describedby="dialogo-conf-msg">
+        <form method="dialog">
+            <h2 id="dialogo-conf-titulo" data-dialogo="titulo">Confirmar</h2>
+            <p id="dialogo-conf-msg" data-dialogo="mensagem"></p>
+            <div class="acoes acoes-direita">
+                <button type="submit" value="cancelar" class="btn btn-secundario">Cancelar</button>
+                <button type="submit" value="ok" class="btn btn-primario" data-dialogo="ok">Confirmar</button>
+            </div>
+        </form>
+    </dialog>
 
-    <!-- Módulos do PaleoLab -->
+    <!-- Módulos do PaleoLab (scripts clássicos: funcionam também abrindo o arquivo direto) -->
     <script src="js/data.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/components.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/abas/inicio.js"></script>
+    <script src="js/abas/escala.js"></script>
+    <script src="js/abas/fosseis.js"></script>
+    <script src="js/abas/deriva.js"></script>
+    <script src="js/abas/tempo.js"></script>
+    <script src="js/abas/clima.js"></script>
+    <script src="js/abas/arvore.js"></script>
+    <script src="js/abas/extincao.js"></script>
+    <script src="js/abas/massa.js"></script>
+    <script src="js/abas/icnofosseis.js"></script>
+    <script src="js/abas/quiz.js"></script>
+    <script src="js/abas/conquistas.js"></script>
+    <script src="js/abas/pdf.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
