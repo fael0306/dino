@@ -3,125 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PaleoLab — Laboratório Virtual</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <title>PaleoLab Científico – Laboratório Virtual de Paleontologia</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Bibliotecas externas -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
-    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
-    
-    <!-- Captura global de falhas de carregamento de scripts -->
-    <script>
-        document.addEventListener('error', function(e) {
-            const target = e.target;
-            if (target.tagName === 'SCRIPT' && target.src) {
-                console.warn('⚠️ Falha ao carregar script externo:', target.src);
-                // A função verificarBiblioteca (em components.js) exibirá mensagens específicas por aba.
-            }
-        }, true);
-    </script>
-
-    <!-- Nosso CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <!-- Vis.js Network CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/vis-network@9.1.2/styles/vis-network.min.css">
+    <!-- Estilos Globais Customizados -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- HEADER -->
-    <header class="paleo-header">
-        <div class="container">
-            <div class="header-inner">
-                <div class="logo">
-                    <i class="bi bi-bug-fill"></i>
-                    <span>Paleo<span class="highlight">Lab</span></span>
-                    <small>científico</small>
-                </div>
-                <div class="header-actions">
-                    <span class="conquista-badge" id="conquista-badge">
-                        <i class="bi bi-trophy-fill"></i>
-                        <span id="conquista-count">0</span>
-                    </span>
-                </div>
-            </div>
+    <!-- Accessibility Skip Link -->
+    <a href="#main-content" class="visually-hidden-focusable p-2 bg-dark text-white">Pular para o conteúdo principal</a>
+
+    <!-- Accessibility Announcer -->
+    <div id="aria-announcer" class="visually-hidden" aria-live="polite"></div>
+
+    <!-- Header Principal -->
+    <header class="header-paleo text-center py-3 shadow-sm">
+        <div class="container-fluid">
+            <h1 class="h3 mb-1 fw-bold">
+                🦴 PaleoLab Científico 
+                <span class="badge bg-warning text-dark fs-6 align-middle">v2.0.0</span>
+            </h1>
+            <p class="mb-0 text-light opacity-75 small">Laboratório Virtual de Paleontologia e Ciências Naturais</p>
         </div>
     </header>
 
-    <!-- MENU DE ABAS -->
-    <nav class="paleo-nav" id="paleo-nav">
-        <div class="container">
-            <ul class="nav-list" id="nav-list">
-                <li><button class="nav-item active" data-tab="escala"><i class="bi bi-rulers"></i><span>Escala</span></button></li>
-                <li><button class="nav-item" data-tab="deriva"><i class="bi bi-globe2"></i><span>Deriva</span></button></li>
-                <li><button class="nav-item" data-tab="extincao"><i class="bi bi-biohazard"></i><span>K‑Pg</span></button></li>
-                <li><button class="nav-item" data-tab="icnofosseis"><i class="bi bi-footprints"></i><span>Icnofósseis</span></button></li>
-                <li><button class="nav-item" data-tab="fosseis"><i class="bi bi-bone"></i><span>Fósseis</span></button></li>
-                <li><button class="nav-item" data-tab="massa"><i class="bi bi-weight-scale"></i><span>Massa</span></button></li>
-                <li><button class="nav-item" data-tab="quiz"><i class="bi bi-question-circle"></i><span>Quiz</span></button></li>
-                <li><button class="nav-item" data-tab="tempo"><i class="bi bi-clock-history"></i><span>Tempo</span></button></li>
-                <li><button class="nav-item" data-tab="clima"><i class="bi bi-cloud-sun"></i><span>Clima</span></button></li>
-                <li><button class="nav-item" data-tab="conquistas"><i class="bi bi-trophy"></i><span>Conquistas</span></button></li>
-                <li><button class="nav-item" data-tab="pdf"><i class="bi bi-file-pdf"></i><span>PDF</span></button></li>
-                <li><button class="nav-item" data-tab="arvore"><i class="bi bi-diagram-3"></i><span>Árvore</span></button></li>
-            </ul>
+    <!-- Navegação por Abas -->
+    <nav class="nav-tabs-wrapper bg-dark py-2 shadow-sm" aria-label="Navegação por abas do laboratório">
+        <div class="container-fluid">
+            <div class="nav nav-tabs justify-content-center border-0 flex-wrap gap-1" id="nav-tab" role="tablist">
+                <button class="tab-btn nav-link active" id="btn-tab-escala" data-tab="escala" role="tab" aria-controls="tab-escala" aria-selected="true">
+                    <i class="bi bi-rulers me-1"></i> Escala Real
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-deriva" data-tab="deriva" role="tab" aria-controls="tab-deriva" aria-selected="false">
+                    <i class="bi bi-globe2 me-1"></i> Deriva Continental
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-extincao" data-tab="extincao" role="tab" aria-controls="tab-extincao" aria-selected="false">
+                    <i class="bi bi-biohazard me-1"></i> Extinção K‑Pg
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-icnofosseis" data-tab="icnofosseis" role="tab" aria-controls="tab-icnofosseis" aria-selected="false">
+                    <i class="bi bi-footprints me-1"></i> Icnofósseis
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-fosseis" data-tab="fosseis" role="tab" aria-controls="tab-fosseis" aria-selected="false">
+                    <i class="bi bi-journal-text me-1"></i> Fósseis Reais
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-massa" data-tab="massa" role="tab" aria-controls="tab-massa" aria-selected="false">
+                    <i class="bi bi-weight-scale me-1"></i> Massa Corporal
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-quiz" data-tab="quiz" role="tab" aria-controls="tab-quiz" aria-selected="false">
+                    <i class="bi bi-patch-question me-1"></i> Quiz & Batalha
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-tempo" data-tab="tempo" role="tab" aria-controls="tab-tempo" aria-selected="false">
+                    <i class="bi bi-clock-history me-1"></i> Linha do Tempo
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-clima" data-tab="clima" role="tab" aria-controls="tab-clima" aria-selected="false">
+                    <i class="bi bi-cloud-sun me-1"></i> Clima Mesozóico
+                </button>
+                <button class="tab-btn nav-link position-relative" id="btn-tab-conquistas" data-tab="conquistas" role="tab" aria-controls="tab-conquistas" aria-selected="false">
+                    <i class="bi bi-trophy me-1"></i> Conquistas
+                    <span id="badge-conquistas" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">0</span>
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-pdf" data-tab="pdf" role="tab" aria-controls="tab-pdf" aria-selected="false">
+                    <i class="bi bi-file-pdf me-1"></i> Exportar PDF
+                </button>
+                <button class="tab-btn nav-link" id="btn-tab-arvore" data-tab="arvore" role="tab" aria-controls="tab-arvore" aria-selected="false">
+                    <i class="bi bi-diagram-3 me-1"></i> Árvore Evolutiva
+                </button>
+            </div>
         </div>
     </nav>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="paleo-main">
-        <div class="container">
-            <section id="tab-escala" class="tab-panel active"></section>
-            <section id="tab-deriva" class="tab-panel"></section>
-            <section id="tab-extincao" class="tab-panel"></section>
-            <section id="tab-icnofosseis" class="tab-panel"></section>
-            <section id="tab-fosseis" class="tab-panel"></section>
-            <section id="tab-massa" class="tab-panel"></section>
-            <section id="tab-quiz" class="tab-panel"></section>
-            <section id="tab-tempo" class="tab-panel"></section>
-            <section id="tab-clima" class="tab-panel"></section>
-            <section id="tab-conquistas" class="tab-panel"></section>
-            <section id="tab-pdf" class="tab-panel"></section>
-            <section id="tab-arvore" class="tab-panel"></section>
+    <!-- Conteúdo Principal das Abas -->
+    <main id="main-content" class="container-fluid py-4">
+        <div class="tab-content-container">
+            <div class="tab-content active" id="tab-escala" role="tabpanel" aria-labelledby="btn-tab-escala"></div>
+            <div class="tab-content" id="tab-deriva" role="tabpanel" aria-labelledby="btn-tab-deriva"></div>
+            <div class="tab-content" id="tab-extincao" role="tabpanel" aria-labelledby="btn-tab-extincao"></div>
+            <div class="tab-content" id="tab-icnofosseis" role="tabpanel" aria-labelledby="btn-tab-icnofosseis"></div>
+            <div class="tab-content" id="tab-fosseis" role="tabpanel" aria-labelledby="btn-tab-fosseis"></div>
+            <div class="tab-content" id="tab-massa" role="tabpanel" aria-labelledby="btn-tab-massa"></div>
+            <div class="tab-content" id="tab-quiz" role="tabpanel" aria-labelledby="btn-tab-quiz"></div>
+            <div class="tab-content" id="tab-tempo" role="tabpanel" aria-labelledby="btn-tab-tempo"></div>
+            <div class="tab-content" id="tab-clima" role="tabpanel" aria-labelledby="btn-tab-clima"></div>
+            <div class="tab-content" id="tab-conquistas" role="tabpanel" aria-labelledby="btn-tab-conquistas"></div>
+            <div class="tab-content" id="tab-pdf" role="tabpanel" aria-labelledby="btn-tab-pdf"></div>
+            <div class="tab-content" id="tab-arvore" role="tabpanel" aria-labelledby="btn-tab-arvore"></div>
         </div>
     </main>
 
-    <!-- Controle de abas -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navItems = document.querySelectorAll('.nav-item');
-            const panels = document.querySelectorAll('.tab-panel');
+    <!-- Footer -->
+    <footer class="text-center py-3 bg-light text-muted border-top fs-7">
+        <div class="container">
+            <p class="mb-0">PaleoLab Científico v2.0.0 &copy; 2026 – Licença MIT. Desenvolvido para ensino e divulgação científica.</p>
+        </div>
+    </footer>
 
-            function activateTab(tabId) {
-                navItems.forEach(item => item.classList.remove('active'));
-                panels.forEach(p => p.classList.remove('active'));
+    <!-- Bibliotecas Externas (CDNs) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/vis-network@9.1.2/standalone/umd/vis-network.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-                const activeBtn = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
-                if (activeBtn) activeBtn.classList.add('active');
-                const activePanel = document.getElementById(`tab-${tabId}`);
-                if (activePanel) activePanel.classList.add('active');
-
-                window.dispatchEvent(new CustomEvent('tabchange', { detail: { tab: tabId } }));
-            }
-
-            navItems.forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const tabId = this.dataset.tab;
-                    activateTab(tabId);
-                });
-            });
-
-            // Ativa a primeira aba (já marcada como active no HTML)
-            const activeTab = document.querySelector('.nav-item.active');
-            if (activeTab) activateTab(activeTab.dataset.tab);
-        });
-    </script>
-
-    <script src="js/data.js" defer></script>
-    <script src="js/utils.js" defer></script>
-    <script src="js/components.js" defer></script>
-    <script src="js/main.js" defer></script>
+    <!-- Módulos do PaleoLab -->
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
