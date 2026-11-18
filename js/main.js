@@ -58,9 +58,10 @@ async function navegarParaAba(abaId, { focar = true } = {}) {
     });
 
     const aba = obterAba(abaId);
+    document.dispatchEvent(new CustomEvent('paleolab:navegando', { detail: { aba: abaId } }));
     document.title = abaId === 'inicio' ? 'PaleoLab Científico – Laboratório Virtual de Paleontologia' : `${aba.titulo} · PaleoLab Científico`;
     fecharMenu();
-    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    window.scrollTo({ top: 0, behavior: 'instant' }); // sem rolagem suave ao trocar de aba
 
     // Renderiza a aba apenas na primeira visita
     if (!state.initialized[abaId]) {
@@ -82,6 +83,7 @@ async function navegarParaAba(abaId, { focar = true } = {}) {
 
     if (focar) document.getElementById(`titulo-${abaId}`)?.focus({ preventScroll: true });
     anunciar(`${aba.titulo} aberta.`);
+    document.dispatchEvent(new CustomEvent('paleolab:navegou', { detail: { aba: abaId } }));
 }
 
 window.navegarParaAba = navegarParaAba;

@@ -13,7 +13,8 @@ registrarAba({
     grupo: 'inicio',
     render(container) {
         const dino = dinossauroDoDia();
-        const modulos = ABAS.filter(a => a.id !== 'inicio');
+        const gruposModulos = GRUPOS_ABAS.filter(g => g.titulo).map(g => g.id);
+        const modulos = ABAS.filter(a => gruposModulos.includes(a.grupo));
         const porGrupo = GRUPOS_ABAS.filter(g => g.titulo).map(g => ({
             ...g,
             abas: modulos.filter(a => a.grupo === g.id)

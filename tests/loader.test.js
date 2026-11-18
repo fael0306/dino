@@ -4,7 +4,7 @@
 let loader;
 let scripts;
 
-function instalarDomFalso({ comportamento = 'carrega' } = {}) {
+function instalarDomFalso({ comportamento = 'carrega', falharLocal = false } = {}) {
     scripts = [];
     const head = {
         appendChild(el) {
@@ -12,7 +12,9 @@ function instalarDomFalso({ comportamento = 'carrega' } = {}) {
             if (el.tagName === 'SCRIPT') {
                 scripts.push(el);
                 setTimeout(() => {
-                    if (comportamento === 'carrega') {
+                    if (falharLocal && el.src.startsWith('vendor/')) {
+                        el.onerror && el.onerror();
+                    } else if (comportamento === 'carrega') {
                         global[el._global] = {};
                         el.onload && el.onload();
                     } else if (comportamento === 'erro') {
@@ -43,7 +45,7 @@ function rotularScripts() {
     const original = global.document.head.appendChild;
     global.document.head.appendChild = el => {
         if (el.tagName === 'SCRIPT') {
-            const lib = Object.values(loader.BIBLIOTECAS).find(b => b.js === el.src);
+            const lib = Object.values(loader.BIBLIOTECAS).find(b => b.js === el.src || b.local === el.src);
             el._global = lib && lib.global;
         }
         original(el);
@@ -56,12 +58,19 @@ test('resolve true imediatamente se a biblioteca já existe', async () => {
     await expect(loader.carregarBiblioteca('chart')).resolves.toBe(true);
 });
 
-test('injeta o <script> e resolve true quando o global aparece', async () => {
+test('usa primeiro a cópia local (pasta vendor/)', async () => {
     instalarDomFalso();
     rotularScripts();
     await expect(loader.carregarBiblioteca('leaflet')).resolves.toBe(true);
     expect(scripts).toHaveLength(1);
-    expect(scripts[0].src).toBe(loader.BIBLIOTECAS.leaflet.js);
+    expect(scripts[0].src).toBe(loader.BIBLIOTECAS.leaflet.local);
+});
+
+test('recorre à CDN quando a cópia local não existe', async () => {
+    instalarDomFalso({ falharLocal: true });
+    rotularScripts();
+    await expect(loader.carregarBiblioteca('chart')).resolves.toBe(true);
+    expect(scripts.map(s => s.src)).toEqual([loader.BIBLIOTECAS.chart.local, loader.BIBLIOTECAS.chart.js]);
 });
 
 test('reaproveita a mesma promessa em chamadas simultâneas', async () => {
@@ -72,9 +81,10 @@ test('reaproveita a mesma promessa em chamadas simultâneas', async () => {
     expect(scripts).toHaveLength(1);
 });
 
-test('resolve false (sem rejeitar) quando o script falha e permite nova tentativa', async () => {
+test('resolve false (sem rejeitar) quando local e CDN falham, e permite nova tentativa', async () => {
     instalarDomFalso({ comportamento: 'erro' });
     await expect(loader.carregarBiblioteca('jspdf')).resolves.toBe(false);
+    expect(scripts).toHaveLength(2);
     expect(loader._promessasBibliotecas.jspdf).toBeUndefined();
 });
 

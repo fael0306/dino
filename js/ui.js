@@ -144,3 +144,61 @@ function htmlBibliotecaIndisponivel(nomeLib, acaoRetentar) {
             </div>
         </div>`;
 }
+
+// ------------------------------------------------------------
+// Ponte com o app Android
+// ------------------------------------------------------------
+/**
+ * Envia uma mensagem ao app nativo. O app injeta window.PaleoLabNativo
+ * (somente na página principal, nunca em iframes) com o método postMessage.
+ * @returns {boolean} false quando a página não está rodando dentro do app.
+ */
+function chamarNativo(acao, dados = {}) {
+    const nativo = window.PaleoLabNativo;
+    if (!nativo || typeof nativo.postMessage !== 'function') return false;
+    try {
+        nativo.postMessage(JSON.stringify({ acao, ...dados }));
+        return true;
+    } catch (e) {
+        console.error('Falha ao chamar o app nativo:', e);
+        return false;
+    }
+}
+
+function estaNoAppNativo() {
+    return !!(window.PaleoLabNativo && typeof window.PaleoLabNativo.postMessage === 'function');
+}
+
+// ------------------------------------------------------------
+// Download de arquivos (funciona no navegador e no app Android)
+// ------------------------------------------------------------
+function _blobParaBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const leitor = new FileReader();
+        leitor.onload = () => resolve(String(leitor.result).split(',')[1] || '');
+        leitor.onerror = reject;
+        leitor.readAsDataURL(blob);
+    });
+}
+
+/**
+ * Salva um arquivo. No app Android, envia o conteúdo ao app (o WebView não
+ * suporta <a download>); o app grava em Downloads/PaleoLab e oferece abrir
+ * ou compartilhar. No navegador, faz o download normal.
+ * @returns {Promise<boolean>}
+ */
+async function baixarArquivo(blob, nomeArquivo) {
+    if (estaNoAppNativo()) {
+        const base64 = await _blobParaBase64(blob);
+        return chamarNativo('salvarArquivo', { nome: nomeArquivo, mime: blob.type || 'application/octet-stream', base64 });
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    return true;
+}

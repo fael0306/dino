@@ -4,7 +4,7 @@
 
 ### Itens do roadmap v2.0.0
 - **Eventos centralizados:** todos os `onclick` inline foram removidos. Um único ouvinte delegado (`initEvents()` em `js/main.js`) despacha as ações `data-action` registradas com `registrarAcao()`.
-- **Testes unitários (Jest):** 96 testes em `tests/` cobrindo `identificarIcnogenus`, `simularExtincao`, `gerarSilhuetaPlaceholder`, carregamento de imagens, massa corporal, modo Batalha, quiz, conquistas e o carregador de bibliotecas. Rode com `npm install && npm test`.
+- **Testes unitários (Jest):** 97 testes em `tests/` cobrindo `identificarIcnogenus`, `simularExtincao`, `gerarSilhuetaPlaceholder`, carregamento de imagens, massa corporal, modo Batalha, quiz, conquistas e o carregador de bibliotecas. Rode com `npm install && npm test`.
 - **Acessibilidade:** `alt` descritivo em todas as imagens, `aria-label` e `aria-valuetext` em controles, `tablist`/`tabpanel` com navegação por setas, regiões `aria-live`, foco gerenciado ao trocar de aba, diálogos nativos (`<dialog>`), link "pular para o conteúdo", suporte a `prefers-reduced-motion`.
 - **Carregamento condicional:** `js/loader.js` baixa Chart.js, Leaflet, vis-network e jsPDF só quando necessário; cada aba é renderizada apenas na primeira visita. Se uma biblioteca não carrega, a aba mostra um aviso com botão "Tentar novamente" em vez de quebrar.
 - **Import/export de conquistas:** exportar para `.json`, importar com validação (ids desconhecidos são ignorados, progresso é mesclado) e apagar progresso com confirmação.
@@ -26,6 +26,11 @@
 - **Batalha:** cartões dos dois duelistas, sorteio de duelo e perguntas novas (dieta, postura, época, razão de massas).
 - **Relatório PDF:** nome/turma opcionais, escolha das seções, quebra de linha e paginação corretas, gráfico K‑Pg com fundo branco, resultado da batalha e da massa corporal.
 - Navegação por URL (`#/quiz`, `#/escala`...), com suporte ao botão Voltar.
+
+### Modo aplicativo (para o app Android)
+- `index.html?plataforma=app` ativa um layout de app (`js/plataforma.js` + `css/app.css`): barra superior com voltar, navegação inferior, telas de seção, bottom sheets, snackbars, alvos de toque de 48 px e transições entre telas.
+- Pontes com o app nativo: download de PDF/JSON pelo Android (o WebView não suporta `<a download>`), cor das barras do sistema conforme o tema, vibração e botão voltar.
+- Ícones do Bootstrap Icons agora ficam no projeto (`vendor/`), e o carregador tenta primeiro cópias locais das bibliotecas (`scripts/baixar-bibliotecas.sh`) antes das CDNs.
 
 ### Correções
 - `module.exports` de `data.js` referenciava constantes inexistentes e quebrava qualquer `require` (impedia testes).

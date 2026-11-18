@@ -9,7 +9,8 @@ Laboratório virtual interativo para o ensino de paleontologia e ciências natur
 - **Nova interface:** design próprio com barra lateral, **tema claro/escuro**, painel inicial, notificações e layout pensado para celulares (inclusive telas com menos de 400 px).
 - **Acessibilidade:** navegação completa por teclado, leitores de tela (ARIA), textos alternativos em todas as imagens e foco gerenciado.
 - **Mais rápido:** bibliotecas externas carregadas só quando necessárias e imagens 4× menores.
-- **Testes automatizados:** 96 testes unitários com Jest.
+- **Testes automatizados:** 97 testes unitários com Jest.
+- **Modo aplicativo:** layout de app Android (barra inferior, telas de seção, bottom sheets), usado pelo app [dino-app](https://github.com/fael0306/dino-app).
 - **Backup do progresso:** exporte e importe suas conquistas em JSON.
 - **Muitas melhorias de uso** em todas as abas: museu com busca e filtros, quiz com feedback imediato, simulador em tempo real, relatório PDF personalizável e mais.
 
@@ -52,11 +53,19 @@ O PaleoLab é uma aplicação **estática**:
    ```
    Também funciona com a extensão Live Server do VS Code, GitHub Pages, nginx, Apache etc.
 
-> ℹ️ **Internet:** os ícones, o globo, o mapa, os gráficos, a árvore e o gerador de PDF vêm de CDNs. Sem conexão, o restante do laboratório continua funcionando e cada recurso indisponível mostra um aviso com o botão "Tentar novamente".
+> ℹ️ **Internet:** os ícones já vêm no projeto (`vendor/`). Gráficos, árvore e PDF usam bibliotecas externas: rode `./scripts/baixar-bibliotecas.sh` uma vez para ter cópias locais; sem elas, o site busca as bibliotecas nas CDNs. O globo e o mapa sempre precisam de internet. Recursos indisponíveis mostram um aviso com o botão "Tentar novamente".
 >
 > ℹ️ **Abrindo pelo arquivo (file://):** alguns navegadores bloqueiam a leitura de imagens locais em canvas. Por isso, só a imagem da comparação de escala dentro do PDF pode ficar de fora; use um servidor local para incluí‑la.
 
 Cada aba tem um endereço próprio (por exemplo, `index.html#/quiz`), que pode ser compartilhado ou salvo nos favoritos.
+
+### 📱 Modo aplicativo (Android)
+
+Abrindo `index.html?plataforma=app`, o site troca a barra lateral por uma navegação de aplicativo: barra superior com botão voltar, barra inferior (Início, Explorar, Laboratório, Desafios), telas de seção, fichas em *bottom sheet* e avisos no estilo *snackbar*. É assim que o app Android ([fael0306/dino-app](https://github.com/fael0306/dino-app)) exibe o PaleoLab. No navegador, sem o parâmetro, nada muda.
+
+O app e a página conversam por duas pontes:
+- **Página → app:** o app injeta `window.PaleoLabNativo` (só na página principal, nunca em iframes). A página envia mensagens JSON com `chamarNativo(acao, dados)` (`js/ui.js`): `salvarArquivo` (`nome`, `mime`, `base64`), `temaMudou` (`tema`, `corTopo`, `corBase`) e `vibrar`.
+- **App → página:** o botão voltar do Android chama `window.PaleoLabApp.voltar()`, que retorna `false` quando o app deve fechar.
 
 ---
 
@@ -74,7 +83,7 @@ Os testes ficam em `tests/` e rodam no ambiente `node` do Jest, sem dependência
 | `utils.test.js` | Icnofósseis, simulação K‑Pg (valores de referência), massa corporal, escala, quiz, modo Batalha (todos os 2.450 pares), períodos, formatação |
 | `imagens.test.js` | `gerarSilhuetaPlaceholder` (desenho determinístico) e as funções de carregamento de imagem |
 | `store.test.js` | Conquistas, recordes, exportação e importação de progresso |
-| `loader.test.js` | Carregamento condicional de bibliotecas (sucesso, erro, tempo esgotado) |
+| `loader.test.js` | Carregamento condicional de bibliotecas (cópia local, CDN de reserva, erro, tempo esgotado) |
 | `data.test.js` | Integridade dos dados (perguntas, espécies, coordenadas, clados) |
 
 ---
@@ -85,6 +94,7 @@ Os testes ficam em `tests/` e rodam no ambiente `node` do Jest, sem dependência
 dino/
 ├── index.html              # Página principal (estrutura e diálogos)
 ├── css/style.css           # Design system (temas claro/escuro, responsivo)
+├── css/app.css             # Estilos do modo aplicativo
 ├── js/
 │   ├── data.js             # Dados: dinossauros, quiz, clima, clados, conquistas
 │   ├── utils.js            # Funções puras (simulação, icnofósseis, batalha...) e imagens
@@ -93,8 +103,11 @@ dino/
 │   ├── ui.js               # Toasts, diálogo de confirmação, tema, estados
 │   ├── app.js              # Núcleo: registro de abas e ações, conquistas
 │   ├── abas/               # Um arquivo por aba (inicio.js, escala.js, quiz.js...)
+│   ├── plataforma.js       # Modo aplicativo (versão Android)
 │   └── main.js             # Navegação, menu e eventos centralizados (initEvents)
 ├── assets/                 # Silhuetas, fotos de fósseis e pegadas
+├── vendor/                 # Ícones e cópias locais das bibliotecas
+├── scripts/                # baixar-bibliotecas.sh
 ├── tests/                  # Testes Jest
 ├── package.json
 ├── CHANGELOG.md

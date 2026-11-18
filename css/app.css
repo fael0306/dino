@@ -1,0 +1,261 @@
+/* ============================================================
+   PaleoLab – modo aplicativo (versão Android)
+   Só vale quando <html data-plataforma="app">.
+   Inspirado no Material Design 3: barra superior, navegação
+   inferior, listas de toque, bottom sheets e snackbars.
+   ============================================================ */
+
+[data-plataforma="app"] {
+    --altura-barra: 60px;
+    --altura-nav: 72px;
+    --topo-seguro: env(safe-area-inset-top, 0px);
+    --base-segura: env(safe-area-inset-bottom, 0px);
+}
+
+[data-plataforma="app"] body {
+    background: var(--fundo);
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    overscroll-behavior-y: none;
+    padding-bottom: calc(var(--altura-nav) + var(--base-segura));
+}
+
+/* Elementos do site que não existem no app */
+[data-plataforma="app"] .sidebar,
+[data-plataforma="app"] .sobreposicao,
+[data-plataforma="app"] .topbar,
+[data-plataforma="app"] .rodape,
+[data-plataforma="app"] .pular-link,
+[data-plataforma="app"] .painel-cabecalho h2 { display: none !important; }
+
+[data-plataforma="app"] .app { display: block; min-height: 100vh; }
+
+/* Botões, cartões e controles não selecionam texto ao tocar */
+[data-plataforma="app"] button,
+[data-plataforma="app"] .segmentado,
+[data-plataforma="app"] .chip,
+[data-plataforma="app"] .app-nav,
+[data-plataforma="app"] .app-barra { user-select: none; -webkit-user-select: none; }
+
+/* ---------------- Barra superior ---------------- */
+.app-barra {
+    position: sticky; top: 0; z-index: 60;
+    display: flex; align-items: center; gap: .25rem;
+    height: calc(var(--altura-barra) + var(--topo-seguro));
+    padding: var(--topo-seguro) .35rem 0;
+    background: var(--fundo);
+    transition: background .2s, box-shadow .2s;
+}
+.app-barra.rolada { box-shadow: 0 1px 0 var(--borda), 0 4px 12px rgba(0, 0, 0, .06); }
+.app-barra-titulo { flex: 1; min-width: 0; display: flex; align-items: center; gap: .6rem; padding-left: .5rem; }
+.app-barra.na-raiz .app-barra-titulo { padding-left: .75rem; }
+.app-barra-titulo h1 {
+    margin: 0; font-size: 1.25rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.app-barra.na-raiz .app-barra-titulo h1 { font-family: var(--fonte-titulo); font-size: 1.45rem; font-weight: 700; }
+.app-logo { width: 34px !important; height: 34px !important; font-size: 1.05rem !important; border-radius: 10px !important; }
+.app-barra-botao {
+    display: grid; place-items: center; width: 48px; height: 48px; border: 0; border-radius: 50%;
+    background: transparent; color: var(--texto); font-size: 1.3rem; cursor: pointer;
+}
+.app-barra-botao:active { background: var(--superficie-3); }
+
+/* ---------------- Navegação inferior ---------------- */
+.app-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    height: calc(var(--altura-nav) + var(--base-segura));
+    padding: 0 .25rem var(--base-segura);
+    background: var(--superficie);
+    border-top: 1px solid var(--borda);
+}
+.app-nav-item {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem;
+    border: 0; background: none; color: var(--texto-suave); font: inherit; cursor: pointer;
+}
+.app-nav-indicador {
+    display: grid; place-items: center; width: 60px; height: 32px; border-radius: 999px; font-size: 1.25rem;
+    transition: background .25s, color .25s;
+}
+.app-nav-rotulo { font-size: .75rem; font-weight: 600; letter-spacing: .01em; }
+.app-nav-item.ativo { color: var(--texto); }
+.app-nav-item.ativo .app-nav-indicador { background: var(--primaria-suave); color: var(--primaria-suave-texto); }
+.app-nav-item:active .app-nav-indicador { background: var(--superficie-3); }
+.app-nav-badge {
+    position: absolute; top: 8px; left: calc(50% + 8px); min-width: 18px; height: 18px; padding: 0 5px;
+    border-radius: 999px; background: var(--primaria); color: var(--primaria-texto);
+    font-size: .68rem; font-weight: 700; line-height: 18px; text-align: center;
+}
+
+/* ---------------- Conteúdo ---------------- */
+[data-plataforma="app"] .paineis { padding: .25rem 1rem 1.5rem; max-width: 720px; }
+[data-plataforma="app"] .painel { animation: none; }
+[data-plataforma="app"] .painel.entrar-lado { animation: appEntrarLado .26s cubic-bezier(.2, .8, .2, 1) both; }
+[data-plataforma="app"] .painel.entrar-fade { animation: appEntrarFade .2s ease both; }
+@keyframes appEntrarLado { from { opacity: .4; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes appEntrarFade { from { opacity: 0; } to { opacity: 1; } }
+
+[data-plataforma="app"] .painel-cabecalho { margin: 0 0 1rem; }
+[data-plataforma="app"] .painel-cabecalho p { font-size: .95rem; margin: 0; }
+[data-plataforma="app"] .painel-corpo { gap: 1rem; }
+
+[data-plataforma="app"] .cartao { border-radius: 20px; padding: 1.1rem; box-shadow: none; }
+[data-plataforma="app"] .cartao > h3, [data-plataforma="app"] .cartao-cabecalho h3 { font-size: 1.05rem; }
+
+/* Sem efeitos de hover (não existem no toque); feedback ao pressionar */
+@media (hover: none) {
+    [data-plataforma="app"] .cartao-modulo:hover,
+    [data-plataforma="app"] .cartao-fossil:hover,
+    [data-plataforma="app"] .nivel:hover { transform: none; box-shadow: none; border-color: var(--borda); }
+    [data-plataforma="app"] .cartao-fossil:hover .cartao-fossil-img img { transform: none; }
+}
+[data-plataforma="app"] .btn:active:not(:disabled),
+[data-plataforma="app"] .cartao-modulo:active,
+[data-plataforma="app"] .cartao-fossil:active,
+[data-plataforma="app"] .item-modulo:active,
+[data-plataforma="app"] .quiz-opcao:active:not(:disabled),
+[data-plataforma="app"] .nivel:active,
+[data-plataforma="app"] .cenario:active { transform: scale(.98); transition: transform .08s; }
+
+/* Botões maiores, no padrão de toque (mín. 48 px) */
+[data-plataforma="app"] .btn { min-height: 48px; border-radius: 999px; padding-inline: 1.25rem; }
+[data-plataforma="app"] .btn-sm { min-height: 40px; }
+[data-plataforma="app"] .segmento { min-height: 40px; }
+[data-plataforma="app"] .input, [data-plataforma="app"] .select { min-height: 50px; font-size: 1rem; border-radius: 12px; }
+
+/* ---------------- Telas de seção (hubs) ---------------- */
+.lista-modulos {
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--superficie); border: 1px solid var(--borda); border-radius: 20px;
+}
+.item-modulo {
+    display: flex; align-items: center; gap: 1rem; padding: 1rem 1rem; min-height: 76px;
+    border: 0; border-bottom: 1px solid var(--borda); background: none; color: var(--texto); font: inherit; text-align: left; cursor: pointer;
+}
+.item-modulo:last-child { border-bottom: 0; }
+.item-modulo:active { background: var(--superficie-3); transform: none !important; }
+.item-modulo-icone {
+    flex-shrink: 0; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px;
+    background: var(--primaria-suave); color: var(--primaria-suave-texto); font-size: 1.35rem;
+}
+.item-modulo-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .1rem; }
+.item-modulo-texto strong { font-size: 1.02rem; }
+.item-modulo-texto span { font-size: .86rem; color: var(--texto-suave); line-height: 1.35; }
+.item-modulo-seta { color: var(--texto-suave); }
+
+/* ---------------- Início no app ---------------- */
+[data-plataforma="app"] .hero { padding: 1.4rem; border-radius: 24px; margin-top: 0; }
+[data-plataforma="app"] .hero h2 { font-size: 1.6rem; margin: .5rem 0; }
+[data-plataforma="app"] .hero p { font-size: .95rem; }
+[data-plataforma="app"] .hero-acoes { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+[data-plataforma="app"] .hero-acoes .btn { width: 100%; padding-inline: .75rem; font-size: .9rem; }
+[data-plataforma="app"] .stats { grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+[data-plataforma="app"] .stat { padding: .7rem .4rem; align-items: center; text-align: center; border-radius: 16px; }
+[data-plataforma="app"] .stat-valor { font-size: 1.3rem; }
+[data-plataforma="app"] .stat-rotulo { font-size: .68rem; line-height: 1.2; }
+[data-plataforma="app"] .inicio-grid { grid-template-columns: 1fr; gap: 1rem; }
+[data-plataforma="app"] .inicio-modulos { order: 2; }
+[data-plataforma="app"] .destaque-dia { order: 1; position: static; display: flex; padding: 0; overflow: hidden; gap: .6rem; }
+[data-plataforma="app"] .destaque-dia > *:not(img) { margin-inline: 1.1rem; }
+[data-plataforma="app"] .destaque-dia .eyebrow { margin-top: 1rem; }
+[data-plataforma="app"] .destaque-dia img { border-radius: 0; order: -1; aspect-ratio: 16 / 9; height: auto; }
+[data-plataforma="app"] .destaque-dia .btn { margin-bottom: 1.1rem; align-self: flex-start; }
+[data-plataforma="app"] .grade-modulos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+[data-plataforma="app"] .cartao-modulo { flex-direction: column; align-items: flex-start; gap: .6rem; padding: .9rem; border-radius: 18px; min-height: 128px; }
+[data-plataforma="app"] .cartao-modulo-texto span { font-size: .78rem; line-height: 1.3; }
+[data-plataforma="app"] .cartao-modulo-seta { display: none; }
+[data-plataforma="app"] .titulo-secao { font-size: 1.1rem; margin: 1.1rem 0 .6rem; }
+
+/* ---------------- Museu ---------------- */
+[data-plataforma="app"] .barra-ferramentas { position: sticky; top: calc(var(--altura-barra) + var(--topo-seguro)); z-index: 20; padding: .75rem; gap: .6rem; border-radius: 18px; }
+[data-plataforma="app"] .barra-ferramentas .segmentado { width: 100%; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+[data-plataforma="app"] .barra-ferramentas .segmento { flex: 1 0 auto; justify-content: center; }
+[data-plataforma="app"] .barra-ferramentas .campo-inline { flex: 1 1 40%; }
+[data-plataforma="app"] .barra-ferramentas .campo-inline label { display: none; }
+[data-plataforma="app"] .barra-ferramentas > .btn { flex: 1 1 100%; }
+[data-plataforma="app"] .grade-fosseis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
+[data-plataforma="app"] .cartao-fossil { border-radius: 18px; }
+[data-plataforma="app"] .cartao-fossil-info { padding: .65rem .75rem .8rem; gap: .35rem; }
+[data-plataforma="app"] .cartao-fossil-info strong { font-size: .88rem; line-height: 1.25; }
+[data-plataforma="app"] .cartao-fossil .chip:not(.chip-periodo) { display: none; }
+[data-plataforma="app"] .cartao-fossil .chip { font-size: .68rem; padding: .1rem .45rem; }
+[data-plataforma="app"] .cartao-fossil-medidas { font-size: .74rem; gap: .6rem; flex-wrap: wrap; }
+
+/* ---------------- Bottom sheet (ficha e confirmação) ---------------- */
+[data-plataforma="app"] .dialogo {
+    margin: auto 0 0; width: 100vw; max-width: 100vw; max-height: 92vh;
+    border-radius: 28px 28px 0 0; padding-bottom: var(--base-segura);
+}
+[data-plataforma="app"] .dialogo[open] { animation: appSheet .3s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes appSheet { from { transform: translateY(100%); } to { transform: none; } }
+[data-plataforma="app"] .dialogo::before {
+    content: ""; display: block; width: 36px; height: 4px; margin: 10px auto 0; border-radius: 999px; background: var(--borda-forte);
+}
+[data-plataforma="app"] .dialogo-ficha .ficha { grid-template-columns: 1fr; }
+[data-plataforma="app"] .dialogo-ficha .ficha-img { margin: .75rem 1rem 0; border-radius: 18px; overflow: hidden; aspect-ratio: 16 / 10; min-height: 0; }
+[data-plataforma="app"] .dialogo-ficha .ficha-info { padding: 1rem 1.25rem 1.5rem; }
+[data-plataforma="app"] .dialogo-ficha .ficha-info h2 { font-size: 1.45rem; padding-right: 0; }
+[data-plataforma="app"] .dialogo-ficha .ficha-acoes .btn { flex: 1 1 100%; }
+[data-plataforma="app"] .dialogo-fechar { top: 1.3rem; right: 1.6rem; background: rgba(0, 0, 0, .45); color: #fff; border: 0; }
+[data-plataforma="app"] .dialogo-confirmacao form { padding: 1rem 1.25rem 1.25rem; }
+[data-plataforma="app"] .dialogo-confirmacao .acoes .btn { flex: 1; }
+
+/* ---------------- Snackbars ---------------- */
+[data-plataforma="app"] .toast-area {
+    left: .75rem; right: .75rem; width: auto;
+    bottom: calc(var(--altura-nav) + var(--base-segura) + .75rem);
+}
+[data-plataforma="app"] .toast { border-radius: 16px; background: var(--lateral); color: #eef1f4; border-color: transparent; }
+[data-plataforma="app"] .toast .toast-fechar { color: #aab4bf; }
+[data-plataforma="app"] .toast-conquista { background: linear-gradient(135deg, #2a2016, #3a2a15); color: #fff3e3; border-color: #a8742a; }
+
+/* ---------------- Ajustes por tela ---------------- */
+[data-plataforma="app"] .quiz-jogo { padding: 1.1rem; }
+[data-plataforma="app"] .quiz-pergunta { font-size: 1.3rem; margin: 1rem 0; }
+[data-plataforma="app"] .quiz-opcao { min-height: 60px; border-radius: 16px; }
+[data-plataforma="app"] .quiz-modo .segmentado { width: 100%; }
+[data-plataforma="app"] .quiz-modo .segmento { flex: 1; justify-content: center; }
+[data-plataforma="app"] .niveis { grid-template-columns: 1fr; gap: .6rem; }
+[data-plataforma="app"] .nivel { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto auto; column-gap: .9rem; row-gap: .1rem; align-items: center; padding: .9rem 1rem; }
+[data-plataforma="app"] .nivel i { grid-row: 1 / span 3; font-size: 1.8rem; }
+[data-plataforma="app"] .quiz-opcoes-config { flex-direction: column; align-items: stretch; }
+[data-plataforma="app"] .quiz-opcoes-config .segmentado { width: 100%; }
+[data-plataforma="app"] .quiz-opcoes-config .segmento { flex: 1; justify-content: center; }
+[data-plataforma="app"] .quiz-resultado { flex-direction: column; text-align: center; gap: 1rem; }
+[data-plataforma="app"] .quiz-resultado .acoes { justify-content: center; }
+[data-plataforma="app"] .duelo { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: .5rem; }
+[data-plataforma="app"] .duelista { padding: .6rem; gap: .5rem; }
+[data-plataforma="app"] .duelista .select { font-size: .82rem; padding: .5rem 1.8rem .5rem .6rem; min-height: 44px; background-position: right .55rem center; }
+[data-plataforma="app"] .duelista .chips { display: none; }
+[data-plataforma="app"] .vs { width: 42px; height: 42px; font-size: .95rem; margin: 0; }
+[data-plataforma="app"] .acoes-centro { display: grid; grid-template-columns: 1fr; }
+
+[data-plataforma="app"] .lab-layout,
+[data-plataforma="app"] .icno-layout,
+[data-plataforma="app"] .arvore-layout,
+[data-plataforma="app"] .pdf-layout,
+[data-plataforma="app"] .mapa-layout { grid-template-columns: 1fr; }
+[data-plataforma="app"] .lab-controles,
+[data-plataforma="app"] .icno-fossil,
+[data-plataforma="app"] .arvore-painel,
+[data-plataforma="app"] .pdf-dica { position: static; }
+[data-plataforma="app"] .grade-2,
+[data-plataforma="app"] .grade-3 { grid-template-columns: 1fr; }
+[data-plataforma="app"] .comparacao-clima { grid-template-columns: 1fr; }
+[data-plataforma="app"] .kpis { grid-template-columns: 1fr; gap: .6rem; }
+[data-plataforma="app"] .equivalencias { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
+[data-plataforma="app"] .equivalencia { flex-direction: column; text-align: center; padding: .6rem .3rem; gap: .2rem; }
+[data-plataforma="app"] .opcoes-radio { grid-template-columns: 1fr; }
+[data-plataforma="app"] .icno-imagem { min-height: 240px; }
+[data-plataforma="app"] .grafico-wrapper { height: 280px; }
+[data-plataforma="app"] .arvore-grafico { height: 420px; }
+[data-plataforma="app"] .mapa { height: 340px; }
+[data-plataforma="app"] .globo-wrapper { aspect-ratio: 1 / 1; }
+[data-plataforma="app"] .grade-conquistas { grid-template-columns: 1fr; }
+[data-plataforma="app"] .placar { max-width: none; }
+[data-plataforma="app"] .fatos { grid-template-columns: 1fr; }
+[data-plataforma="app"] .quiz-titulo { display: none; }
+[data-plataforma="app"] .quiz-contador { flex: 1; }
+
+/* Em app, rolagens programáticas são imediatas (como nas listas nativas) */
+html[data-plataforma="app"] { scroll-behavior: auto; }

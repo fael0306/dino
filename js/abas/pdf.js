@@ -243,9 +243,9 @@ async function gerarPDF() {
         }
 
         const arquivo = `relatorio_paleolab${nome ? '_' + slugNome(nome).replace(/[^a-z0-9_]/g, '') : ''}.pdf`;
-        doc.save(arquivo);
+        await baixarArquivo(doc.output('blob'), arquivo);
         status.innerHTML = htmlAlerta(avisos.length ? 'aviso' : 'sucesso',
-            `<strong>Relatório gerado!</strong> O download de <em>${escapeHtml(arquivo)}</em> deve começar automaticamente.${avisos.length ? `<br>Não foi possível incluir: ${escapeHtml(avisos.join('; '))}.` : ''}`);
+            `<strong>Relatório gerado!</strong> O arquivo <em>${escapeHtml(arquivo)}</em> foi salvo${estaNoAppNativo() ? ' em Downloads/PaleoLab' : ''}.${avisos.length ? `<br>Não foi possível incluir: ${escapeHtml(avisos.join('; '))}.` : ''}`);
     } catch (e) {
         console.error('Erro ao gerar PDF:', e);
         status.innerHTML = htmlAlerta('erro', `Erro ao gerar o PDF: ${escapeHtml(e.message)}`);

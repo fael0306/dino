@@ -66,18 +66,12 @@ function renderListaConquistas() {
     }).join('');
 }
 
-function exportarConquistasJSON() {
+async function exportarConquistasJSON() {
     const payload = criarPayloadExportacao(lerConquistas(), lerPeriodosVisitados());
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `paleolab_conquistas_${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    toast('Arquivo de progresso baixado.', 'sucesso');
+    const ok = await baixarArquivo(blob, `paleolab_conquistas_${new Date().toISOString().slice(0, 10)}.json`);
+    // No app Android, o próprio app avisa onde o arquivo foi salvo
+    if (ok && !estaNoAppNativo()) toast('Arquivo de progresso salvo.', 'sucesso');
 }
 
 function importarConquistasJSON(event) {
