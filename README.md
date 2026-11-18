@@ -1,4 +1,4 @@
-# 🦴 PaleoLab Científico – v2.0.0 (Web Estática)
+# 🦴 PaleoLab Científico – v2.0.1 (Web Estática)
 
 Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem servidor backend**.
 
@@ -53,7 +53,7 @@ O PaleoLab é uma aplicação **estática**:
    ```
    Também funciona com a extensão Live Server do VS Code, GitHub Pages, nginx, Apache etc.
 
-> ℹ️ **Internet:** os ícones já vêm no projeto (`vendor/`). Gráficos, árvore e PDF usam bibliotecas externas: rode `./scripts/baixar-bibliotecas.sh` uma vez para ter cópias locais; sem elas, o site busca as bibliotecas nas CDNs. O globo e o mapa sempre precisam de internet. Recursos indisponíveis mostram um aviso com o botão "Tentar novamente".
+> ℹ️ **Internet:** os ícones já vêm no projeto (`vendor/`). Gráficos, árvore e PDF usam bibliotecas externas: rode `./scripts/baixar-bibliotecas.sh` uma vez para ter cópias locais; sem elas, o site busca as bibliotecas nas CDNs. O globo e o mapa sempre precisam de internet (o mapa usa OpenStreetMap, com Esri como reserva; nenhum dos dois exige chave de acesso). Recursos indisponíveis mostram um aviso com o botão "Tentar novamente".
 >
 > ℹ️ **Abrindo pelo arquivo (file://):** alguns navegadores bloqueiam a leitura de imagens locais em canvas. Por isso, só a imagem da comparação de escala dentro do PDF pode ficar de fora; use um servidor local para incluí‑la.
 

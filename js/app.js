@@ -2,7 +2,7 @@
 // Núcleo da aplicação: registro de abas, registro de ações (eventos
 // centralizados), conquistas e indicadores de progresso.
 
-const VERSAO_APP = '2.0.0';
+const VERSAO_APP = '2.0.1';
 
 // ------------------------------------------------------------
 // Estado global compartilhado entre as abas

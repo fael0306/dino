@@ -1,6 +1,6 @@
 {
   "name": "paleolab-cientifico",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Laboratório virtual interativo de paleontologia – aplicação web estática.",
   "private": true,
   "license": "MIT",

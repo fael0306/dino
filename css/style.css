@@ -602,6 +602,9 @@ kbd {
 .popup-dino { display: flex; flex-direction: column; gap: .2rem; font-size: .85rem; }
 .popup-dino img { width: 100%; height: 110px; object-fit: cover; border-radius: 6px; margin-bottom: .3rem; background: #eee; }
 .leaflet-container { font-family: var(--fonte); }
+/* Tema escuro: escurece o mapa base sem alterar os marcadores */
+[data-tema="escuro"] .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.9); }
+[data-tema="escuro"] .leaflet-container { background: #1f2730; }
 
 /* ------------------------------------------------------------
    9. Linha do tempo

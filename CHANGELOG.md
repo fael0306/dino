@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.1] – Correção do mapa
+
+### Correções
+- **Mapa de sítios fósseis (Deriva Continental):** o mapa base mostrava "API KEY REQUIRED" em vez dos continentes, porque o provedor usado até então (CARTO) passou a exigir chave de acesso. Agora o mapa usa o **OpenStreetMap** e, se ele falhar, troca automaticamente para o **Esri World Street Map**. Nenhum dos dois exige chave.
+- No tema escuro, o mapa base também fica escuro.
+
 ## [2.0.0] – Qualidade, testes, acessibilidade e nova interface
 
 ### Itens do roadmap v2.0.0

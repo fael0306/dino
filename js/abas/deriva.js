@@ -7,6 +7,41 @@ const ERAS_GLOBO = [
     { valor: '240', rotulo: '240 Ma · Triássico' }
 ];
 
+// Mapas base gratuitos que não exigem chave de acesso. Se o primeiro falhar
+// (servidor fora do ar ou bloqueado), o mapa troca para o seguinte.
+// Obs.: até a v2.0.0 era usado o CARTO, que passou a exigir chave ("API KEY REQUIRED").
+const CAMADAS_MAPA = [
+    {
+        nome: 'OpenStreetMap',
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        opcoes: { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }
+    },
+    {
+        nome: 'Esri World Street Map',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+        opcoes: { maxZoom: 19, attribution: 'Mapa © <a href="https://www.esri.com/">Esri</a>' }
+    }
+];
+const ERROS_PARA_TROCAR_CAMADA = 4;
+
+/** Adiciona o mapa base, trocando para o próximo provedor se os azulejos falharem. */
+function adicionarCamadaBase(mapa, indice = 0) {
+    const config = CAMADAS_MAPA[indice];
+    if (!config) return null;
+    const camada = L.tileLayer(config.url, config.opcoes);
+    let erros = 0;
+    camada.on('tileerror', () => {
+        erros++;
+        if (erros === ERROS_PARA_TROCAR_CAMADA && CAMADAS_MAPA[indice + 1]) {
+            console.warn(`Mapa base "${config.nome}" indisponível; usando "${CAMADAS_MAPA[indice + 1].nome}".`);
+            mapa.removeLayer(camada);
+            state.graficos.camadaBase = adicionarCamadaBase(mapa, indice + 1);
+        }
+    });
+    camada.addTo(mapa);
+    return camada;
+}
+
 const urlGlobo = era => `https://dinosaurpictures.org/ancient-earth?_t=${era}#${era}`;
 
 registrarAba({
@@ -85,10 +120,7 @@ async function iniciarMapa() {
     el.innerHTML = '';
     if (state.graficos.mapa) { state.graficos.mapa.remove(); }
     state.graficos.mapa = L.map(el, { center: [20, 0], zoom: 2, worldCopyJump: true });
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap, © CARTO',
-        maxZoom: 18
-    }).addTo(state.graficos.mapa);
+    state.graficos.camadaBase = adicionarCamadaBase(state.graficos.mapa);
     state.graficos.camadaMarcadores = L.layerGroup().addTo(state.graficos.mapa);
     atualizarMapa();
     // O container pode ter sido medido antes de ficar visível
