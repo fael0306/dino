@@ -1,10 +1,14 @@
-# 🦴 PaleoLab Científico – v2.1.0 (Web Estática)
+# 🦴 PaleoLab Científico – v2.1.1 (Web Estática)
 
 Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem servidor backend**.
 
 ---
 
-## 🆕 Novidades da v2.1.0
+## 🆕 Novidades da v2.1.1
+
+- **Foto do *Herrerasaurus ischigualastensis*:** era a única espécie do museu sem foto. Agora as 50 espécies têm foto.
+
+## Novidades da v2.1.0
 
 - **Viagem no Tempo:** a Linha do Tempo e a Deriva Continental viraram uma aba só. Você escolhe a idade, e o globo, o período, os dinossauros e o mapa de fósseis acompanham.
 - **Novo Paleo‑Detetive:** veja a pegada fóssil e escolha qual dinossauro a deixou.

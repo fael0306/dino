@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.1] – Foto do Herrerasaurus
+
+### Correções
+- **Museu:** o *Herrerasaurus ischigualastensis* era a única das 50 espécies sem foto e aparecia com um desenho genérico. Agora tem foto (`assets/real_herrerasaurus_ischigualastensis.png`), que aparece no museu, na ficha, na Viagem no Tempo, na Árvore Evolutiva e no modo Batalha.
+
 ## [2.1.0] – Viagem no Tempo, novo Paleo-Detetive e árvore genealógica
 
 ### Novidades
