@@ -36,7 +36,7 @@ function instalarDomFalso({ comportamento = 'carrega', falharLocal = false } = {
 
 beforeEach(() => {
     jest.resetModules();
-    ['Chart', 'L', 'vis', 'jspdf'].forEach(g => delete global[g]);
+    ['Chart', 'L', 'jspdf'].forEach(g => delete global[g]);
     loader = require('../js/loader.js');
 });
 
@@ -76,7 +76,7 @@ test('recorre à CDN quando a cópia local não existe', async () => {
 test('reaproveita a mesma promessa em chamadas simultâneas', async () => {
     instalarDomFalso();
     rotularScripts();
-    const [a, b] = await Promise.all([loader.carregarBiblioteca('vis'), loader.carregarBiblioteca('vis')]);
+    const [a, b] = await Promise.all([loader.carregarBiblioteca('jspdf'), loader.carregarBiblioteca('jspdf')]);
     expect(a && b).toBe(true);
     expect(scripts).toHaveLength(1);
 });
@@ -101,5 +101,5 @@ test('resolve false para chaves desconhecidas', async () => {
 test('carregarBibliotecas só é true se todas carregarem', async () => {
     instalarDomFalso();
     rotularScripts();
-    await expect(loader.carregarBibliotecas(['chart', 'vis'])).resolves.toBe(true);
+    await expect(loader.carregarBibliotecas(['chart', 'jspdf'])).resolves.toBe(true);
 });

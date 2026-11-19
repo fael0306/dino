@@ -161,8 +161,11 @@ registrarAcao('sortear-fossil', () => {
 registrarAcao('ver-no-mapa', el => {
     fecharFicha();
     state.mapaDinoInicial = el.dataset.dino;
-    navegarParaAba('deriva');
-    if (state.initialized.deriva && typeof selecionarDinoMapa === 'function') selecionarDinoMapa(el.dataset.dino);
+    navegarParaAba('viagem');
+    if (state.initialized.viagem && typeof selecionarDinoMapa === 'function') {
+        selecionarDinoMapa(el.dataset.dino);
+        state.mapaDinoInicial = null;
+    }
 });
 registrarAcao('duelar-com', el => {
     fecharFicha();

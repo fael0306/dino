@@ -19,12 +19,6 @@ const BIBLIOTECAS = {
         js: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
         css: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
     },
-    vis: {
-        nome: 'vis-network',
-        global: 'vis',
-        local: 'vendor/vis-network.min.js',
-        js: 'https://unpkg.com/vis-network@9.1.2/standalone/umd/vis-network.min.js'
-    },
     jspdf: {
         nome: 'jsPDF',
         global: 'jspdf',

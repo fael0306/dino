@@ -6,8 +6,8 @@ const CLIMA_ATUAL = { temperatura: 15, co2: 420 };
 registrarAba({
     id: 'clima',
     titulo: 'Clima Mesozoico',
-    subtitulo: 'Temperatura, CO₂ e vegetação de cada período',
-    descricao: 'Compare o clima dos dinossauros com o de hoje.',
+    subtitulo: 'Temperatura, CO₂, plantas e o mundo que desapareceu em cada período',
+    descricao: 'Clima, plantas e curiosidades de um mundo que não existe mais.',
     icone: 'bi-cloud-sun',
     grupo: 'explorar',
     render(container) {
@@ -22,6 +22,20 @@ registrarAba({
                 </div>
                 <div id="clima-info"></div>
             </div>
+            <section class="cartao" aria-labelledby="plantas-titulo">
+                <h3 id="plantas-titulo"><i class="bi bi-tree" aria-hidden="true"></i> <span id="plantas-titulo-texto">Plantas</span></h3>
+                <p class="lead" id="plantas-paisagem"></p>
+                <div class="plantas-filtro">
+                    <span class="legenda-planta"><span class="selo-planta existe"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Existe hoje</span> o grupo ainda tem representantes vivos</span>
+                    <span class="legenda-planta"><span class="selo-planta extinta"><i class="bi bi-x-circle-fill" aria-hidden="true"></i> Extinta</span> não existe mais</span>
+                </div>
+                <div id="plantas-grade" class="plantas-grade"></div>
+            </section>
+            <section class="cartao" aria-labelledby="perdido-titulo">
+                <h3 id="perdido-titulo"><i class="bi bi-hourglass-bottom" aria-hidden="true"></i> <span id="perdido-titulo-texto">Mundo perdido</span></h3>
+                <p class="texto-suave">Coisas que existiam nessa época e não existem mais.</p>
+                <div id="mundo-perdido" class="mundo-perdido"></div>
+            </section>
             <div class="cartao">
                 <h3><i class="bi bi-bar-chart" aria-hidden="true"></i> Comparação entre os períodos e hoje</h3>
                 <div id="clima-comparacao" class="comparacao-clima"></div>
@@ -63,6 +77,7 @@ function atualizarClima(periodo) {
         </div>
         <div class="vegetacao"><i class="bi bi-tree" aria-hidden="true"></i><div><strong>Vegetação</strong><p>${escapeHtml(dados.vegetacao)}</p></div></div>
     `;
+    renderPlantasEMundoPerdido(nome);
 
     const maxTemp = Math.max(...Object.values(DADOS_CLIMA).map(d => d.temperatura), CLIMA_ATUAL.temperatura);
     const maxCo2 = Math.max(...Object.values(DADOS_CLIMA).map(d => d.co2), CLIMA_ATUAL.co2);
@@ -80,4 +95,33 @@ function atualizarClima(periodo) {
         ? '<i class="bi bi-check-circle-fill" aria-hidden="true"></i> Todos os períodos explorados'
         : `<i class="bi bi-compass" aria-hidden="true"></i> Períodos explorados: ${n}/3`;
     if (n === 3) desbloquearConquista('climaturista');
+}
+
+function renderPlantasEMundoPerdido(nomePeriodo) {
+    const flora = PLANTAS_PERIODO[nomePeriodo];
+    const perdido = MUNDO_PERDIDO[nomePeriodo] || [];
+    if (flora) {
+        document.getElementById('plantas-titulo-texto').textContent = `Plantas do ${nomePeriodo}`;
+        document.getElementById('plantas-paisagem').textContent = flora.paisagem;
+        document.getElementById('plantas-grade').innerHTML = flora.plantas.map(p => `
+            <article class="planta">
+                <div class="planta-topo">
+                    <span class="planta-icone" aria-hidden="true">${p.icone}</span>
+                    <div>
+                        <h4>${escapeHtml(p.nome)}</h4>
+                        <span class="planta-grupo">${escapeHtml(p.grupo)}</span>
+                    </div>
+                </div>
+                <p>${escapeHtml(p.descricao)}</p>
+                ${p.existeHoje
+                    ? '<span class="selo-planta existe"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Existe hoje</span>'
+                    : '<span class="selo-planta extinta"><i class="bi bi-x-circle-fill" aria-hidden="true"></i> Extinta</span>'}
+            </article>`).join('');
+    }
+    document.getElementById('perdido-titulo-texto').textContent = `Mundo perdido do ${nomePeriodo}`;
+    document.getElementById('mundo-perdido').innerHTML = perdido.map(c => `
+        <article class="curiosidade">
+            <span class="curiosidade-icone"><i class="bi ${c.icone}" aria-hidden="true"></i></span>
+            <div><h4>${escapeHtml(c.titulo)}</h4><p>${escapeHtml(c.texto)}</p></div>
+        </article>`).join('');
 }

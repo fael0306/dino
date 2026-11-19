@@ -3,6 +3,5 @@ coverage/
 .DS_Store
 # Cópias locais geradas por scripts/baixar-bibliotecas.sh (os ícones ficam versionados)
 vendor/chart.umd.min.js
-vendor/vis-network.min.js
 vendor/jspdf.umd.min.js
 vendor/leaflet/

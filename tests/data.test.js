@@ -47,3 +47,46 @@ describe('árvore evolutiva e conquistas', () => {
         });
     });
 });
+
+describe('dados da v2.1', () => {
+    test('as épocas cobrem o Mesozoico sem buracos e batem com os períodos', () => {
+        expect(d.EPOCAS[0].inicio).toBe(252);
+        expect(d.EPOCAS[d.EPOCAS.length - 1].fim).toBe(66);
+        for (let i = 1; i < d.EPOCAS.length; i++) expect(d.EPOCAS[i].inicio).toBe(d.EPOCAS[i - 1].fim);
+        d.EPOCAS.forEach(e => {
+            const p = d.PERIODOS.find(x => x.nome === e.periodo);
+            expect(e.inicio).toBeLessThanOrEqual(p.inicio);
+            expect(e.fim).toBeGreaterThanOrEqual(p.fim);
+        });
+    });
+    test('o campo Periodo de cada espécie é uma época existente', () => {
+        const nomes = d.EPOCAS.map(e => e.nome);
+        d.DINOSSAUROS_REAIS.forEach(x => expect(nomes).toContain(x.Periodo));
+    });
+    test('toda pegada tem autor, e todo autor tem uma imagem de pegada', () => {
+        expect(Object.keys(d.AUTORES_ICNOFOSSEIS).sort()).toEqual(Object.keys(d.ICNOFOSSEIS).sort());
+        Object.values(d.AUTORES_ICNOFOSSEIS).forEach(a => {
+            expect(Object.keys(d.GRUPOS_PEGADAS)).toContain(a.grupo);
+            ['autor', 'exemplo', 'pistas', 'curiosidade'].forEach(k => expect(a[k]).toBeTruthy());
+        });
+    });
+    test('os distratores do jogo são espécies do museu', () => {
+        const nomes = d.DINOSSAUROS_REAIS.map(x => x.Nome);
+        d.DISTRATORES_ICNOFOSSEIS.forEach(n => expect(nomes).toContain(n));
+    });
+    test('toda espécie do museu está em um clado da árvore', () => {
+        d.DINOSSAUROS_REAIS.forEach(x => expect(d.CLADOS_INFO[d.CLADO_DINOSSAURO[x.Nome]]).toBeTruthy());
+    });
+    test('cada período tem paisagem, ao menos 5 plantas e curiosidades', () => {
+        ['Triássico', 'Jurássico', 'Cretáceo'].forEach(p => {
+            expect(d.PLANTAS_PERIODO[p].paisagem).toBeTruthy();
+            expect(d.PLANTAS_PERIODO[p].plantas.length).toBeGreaterThanOrEqual(5);
+            d.PLANTAS_PERIODO[p].plantas.forEach(pl => expect(typeof pl.existeHoje).toBe('boolean'));
+            expect(d.MUNDO_PERDIDO[p].length).toBeGreaterThanOrEqual(3);
+        });
+    });
+    test('as eras do globo estão dentro do Mesozoico e em ordem', () => {
+        d.ERAS_GLOBO.forEach(e => { expect(e).toBeLessThanOrEqual(252); expect(e).toBeGreaterThanOrEqual(65); });
+        expect([...d.ERAS_GLOBO].sort((a, b) => b - a)).toEqual(d.ERAS_GLOBO);
+    });
+});

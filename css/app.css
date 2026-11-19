@@ -232,12 +232,11 @@
 
 [data-plataforma="app"] .lab-layout,
 [data-plataforma="app"] .icno-layout,
-[data-plataforma="app"] .arvore-layout,
 [data-plataforma="app"] .pdf-layout,
-[data-plataforma="app"] .mapa-layout { grid-template-columns: 1fr; }
+[data-plataforma="app"] .mapa-layout,
+[data-plataforma="app"] .viagem-grade { grid-template-columns: 1fr; }
 [data-plataforma="app"] .lab-controles,
 [data-plataforma="app"] .icno-fossil,
-[data-plataforma="app"] .arvore-painel,
 [data-plataforma="app"] .pdf-dica { position: static; }
 [data-plataforma="app"] .grade-2,
 [data-plataforma="app"] .grade-3 { grid-template-columns: 1fr; }
@@ -245,12 +244,14 @@
 [data-plataforma="app"] .kpis { grid-template-columns: 1fr; gap: .6rem; }
 [data-plataforma="app"] .equivalencias { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; }
 [data-plataforma="app"] .equivalencia { flex-direction: column; text-align: center; padding: .6rem .3rem; gap: .2rem; }
-[data-plataforma="app"] .opcoes-radio { grid-template-columns: 1fr; }
 [data-plataforma="app"] .icno-imagem { min-height: 240px; }
 [data-plataforma="app"] .grafico-wrapper { height: 280px; }
-[data-plataforma="app"] .arvore-grafico { height: 420px; }
+[data-plataforma="app"] .arvore-viewport { max-height: 60vh; }
 [data-plataforma="app"] .mapa { height: 340px; }
-[data-plataforma="app"] .globo-wrapper { aspect-ratio: 1 / 1; }
+[data-plataforma="app"] .globo-wrapper,
+[data-plataforma="app"] .viagem-globo .globo-wrapper { aspect-ratio: 1 / 1; }
+[data-plataforma="app"] .linha-tempo-epoca { color: transparent; }
+[data-plataforma="app"] .dinos-epoca { grid-template-columns: 1fr; max-height: none; }
 [data-plataforma="app"] .grade-conquistas { grid-template-columns: 1fr; }
 [data-plataforma="app"] .placar { max-width: none; }
 [data-plataforma="app"] .fatos { grid-template-columns: 1fr; }

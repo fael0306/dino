@@ -264,3 +264,81 @@ describe('texto e caminhos', () => {
         expect(u.caminhoImagemIcnofossil('Inexistente')).toBeNull();
     });
 });
+
+describe('Viagem no Tempo', () => {
+    const { EPOCAS, ERAS_GLOBO } = require('../js/data.js');
+
+    test('epocaPorIdade encontra a época certa, inclusive nos limites', () => {
+        expect(u.epocaPorIdade(252, EPOCAS).nome).toBe('Triássico Inferior');
+        expect(u.epocaPorIdade(240, EPOCAS).nome).toBe('Triássico Médio');
+        expect(u.epocaPorIdade(150, EPOCAS).nome).toBe('Jurássico Superior');
+        expect(u.epocaPorIdade(100, EPOCAS).nome).toBe('Cretáceo Superior');
+        expect(u.epocaPorIdade(66, EPOCAS).nome).toBe('Cretáceo Superior');
+        expect(u.epocaPorIdade(30, EPOCAS)).toBeNull();
+    });
+
+    test('toda idade do Mesozoico (252 a 66 Ma) tem uma época', () => {
+        for (let idade = 66; idade <= 252; idade++) {
+            expect(u.epocaPorIdade(idade, EPOCAS)).toBeTruthy();
+        }
+    });
+
+    test('eraGloboMaisProxima só devolve eras que o globo aceita', () => {
+        expect(u.eraGloboMaisProxima(150, ERAS_GLOBO)).toBe(150);
+        expect(u.eraGloboMaisProxima(66, ERAS_GLOBO)).toBe(65);
+        expect(u.eraGloboMaisProxima(252, ERAS_GLOBO)).toBe(240);
+        expect(u.eraGloboMaisProxima(185, ERAS_GLOBO)).toBe(200); // empate entre 170 e 200: a mais antiga
+        expect(u.eraGloboMaisProxima(100, [])).toBeNull();
+        for (let idade = 66; idade <= 252; idade++) {
+            expect(ERAS_GLOBO).toContain(u.eraGloboMaisProxima(idade, ERAS_GLOBO));
+        }
+    });
+
+    test('dinossaurosDaEpoca compara a época exata', () => {
+        const lista = u.dinossaurosDaEpoca('Jurássico Inferior', DINOSSAUROS_REAIS);
+        expect(lista.map(d => d.Nome)).toEqual(['Dilophosaurus wetherilli']);
+    });
+});
+
+describe('Paleo-Detetive (escolha do dinossauro)', () => {
+    const { AUTORES_ICNOFOSSEIS, DISTRATORES_ICNOFOSSEIS } = require('../js/data.js');
+    const grupoDe = nome => Object.values(AUTORES_ICNOFOSSEIS).find(a => a.exemplo === nome)?.grupo
+        || (DISTRATORES_ICNOFOSSEIS.includes(nome) ? 'encouracado' : null);
+
+    test.each(Object.keys(AUTORES_ICNOFOSSEIS))('%s: 4 alternativas, uma de cada grupo, com a resposta certa', icno => {
+        for (let semente = 1; semente <= 20; semente++) {
+            const { opcoes, correta } = u.gerarOpcoesIcno(icno, AUTORES_ICNOFOSSEIS, DISTRATORES_ICNOFOSSEIS, u.criarRng(semente));
+            expect(opcoes).toHaveLength(4);
+            expect(correta).toBe(AUTORES_ICNOFOSSEIS[icno].exemplo);
+            expect(opcoes).toContain(correta);
+            expect(new Set(opcoes.map(grupoDe)).size).toBe(4);
+        }
+    });
+
+    test('icnogênero desconhecido não gera alternativas', () => {
+        expect(u.gerarOpcoesIcno('Inexistente', AUTORES_ICNOFOSSEIS, DISTRATORES_ICNOFOSSEIS)).toEqual({ opcoes: [], correta: null });
+    });
+});
+
+describe('árvore evolutiva', () => {
+    const { ARVORE_ARESTAS, CLADO_DINOSSAURO } = require('../js/data.js');
+
+    test('construirArvore monta a hierarquia a partir de Reptilia', () => {
+        const arvore = u.construirArvore(ARVORE_ARESTAS);
+        expect(arvore.nome).toBe('Reptilia');
+        expect(arvore.filhos.map(f => f.nome)).toEqual(['Archosauria', 'Sauropterygia', 'Ichthyosauria']);
+    });
+
+    test('cladoEDescendentes inclui o próprio clado e todos abaixo dele', () => {
+        expect(u.cladoEDescendentes('Sauropodomorpha', ARVORE_ARESTAS).sort())
+            .toEqual(['Brachiosauridae', 'Diplodocidae', 'Sauropodomorpha']);
+    });
+
+    test('exemplosDoClado soma as espécies dos grupos descendentes', () => {
+        const dinos = u.exemplosDoClado('Dinosauria', ARVORE_ARESTAS, CLADO_DINOSSAURO, DINOSSAUROS_REAIS);
+        expect(dinos).toHaveLength(50);
+        const espinos = u.exemplosDoClado('Spinosauridae', ARVORE_ARESTAS, CLADO_DINOSSAURO, DINOSSAUROS_REAIS).map(d => d.Nome);
+        expect(espinos.sort()).toEqual(['Baryonyx walkeri', 'Spinosaurus aegyptiacus']);
+        expect(u.exemplosDoClado('Pterosauria', ARVORE_ARESTAS, CLADO_DINOSSAURO, DINOSSAUROS_REAIS)).toEqual([]);
+    });
+});

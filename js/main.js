@@ -35,12 +35,17 @@ function construirNavegacao() {
 // ------------------------------------------------------------
 // Navegação entre abas (com persistência de estado)
 // ------------------------------------------------------------
+// Abas que foram juntadas ou renomeadas: os links antigos continuam funcionando
+const ABAS_ANTIGAS = { deriva: 'viagem', tempo: 'viagem' };
+
 function abaDoHash() {
-    const id = (location.hash || '').replace(/^#\/?/, '');
+    let id = (location.hash || '').replace(/^#\/?/, '');
+    id = ABAS_ANTIGAS[id] || id;
     return obterAba(id) ? id : null;
 }
 
 async function navegarParaAba(abaId, { focar = true } = {}) {
+    abaId = ABAS_ANTIGAS[abaId] || abaId;
     if (!obterAba(abaId)) abaId = 'inicio';
     if (location.hash !== `#/${abaId}`) {
         // atualiza a URL sem disparar uma segunda navegação
@@ -76,10 +81,6 @@ async function navegarParaAba(abaId, { focar = true } = {}) {
     } else if (typeof aba.aoAtivar === 'function') {
         aba.aoAtivar();
     }
-
-    // Bibliotecas que precisam medir o container visível
-    if (abaId === 'deriva' && state.graficos.mapa) setTimeout(() => state.graficos.mapa.invalidateSize(), 50);
-    if (abaId === 'arvore' && state.graficos.arvore) setTimeout(() => state.graficos.arvore.fit(), 50);
 
     if (focar) document.getElementById(`titulo-${abaId}`)?.focus({ preventScroll: true });
     anunciar(`${aba.titulo} aberta.`);

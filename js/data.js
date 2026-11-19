@@ -228,21 +228,21 @@ const DADOS_CLIMA = {
     "Triássico (252-201 Ma)": {
         temperatura: 20,
         co2: 2000,
-        vegetacao: "Gimnospermas (coníferas, cicadáceas), primeiras plantas com flores no final",
+        vegetacao: "Samambaias-com-sementes, coníferas, cicadáceas, ginkgos e cavalinhas. Ainda não existiam flores.",
         nivelMar: "Baixo (Pangeia unificada)",
         descricao: "Clima quente e seco, com desertos extensos. Concentração de CO₂ muito alta."
     },
     "Jurássico (201-145 Ma)": {
         temperatura: 22,
         co2: 1500,
-        vegetacao: "Florestas de coníferas, cicadáceas, ginkgos. Primeiras angiospermas no final.",
+        vegetacao: "Florestas de coníferas e samambaias, com cicadáceas, ginkgos e benetitales. As flores ainda não existiam.",
         nivelMar: "Moderado, com início da abertura do Atlântico",
         descricao: "Clima quente e úmido, com estações definidas e aumento das florestas."
     },
     "Cretáceo (145-66 Ma)": {
         temperatura: 26,
         co2: 1000,
-        vegetacao: "Angiospermas (plantas com flores) tornam-se dominantes",
+        vegetacao: "As plantas com flores (angiospermas) surgem e se tornam dominantes até o fim do período.",
         nivelMar: "Alto (mar epicontinental inundando continentes)",
         descricao: "Clima quente e úmido, sem calotas polares. Grande diversificação de plantas e dinossauros."
     }
@@ -327,6 +327,152 @@ const CENARIOS_KPG = [
 ];
 
 // ============================================================
+// 12. Épocas do Mesozoico (Viagem no Tempo) – ICS 2023, valores arredondados
+// ============================================================
+const EPOCAS = [
+    { nome: "Triássico Inferior", periodo: "Triássico", inicio: 252, fim: 247, destaque: "A vida se recupera da maior extinção da história, a do fim do Permiano." },
+    { nome: "Triássico Médio", periodo: "Triássico", inicio: 247, fim: 237, destaque: "Surgem os parentes mais próximos dos dinossauros, e répteis marinhos se espalham pelos oceanos." },
+    { nome: "Triássico Superior", periodo: "Triássico", inicio: 237, fim: 201, destaque: "Aparecem os primeiros dinossauros, pterossauros e mamíferos." },
+    { nome: "Jurássico Inferior", periodo: "Jurássico", inicio: 201, fim: 174, destaque: "Depois da extinção do fim do Triássico, os dinossauros passam a dominar a terra firme." },
+    { nome: "Jurássico Médio", periodo: "Jurássico", inicio: 174, fim: 161, destaque: "A Pangeia começa a se partir e os saurópodes ficam cada vez maiores." },
+    { nome: "Jurássico Superior", periodo: "Jurássico", inicio: 161, fim: 145, destaque: "A era dos gigantes: Brachiosaurus, Diplodocus e as primeiras aves, como o Archaeopteryx." },
+    { nome: "Cretáceo Inferior", periodo: "Cretáceo", inicio: 145, fim: 100.5, destaque: "As plantas com flores surgem e se espalham, e o Atlântico Sul começa a se abrir." },
+    { nome: "Cretáceo Superior", periodo: "Cretáceo", inicio: 100.5, fim: 66, destaque: "Tiranossauros, ceratopsianos e hadrossauros dominam até o impacto do asteroide, há 66 Ma." }
+];
+
+/** Eras disponíveis no globo do Ancient Earth (o globo só aceita estes valores). */
+const ERAS_GLOBO = [240, 220, 200, 170, 150, 120, 105, 90, 65];
+
+// ============================================================
+// 13. Prováveis autores das pegadas (jogo Paleo-Detetive)
+// Icnofósseis não identificam uma espécie exata: o "autor" é o grupo
+// de dinossauros mais provável, com um exemplo representativo.
+// ============================================================
+const AUTORES_ICNOFOSSEIS = {
+    "Grallator": { grupo: "teropode", autor: "Terópodes pequenos", exemplo: "Coelophysis bauri", pistas: "3 dedos finos e pontudos, com marcas de garras; pegada pequena, de até uns 15 cm.", curiosidade: "É uma das pegadas de dinossauro mais comuns do Triássico Superior e do Jurássico Inferior." },
+    "Eubrontes": { grupo: "teropode", autor: "Terópodes grandes do Jurássico Inferior", exemplo: "Dilophosaurus wetherilli", pistas: "3 dedos com garras; pegada grande (25 a 50 cm) e alongada.", curiosidade: "É muito comum no vale do rio Connecticut (EUA), onde foi uma das primeiras pegadas de dinossauro estudadas, ainda no século XIX." },
+    "Megalosauripus": { grupo: "teropode", autor: "Terópodes grandes e robustos", exemplo: "Allosaurus fragilis", pistas: "3 dedos grossos com garras; pegada grande e larga.", curiosidade: "O nome lembra o Megalosaurus, o primeiro dinossauro descrito pela ciência, em 1824." },
+    "Wintonopus": { grupo: "ornitisquio", autor: "Ornitópodes pequenos", exemplo: "Hypsilophodon foxii", pistas: "3 dedos curtos e arredondados, sem garras afiadas; pegada pequena.", curiosidade: "Aparece aos milhares em Lark Quarry, na Austrália, num sítio que já foi interpretado como uma 'debandada' de pequenos dinossauros." },
+    "Amblydactylus": { grupo: "ornitisquio", autor: "Ornitópodes grandes (iguanodontes e hadrossauros)", exemplo: "Iguanodon bernissartensis", pistas: "3 dedos largos e arredondados, quase como cascos; pegada grande.", curiosidade: "Foi descrita a partir de pistas do Cretáceo Inferior no cânion do rio Peace, no Canadá." },
+    "Anomoepus": { grupo: "ornitisquio", autor: "Ornitísquios primitivos", exemplo: "Lesothosaurus diagnosticus", pistas: "4 dedos com marcas de garras; tamanho médio. Às vezes aparecem as marcas das mãos, quando o animal se agachava.", curiosidade: "Algumas pistas mostram o animal sentado, com marcas do quadril e das mãos no chão." },
+    "Brontopodus": { grupo: "sauropode", autor: "Saurópodes de passada larga", exemplo: "Sauroposeidon proteles", pistas: "Pegadas enormes e arredondadas, sem garras, com as pistas da esquerda e da direita bem afastadas.", curiosidade: "As pistas de Glen Rose, no Texas (EUA), mostram saurópodes andando juntos e até um terópode seguindo um deles." },
+    "Parabrontopodus": { grupo: "sauropode", autor: "Saurópodes de passada estreita (diplodocídeos)", exemplo: "Diplodocus longus", pistas: "Pegadas enormes e arredondadas, sem garras, com as pistas da esquerda e da direita quase na mesma linha.", curiosidade: "Esse padrão de passada estreita é associado a diplodocídeos, como o Diplodocus e o Apatosaurus." }
+};
+
+/** Dinossauros usados como alternativas erradas: quadrúpedes encouraçados ou com chifres. */
+const DISTRATORES_ICNOFOSSEIS = ["Stegosaurus stenops", "Triceratops horridus", "Ankylosaurus magniventris"];
+
+const GRUPOS_PEGADAS = {
+    teropode: "Terópode",
+    ornitisquio: "Ornitísquio bípede",
+    sauropode: "Saurópode",
+    encouracado: "Quadrúpede com placas, chifres ou couraça"
+};
+
+// ============================================================
+// 14. Exemplos de cada clado (Árvore Evolutiva)
+// Cada espécie do museu fica no clado mais específico da árvore.
+// ============================================================
+const CLADO_DINOSSAURO = {
+    "Tyrannosaurus rex": "Tyrannosauridae",
+    "Velociraptor mongoliensis": "Dromaeosauridae", "Deinonychus antirrhopus": "Dromaeosauridae",
+    "Microraptor gui": "Dromaeosauridae", "Utahraptor ostrommaysorum": "Dromaeosauridae",
+    "Spinosaurus aegyptiacus": "Spinosauridae", "Baryonyx walkeri": "Spinosauridae",
+    "Allosaurus fragilis": "Theropoda", "Carnotaurus sastrei": "Theropoda", "Therizinosaurus cheloniformis": "Theropoda",
+    "Archaeopteryx lithographica": "Theropoda", "Coelophysis bauri": "Theropoda", "Giganotosaurus carolinii": "Theropoda",
+    "Carcharodontosaurus saharicus": "Theropoda", "Dilophosaurus wetherilli": "Theropoda", "Ceratosaurus nasicornis": "Theropoda",
+    "Gallimimus bullatus": "Theropoda", "Ornithomimus velox": "Theropoda", "Struthiomimus altus": "Theropoda",
+    "Oviraptor philoceratops": "Theropoda", "Citipati osmolskae": "Theropoda",
+    "Herrerasaurus ischigualastensis": "Saurischia",
+    "Brachiosaurus altithorax": "Brachiosauridae", "Sauroposeidon proteles": "Brachiosauridae",
+    "Diplodocus longus": "Diplodocidae", "Apatosaurus louisae": "Diplodocidae",
+    "Patagotitan mayorum": "Sauropodomorpha", "Plateosaurus engelhardti": "Sauropodomorpha", "Camarasaurus grandis": "Sauropodomorpha",
+    "Mamenchisaurus hochuanensis": "Sauropodomorpha", "Amargasaurus cazaui": "Sauropodomorpha", "Euhelopus zdanskyi": "Sauropodomorpha",
+    "Triceratops horridus": "Ceratopsia", "Styracosaurus albertensis": "Ceratopsia", "Chasmosaurus belli": "Ceratopsia",
+    "Protoceratops andrewsi": "Ceratopsia", "Psittacosaurus mongoliensis": "Ceratopsia",
+    "Parasaurolophus walkeri": "Ornithopoda", "Iguanodon bernissartensis": "Ornithopoda", "Edmontosaurus annectens": "Ornithopoda",
+    "Lambeosaurus lambei": "Ornithopoda", "Corythosaurus casuarius": "Ornithopoda", "Maiasaura peeblesorum": "Ornithopoda",
+    "Shantungosaurus giganteus": "Ornithopoda",
+    "Stegosaurus stenops": "Stegosauria", "Kentrosaurus aethiopicus": "Stegosauria", "Tuojiangosaurus multispinus": "Stegosauria",
+    "Ankylosaurus magniventris": "Ankylosauria", "Euoplocephalus tutus": "Ankylosauria",
+    "Pachycephalosaurus wyomingensis": "Ornithischia"
+};
+
+/** Exemplos que não estão no museu (grupos que não são dinossauros, ou atuais). */
+const EXEMPLOS_EXTRAS_CLADOS = {
+    "Reptilia": ["Lagartos", "Serpentes", "Tartarugas"],
+    "Archosauria": ["Crocodilos e jacarés"],
+    "Dinosauria": ["Aves atuais"],
+    "Pterosauria": ["Pteranodon", "Quetzalcoatlus", "Rhamphorhynchus"],
+    "Sauropterygia": ["Nothosaurus", "Placodus"],
+    "Plesiosauria": ["Elasmosaurus", "Plesiosaurus", "Liopleurodon"],
+    "Ichthyosauria": ["Ichthyosaurus", "Ophthalmosaurus", "Shonisaurus"]
+};
+
+// ============================================================
+// 15. Plantas de cada período (aba Clima)
+// ============================================================
+const PLANTAS_PERIODO = {
+    "Triássico": {
+        paisagem: "O interior da Pangeia era muito seco, com grandes desertos. As florestas ficavam perto de rios, lagos e do litoral. Não existiam flores nem grama.",
+        plantas: [
+            { nome: "Dicroidium", grupo: "Samambaia-com-sementes", icone: "🌿", existeHoje: false, descricao: "Dominava as florestas do sul da Pangeia (Gondwana), inclusive na região onde hoje fica o Sul do Brasil." },
+            { nome: "Coníferas primitivas", grupo: "Coníferas", icone: "🌲", existeHoje: true, descricao: "Troncos petrificados dessas árvores formam a Floresta Petrificada do Arizona (EUA) e os fósseis de Mata, no Rio Grande do Sul." },
+            { nome: "Cicadáceas", grupo: "Gimnospermas", icone: "🌴", existeHoje: true, descricao: "Parecem palmeiras, mas são parentes dos pinheiros. Quase não mudaram desde o Triássico." },
+            { nome: "Ginkgos", grupo: "Gimnospermas", icone: "🍃", existeHoje: true, descricao: "Hoje resta uma única espécie, o Ginkgo biloba, considerado um 'fóssil vivo'." },
+            { nome: "Cavalinhas gigantes", grupo: "Equisetáceas", icone: "🎋", existeHoje: true, descricao: "Parentes das cavalinhas atuais (Equisetum), mas bem maiores." },
+            { nome: "Pleuromeia", grupo: "Licófita", icone: "🌱", existeHoje: false, descricao: "Planta em forma de poste, com cerca de 2 m, que se espalhou logo depois da grande extinção do Permiano." }
+        ]
+    },
+    "Jurássico": {
+        paisagem: "O clima ficou mais úmido e as florestas de coníferas e samambaias se espalharam. Os saurópodes gigantes comiam folhas de coníferas e cicadáceas. As flores ainda não existiam.",
+        plantas: [
+            { nome: "Araucárias", grupo: "Coníferas", icone: "🌲", existeHoje: true, descricao: "A Araucaria mirabilis, do Jurássico da Patagônia, é parente do pinheiro-do-paraná, árvore símbolo do Sul do Brasil." },
+            { nome: "Samambaias arborescentes", grupo: "Samambaias", icone: "🌿", existeHoje: true, descricao: "Formavam o sub-bosque das florestas. São parentes do xaxim." },
+            { nome: "Cicadáceas", grupo: "Gimnospermas", icone: "🌴", existeHoje: true, descricao: "Tão comuns que o Jurássico costuma ser chamado de 'era das cicadáceas'." },
+            { nome: "Benetitales", grupo: "Gimnospermas", icone: "🌺", existeHoje: false, descricao: "Pareciam cicadáceas, mas tinham estruturas parecidas com flores. Desapareceram por volta do fim do Cretáceo." },
+            { nome: "Parentes das sequoias e ciprestes", grupo: "Coníferas", icone: "🌲", existeHoje: true, descricao: "A família dos ciprestes, que inclui as sequoias atuais, já existia no Jurássico." },
+            { nome: "Ginkgos", grupo: "Gimnospermas", icone: "🍃", existeHoje: true, descricao: "Eram muito mais variados do que hoje, com várias espécies espalhadas pelo hemisfério norte." }
+        ]
+    },
+    "Cretáceo": {
+        paisagem: "As plantas com flores se espalharam rapidamente e, junto com elas, insetos polinizadores como as primeiras abelhas. Havia florestas até perto dos polos, que não tinham gelo.",
+        plantas: [
+            { nome: "Archaefructus", grupo: "Angiosperma primitiva", icone: "🌸", existeHoje: false, descricao: "Uma das plantas com flores mais antigas que se conhece (cerca de 125 Ma), encontrada na China. Vivia na água." },
+            { nome: "Magnólias", grupo: "Angiospermas", icone: "🌸", existeHoje: true, descricao: "Grupo antigo de plantas com flores, polinizadas por besouros, como já acontecia no Cretáceo." },
+            { nome: "Ninfeias", grupo: "Angiospermas", icone: "🪷", existeHoje: true, descricao: "Parentes da vitória-régia, estão entre as linhagens de plantas com flores mais antigas." },
+            { nome: "Palmeiras", grupo: "Angiospermas", icone: "🌴", existeHoje: true, descricao: "As primeiras palmeiras aparecem no fim do Cretáceo." },
+            { nome: "Gramíneas", grupo: "Angiospermas", icone: "🌾", existeHoje: true, descricao: "Eram raras, mas já existiam: restos de grama foram achados em fezes fossilizadas de saurópodes na Índia." },
+            { nome: "Coníferas e samambaias", grupo: "Coníferas e samambaias", icone: "🌲", existeHoje: true, descricao: "Mesmo com as flores se espalhando, as florestas de coníferas e samambaias continuavam comuns." }
+        ]
+    }
+};
+
+// ============================================================
+// 16. Mundo perdido: coisas que existiam e não existem mais (aba Clima)
+// ============================================================
+const MUNDO_PERDIDO = {
+    "Triássico": [
+        { icone: "bi-globe-americas", titulo: "Um único supercontinente", texto: "Todos os continentes estavam unidos na Pangeia, cercada por um único oceano gigante, o Pantalassa." },
+        { icone: "bi-droplet-half", titulo: "Falsos crocodilos", texto: "Os fitossauros pareciam crocodilos, mas não eram parentes diretos: tinham as narinas no alto da cabeça, perto dos olhos." },
+        { icone: "bi-lightning", titulo: "Os predadores não eram dinossauros", texto: "Os grandes caçadores eram os rauissúquios, parentes dos crocodilos. Os primeiros dinossauros eram pequenos." }
+    ],
+    "Jurássico": [
+        { icone: "bi-water", titulo: "O Atlântico ainda não existia", texto: "América do Sul e África estavam coladas. O Atlântico Sul só começou a se abrir no Cretáceo." },
+        { icone: "bi-compass", titulo: "O mar de Tétis", texto: "Um oceano tropical separava os continentes do norte (Laurásia) dos do sul (Gondwana). O Mediterrâneo é um dos seus restos." },
+        { icone: "bi-hurricane", titulo: "Mares cheios de amonites", texto: "Moluscos com concha em espiral, parentes das lulas, eram comuníssimos. Desapareceram junto com os dinossauros." },
+        { icone: "bi-feather", titulo: "Céus dos pterossauros", texto: "Os céus eram dominados pelos pterossauros, répteis voadores que não deixaram descendentes." }
+    ],
+    "Cretáceo": [
+        { icone: "bi-signpost-split", titulo: "Um mar cortava a América do Norte", texto: "O Mar Interior Ocidental dividia a América do Norte em duas grandes ilhas." },
+        { icone: "bi-clock-history", titulo: "Dias mais curtos", texto: "Há 70 milhões de anos, um dia durava cerca de 23,5 horas e o ano tinha 372 dias, segundo os anéis de crescimento de conchas fósseis." },
+        { icone: "bi-bricks", titulo: "Recifes de moluscos", texto: "Muitos recifes eram construídos por rudistas, moluscos bivalves em forma de cone, e não principalmente por corais." },
+        { icone: "bi-airplane", titulo: "Voadores do tamanho de aviões", texto: "O pterossauro Quetzalcoatlus tinha cerca de 10 metros de envergadura." },
+        { icone: "bi-snow2", titulo: "Polos sem gelo", texto: "Havia florestas e dinossauros perto dos polos, como no Alasca e no sul da Austrália." }
+    ]
+};
+
+// ============================================================
 // Export para ambiente Node/Jest
 // ============================================================
 if (typeof module !== 'undefined' && module.exports) {
@@ -342,6 +488,15 @@ if (typeof module !== 'undefined' && module.exports) {
         CLADOS_INFO,
         CONQUISTAS_LISTA,
         REFERENCIAS_ESCALA,
-        CENARIOS_KPG
+        CENARIOS_KPG,
+        EPOCAS,
+        ERAS_GLOBO,
+        AUTORES_ICNOFOSSEIS,
+        DISTRATORES_ICNOFOSSEIS,
+        GRUPOS_PEGADAS,
+        CLADO_DINOSSAURO,
+        EXEMPLOS_EXTRAS_CLADOS,
+        PLANTAS_PERIODO,
+        MUNDO_PERDIDO
     };
 }

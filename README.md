@@ -1,15 +1,22 @@
-# 🦴 PaleoLab Científico – v2.0.1 (Web Estática)
+# 🦴 PaleoLab Científico – v2.1.0 (Web Estática)
 
 Laboratório virtual interativo para o ensino de paleontologia e ciências naturais, voltado para alunos do ensino fundamental e médio. Utiliza dados científicos reais, modelos matemáticos e jogos para explorar o mundo dos dinossauros – **tudo rodando diretamente no navegador, sem servidor backend**.
 
 ---
 
-## 🆕 Novidades da v2.0.0
+## 🆕 Novidades da v2.1.0
+
+- **Viagem no Tempo:** a Linha do Tempo e a Deriva Continental viraram uma aba só. Você escolhe a idade, e o globo, o período, os dinossauros e o mapa de fósseis acompanham.
+- **Novo Paleo‑Detetive:** veja a pegada fóssil e escolha qual dinossauro a deixou.
+- **Árvore Evolutiva vertical**, no estilo de árvore genealógica, com exemplos de dinossauros em cada grupo (sem depender de bibliotecas externas).
+- **Clima ampliado:** plantas de cada período e a seção "Mundo perdido", com curiosidades sobre o que existia e não existe mais.
+
+## Novidades da v2.0.0
 
 - **Nova interface:** design próprio com barra lateral, **tema claro/escuro**, painel inicial, notificações e layout pensado para celulares (inclusive telas com menos de 400 px).
 - **Acessibilidade:** navegação completa por teclado, leitores de tela (ARIA), textos alternativos em todas as imagens e foco gerenciado.
 - **Mais rápido:** bibliotecas externas carregadas só quando necessárias e imagens 4× menores.
-- **Testes automatizados:** 97 testes unitários com Jest.
+- **Testes automatizados:** testes unitários com Jest (120 na v2.1.0).
 - **Modo aplicativo:** layout de app Android (barra inferior, telas de seção, bottom sheets), usado pelo app [dino-app](https://github.com/fael0306/dino-app).
 - **Backup do progresso:** exporte e importe suas conquistas em JSON.
 - **Muitas melhorias de uso** em todas as abas: museu com busca e filtros, quiz com feedback imediato, simulador em tempo real, relatório PDF personalizável e mais.
@@ -23,20 +30,19 @@ Veja todos os detalhes no [CHANGELOG](CHANGELOG.md).
 **Explorar**
 1. **📏 Escala Real** – Compare até 3 animais (dinossauros, humano ou elefante) lado a lado, com régua em metros.
 2. **🦴 Fósseis Reais** – Museu com 50 espécies reais: busca, filtros por período e dieta, ordenação e ficha detalhada.
-3. **🗺️ Deriva Continental** – Globo da Terra antiga (Ancient Earth) e mapa dos sítios fósseis.
-4. **⏳ Linha do Tempo** – Triássico, Jurássico e Cretáceo em escala, com os dinossauros de cada período.
-5. **🌍 Clima Mesozoico** – Temperatura, CO₂, nível do mar e vegetação, comparados com o clima atual.
-6. **🌳 Árvore Evolutiva** – Cladograma interativo (vis.js) com descrição de cada grupo e versão em lista.
+3. **⏳ Viagem no Tempo** – Escolha um momento entre 252 e 66 milhões de anos atrás: o globo da Terra antiga (Ancient Earth) mostra os continentes daquela era, aparecem o período, a época, os acontecimentos e os dinossauros, e o mapa mostra onde os fósseis daquela época foram encontrados.
+4. **🌍 Clima Mesozoico** – Temperatura, CO₂ e nível do mar comparados com hoje, as plantas de cada período e o "Mundo perdido".
+5. **🌳 Árvore Evolutiva** – Árvore genealógica vertical dos grandes grupos de répteis, com exemplos do museu em cada grupo.
 
 **Laboratório**
-7. **☄️ Extinção K‑Pg** – Simulador do impacto do asteroide (Lotka‑Volterra + Runge‑Kutta 4) com cenários prontos.
-8. **⚖️ Massa Corporal** – Estimativa de massa pela circunferência do fêmur (Campione & Evans, 2012) com gráfico de dispersão.
-9. **👣 Icnofósseis** – Jogo "Paleo‑Detetive": identifique o icnogênero de uma pegada com uma chave dicotômica.
+6. **☄️ Extinção K‑Pg** – Simulador do impacto do asteroide (Lotka‑Volterra + Runge‑Kutta 4) com cenários prontos.
+7. **⚖️ Massa Corporal** – Estimativa de massa pela circunferência do fêmur (Campione & Evans, 2012) com gráfico de dispersão.
+8. **👣 Icnofósseis** – Jogo "Paleo‑Detetive": observe uma pegada fóssil e descubra qual dinossauro a deixou.
 
 **Desafios**
-10. **📝 Quiz & Batalha** – 60 perguntas em 3 níveis e duelos entre dois dinossauros com perguntas geradas na hora.
-11. **🏆 Conquistas** – 7 medalhas, progresso e backup em JSON.
-12. **📄 Relatório PDF** – Relatório com conquistas, quiz, batalha, simulação K‑Pg, escala e massa corporal.
+9. **📝 Quiz & Batalha** – 60 perguntas em 3 níveis e duelos entre dois dinossauros com perguntas geradas na hora.
+10. **🏆 Conquistas** – 7 medalhas, progresso e backup em JSON.
+11. **📄 Relatório PDF** – Relatório com conquistas, quiz, batalha, simulação K‑Pg, escala e massa corporal.
 
 ---
 
@@ -53,7 +59,7 @@ O PaleoLab é uma aplicação **estática**:
    ```
    Também funciona com a extensão Live Server do VS Code, GitHub Pages, nginx, Apache etc.
 
-> ℹ️ **Internet:** os ícones já vêm no projeto (`vendor/`). Gráficos, árvore e PDF usam bibliotecas externas: rode `./scripts/baixar-bibliotecas.sh` uma vez para ter cópias locais; sem elas, o site busca as bibliotecas nas CDNs. O globo e o mapa sempre precisam de internet (o mapa usa OpenStreetMap, com Esri como reserva; nenhum dos dois exige chave de acesso). Recursos indisponíveis mostram um aviso com o botão "Tentar novamente".
+> ℹ️ **Internet:** os ícones já vêm no projeto (`vendor/`). Gráficos, mapa e PDF usam bibliotecas externas: rode `./scripts/baixar-bibliotecas.sh` uma vez para ter cópias locais; sem elas, o site busca as bibliotecas nas CDNs. O globo e o mapa sempre precisam de internet (o mapa usa OpenStreetMap, com Esri como reserva; nenhum dos dois exige chave de acesso). Recursos indisponíveis mostram um aviso com o botão "Tentar novamente".
 >
 > ℹ️ **Abrindo pelo arquivo (file://):** alguns navegadores bloqueiam a leitura de imagens locais em canvas. Por isso, só a imagem da comparação de escala dentro do PDF pode ficar de fora; use um servidor local para incluí‑la.
 
@@ -80,7 +86,7 @@ Os testes ficam em `tests/` e rodam no ambiente `node` do Jest, sem dependência
 
 | Arquivo | O que testa |
 |---------|-------------|
-| `utils.test.js` | Icnofósseis, simulação K‑Pg (valores de referência), massa corporal, escala, quiz, modo Batalha (todos os 2.450 pares), períodos, formatação |
+| `utils.test.js` | Icnofósseis e Paleo‑Detetive, simulação K‑Pg (valores de referência), massa corporal, escala, quiz, modo Batalha (todos os 2.450 pares), épocas e globo, árvore evolutiva, formatação |
 | `imagens.test.js` | `gerarSilhuetaPlaceholder` (desenho determinístico) e as funções de carregamento de imagem |
 | `store.test.js` | Conquistas, recordes, exportação e importação de progresso |
 | `loader.test.js` | Carregamento condicional de bibliotecas (cópia local, CDN de reserva, erro, tempo esgotado) |
@@ -154,7 +160,7 @@ PaleoLab Científico foi desenhado para sala de aula ou estudo em casa, com:
 - **Campione & Evans (2012)** – *A universal scaling relationship between body mass and proximal limb bone dimensions in quadrupedal terrestrial tetrapods.*
 - **Paleomap Project** – [earthbyte.org](https://www.earthbyte.org/)
 - **Modelo climático** – baseado em Scotese (2021) e IPCC (2021).
-- Bibliotecas: Chart.js, Leaflet, vis-network, jsPDF, Bootstrap Icons.
+- Bibliotecas: Chart.js, Leaflet, jsPDF, Bootstrap Icons.
 
 ---
 

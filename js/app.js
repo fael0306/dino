@@ -2,7 +2,7 @@
 // Núcleo da aplicação: registro de abas, registro de ações (eventos
 // centralizados), conquistas e indicadores de progresso.
 
-const VERSAO_APP = '2.0.1';
+const VERSAO_APP = '2.1.0';
 
 // ------------------------------------------------------------
 // Estado global compartilhado entre as abas
@@ -10,7 +10,7 @@ const VERSAO_APP = '2.0.1';
 const state = {
     abaAtiva: null,
     initialized: {},      // abas já renderizadas (não re-renderizam ao voltar)
-    graficos: {},         // instâncias Chart.js / vis.js por nome
+    graficos: {},         // instâncias Chart.js e Leaflet por nome
     escala: null,         // última comparação de escala (usada no PDF)
     simulacao: null,      // último resultado da simulação K-Pg (usado no PDF)
     quiz: null,           // último quiz concluído (usado no PDF)

@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.1.0] – Viagem no Tempo, novo Paleo-Detetive e árvore genealógica
+
+### Novidades
+- **Viagem no Tempo:** a **Linha do Tempo** e a **Deriva Continental** viraram uma aba só, com tudo integrado:
+  - a pessoa escolhe a idade (252 a 66 milhões de anos) na linha do tempo, que agora também mostra as épocas (Inferior, Médio, Superior);
+  - o **globo** mostra os continentes da era escolhida (o mapa mais próximo disponível no Ancient Earth), com opção de comparar com a Terra de hoje;
+  - aparecem o **período**, a **época**, os acontecimentos marcantes, um resumo do clima e os **dinossauros do museu** daquela época;
+  - o **mapa** mostra onde os fósseis daquela época foram encontrados; dá para ver todas as espécies ou uma só.
+  - Os links antigos (`#/deriva` e `#/tempo`) levam para a nova aba, e "Ver fósseis no mapa" na ficha leva a linha do tempo até a época do dinossauro.
+- **Paleo-Detetive (Icnofósseis):** o jogo agora mostra a pegada e quatro dinossauros, e a pessoa marca qual deles pode ter deixado a pegada. Cada alternativa é de um grupo diferente (terópode, ornitópode, saurópode e quadrúpede encouraçado). Há um botão de pistas e, depois da resposta, a explicação de como reconhecer a pegada e uma curiosidade.
+- **Árvore Evolutiva:** agora é **vertical**, no estilo de árvore genealógica, com a foto de um representante em cada grupo. Ao tocar num grupo, aparecem a descrição, a linhagem e **exemplos de dinossauros** daquele grupo (que abrem a ficha), além de exemplos de grupos que não são dinossauros, como pterossauros e plesiossauros. Tem zoom e funciona sem internet.
+- **Clima Mesozoico:**
+  - **Plantas de cada período:** paisagem e seis plantas por período, indicando quais ainda existem hoje e quais foram extintas;
+  - **Mundo perdido:** curiosidades sobre o que existia e não existe mais (Pangeia, mar de Tétis, amonites, dias mais curtos, polos sem gelo e outras).
+
+### Correções
+- Vegetação do Triássico e do Jurássico: o texto dizia que as primeiras flores surgiram nesses períodos; as plantas com flores aparecem no Cretáceo.
+
+### Internas
+- A biblioteca vis-network deixou de ser usada (a árvore é feita só com HTML e CSS).
+- Novos dados em `js/data.js` (épocas, eras do globo, autores das pegadas, clados das espécies, plantas e mundo perdido) e funções puras com testes (120 testes no total).
+
 ## [2.0.1] – Correção do mapa
 
 ### Correções

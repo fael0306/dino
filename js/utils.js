@@ -435,6 +435,77 @@ function gerarPerguntasBatalha(dino1, dino2, quantidade = 5, rng = Math.random) 
 }
 
 // ============================================================
+// VIAGEM NO TEMPO (épocas e globo)
+// ============================================================
+/** Época (ex.: "Jurássico Superior") que contém a idade, em milhões de anos. */
+function epocaPorIdade(idadeMa, epocas) {
+    const idade = Number(idadeMa);
+    return (epocas || []).find(e => idade <= e.inicio && idade >= e.fim) || null;
+}
+
+/** Era disponível no globo mais próxima da idade escolhida (empate: a mais antiga). */
+function eraGloboMaisProxima(idadeMa, eras) {
+    const idade = Number(idadeMa);
+    if (!eras || !eras.length || !Number.isFinite(idade)) return null;
+    return eras.reduce((melhor, era) => {
+        const d = Math.abs(era - idade), dm = Math.abs(melhor - idade);
+        return d < dm || (d === dm && era > melhor) ? era : melhor;
+    });
+}
+
+/** Espécies cujo campo Periodo é exatamente a época (ex.: "Cretáceo Superior"). */
+function dinossaurosDaEpoca(nomeEpoca, lista) {
+    return (lista || []).filter(d => d.Periodo === nomeEpoca);
+}
+
+// ============================================================
+// PALEO-DETETIVE (escolher o provável autor da pegada)
+// ============================================================
+/**
+ * Monta as alternativas de uma rodada: o autor correto e um dinossauro de cada
+ * um dos outros grupos (assim nunca há duas respostas plausíveis).
+ * @returns {{opcoes: string[], correta: string}}
+ */
+function gerarOpcoesIcno(icnogenero, autores, distratoresExtras, rng = Math.random) {
+    const certo = autores[icnogenero];
+    if (!certo) return { opcoes: [], correta: null };
+    const porGrupo = {};
+    Object.values(autores).forEach(a => { (porGrupo[a.grupo] = porGrupo[a.grupo] || []).push(a.exemplo); });
+    const sortear = lista => lista[Math.floor(rng() * lista.length)];
+    const erradas = Object.keys(porGrupo)
+        .filter(g => g !== certo.grupo)
+        .map(g => sortear([...new Set(porGrupo[g])]));
+    if (distratoresExtras && distratoresExtras.length) erradas.push(sortear(distratoresExtras));
+    return { opcoes: embaralhar([certo.exemplo, ...erradas], rng), correta: certo.exemplo };
+}
+
+// ============================================================
+// ÁRVORE EVOLUTIVA
+// ============================================================
+/** Estrutura hierárquica { nome, filhos[] } a partir das arestas [pai, filho]. */
+function construirArvore(arestas, raiz = 'Reptilia') {
+    const filhos = {};
+    (arestas || []).forEach(([pai, filho]) => { (filhos[pai] = filhos[pai] || []).push(filho); });
+    const montar = nome => ({ nome, filhos: (filhos[nome] || []).map(montar) });
+    return montar(raiz);
+}
+
+/** O próprio clado e todos os seus descendentes. */
+function cladoEDescendentes(clado, arestas) {
+    const resultado = [clado];
+    for (let i = 0; i < resultado.length; i++) {
+        (arestas || []).forEach(([pai, filho]) => { if (pai === resultado[i]) resultado.push(filho); });
+    }
+    return resultado;
+}
+
+/** Espécies do museu que pertencem ao clado (direta ou indiretamente). */
+function exemplosDoClado(clado, arestas, mapaClados, lista) {
+    const grupos = new Set(cladoEDescendentes(clado, arestas));
+    return (lista || []).filter(d => grupos.has(mapaClados[d.Nome]));
+}
+
+// ============================================================
 // IMAGENS (dependem do DOM)
 // ============================================================
 /** Carrega uma imagem; resolve com o elemento ou `null` em caso de erro. */
@@ -499,6 +570,71 @@ function comporImagensLadoALado(imagens, alturasPx, { espaco = 24, fundo = '#fff
 // ============================================================
 // SILHUETA PLACEHOLDER (desenho estilizado em canvas)
 // ============================================================
+/**
+ * Silhueta de um dinossauro bípede genérico (corpo, cauda, pescoço e cabeça
+ * num só contorno), usada quando falta a foto de uma espécie.
+ */
+function desenharDinossauroGenerico(ctx, largura, altura, cor) {
+    // Desenha numa área de 200 x 120 centralizada e proporcional
+    const e = Math.min(largura / 200, altura / 130);
+    const ox = (largura - 200 * e) / 2;
+    const oy = (altura - 120 * e) / 2;
+    const p = (x, y) => [ox + x * e, oy + y * e];
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.beginPath();
+    ctx.ellipse(...p(100, 113), 60 * e, 5 * e, 0, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.fillStyle = cor;
+    // Pernas (atrás do corpo)
+    const perna = (x1, x2, joelhoX) => {
+        ctx.beginPath();
+        ctx.moveTo(...p(x1, 62));
+        ctx.quadraticCurveTo(...p(joelhoX, 82), ...p(x1 + 2, 108));
+        ctx.lineTo(...p(x1 + 12, 110));
+        ctx.lineTo(...p(x1 + 10, 104));
+        ctx.quadraticCurveTo(...p(joelhoX + 12, 84), ...p(x2, 64));
+        ctx.closePath();
+        ctx.fill();
+    };
+    perna(88, 108, 84);
+    ctx.globalAlpha = 0.75;
+    perna(102, 120, 98);
+    ctx.globalAlpha = 1;
+
+    // Corpo + cauda + pescoço + cabeça
+    ctx.beginPath();
+    ctx.moveTo(...p(8, 52));                                  // ponta da cauda
+    ctx.quadraticCurveTo(...p(50, 40), ...p(82, 42));        // dorso da cauda
+    ctx.quadraticCurveTo(...p(112, 30), ...p(136, 40));      // costas
+    ctx.quadraticCurveTo(...p(150, 30), ...p(156, 18));      // pescoço
+    ctx.quadraticCurveTo(...p(162, 8), ...p(176, 10));       // topo da cabeça
+    ctx.quadraticCurveTo(...p(194, 12), ...p(194, 20));      // focinho
+    ctx.quadraticCurveTo(...p(184, 26), ...p(170, 26));      // mandíbula
+    ctx.quadraticCurveTo(...p(162, 36), ...p(150, 52));      // garganta
+    ctx.quadraticCurveTo(...p(140, 70), ...p(112, 70));      // peito e barriga
+    ctx.quadraticCurveTo(...p(86, 70), ...p(70, 58));        // quadril
+    ctx.quadraticCurveTo(...p(40, 58), ...p(8, 52));         // base da cauda
+    ctx.closePath();
+    ctx.fill();
+
+    // Braço
+    ctx.lineWidth = 4 * e;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = cor;
+    ctx.beginPath();
+    ctx.moveTo(...p(140, 54));
+    ctx.quadraticCurveTo(...p(148, 64), ...p(156, 62));
+    ctx.stroke();
+
+    // Olho
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    ctx.beginPath();
+    ctx.arc(...p(178, 16), 2.2 * e, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
 function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     nome = String(nome || '');
     const canvas = document.createElement('canvas');
@@ -609,7 +745,13 @@ function gerarSilhuetaPlaceholder(nome, largura = 200, altura = 200) {
     const cy = altura / 2;
     const escala = Math.min(largura, altura) / 200;
 
-    // Desenho genérico de dinossauro
+    const nomeMin = nome.toLowerCase();
+    if (!nomeMin.includes('humano') && !nomeMin.includes('elefante')) {
+        desenharDinossauroGenerico(ctx, largura, altura, cor);
+        return canvas.toDataURL('image/png');
+    }
+
+    // Base do corpo (humano e elefante)
     ctx.beginPath();
     ctx.moveTo(cx - 60*escala, cy + 40*escala);
     ctx.quadraticCurveTo(cx - 80*escala, cy - 10*escala, cx - 50*escala, cy - 40*escala);
@@ -798,6 +940,13 @@ if (typeof module !== 'undefined' && module.exports) {
         prepararQuiz,
         EMPATE,
         gerarPerguntasBatalha,
+        epocaPorIdade,
+        eraGloboMaisProxima,
+        dinossaurosDaEpoca,
+        gerarOpcoesIcno,
+        construirArvore,
+        cladoEDescendentes,
+        exemplosDoClado,
         carregarImagem,
         carregarImagemOriginal,
         carregarImagemFossilReal,
